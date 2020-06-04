@@ -15,6 +15,10 @@ run_bash=0
 
 run_bash_akrruser=0
 
+run_bash_admin=0
+
+run_bash_user1=0
+
 start_process(){
     name=$1
     command=$2
@@ -131,6 +135,14 @@ do
         echo "Will launching bash at the end as akrruser"
         run_bash_akrruser=1
         ;;
+    bash_admin)
+        echo "Will launching bash at the end as admin"
+        run_bash_admin=1
+        ;;
+    bash_user1)
+        echo "Will launching bash at the end as user1"
+        run_bash_user1=1
+        ;;
     run_tests)
         echo "Start Tests: $RUN_TESTS"
         $RUN_TESTS
@@ -159,6 +171,10 @@ if [ $run_bash -eq 1 ]; then
     /bin/bash
 elif [ $run_bash_akrruser -eq 1 ]; then
     su - akrruser
+elif [ $run_bash_admin -eq 1 ]; then
+    su - admin
+elif [ $run_bash_user1 -eq 1 ]; then
+    su - user1
 elif [ $loop -eq 1 ]; then
     echo "All requested daemon launched"
     while true; do

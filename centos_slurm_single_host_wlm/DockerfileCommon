@@ -1,0 +1,49 @@
+FROM centos:7
+
+LABEL description="Common Image for Slurm Virtual Cluster"
+
+# install dependencies
+RUN \
+    yum -y update && \
+    yum -y install --setopt=tsflags=nodocs epel-release && \
+    yum -y install --setopt=tsflags=nodocs \
+        vim tmux mc perl-Switch\
+        openssl openssh-server openssh-clients iproute \
+        munge sudo && \
+    yum clean all
+
+WORKDIR /root
+
+# copy daemons starters
+COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
+
+# add users
+RUN useradd -m -s /bin/bash admin && \
+    echo 'admin:admin' |chpasswd && \
+    usermod -a -G wheel admin && \
+    echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    useradd -m -s /bin/bash user1 && \
+    echo 'user1:user' |chpasswd && \
+    useradd -m -s /bin/bash user2 && \
+    echo 'user2:user' |chpasswd && \
+    useradd -m -s /bin/bash user3 && \
+    echo 'user3:user' |chpasswd && \
+    useradd -m -s /bin/bash user4 && \
+    echo 'user4:user' |chpasswd && \
+    useradd -m -s /bin/bash user5 && \
+    echo 'user5:user' |chpasswd
+    
+# configure sshd
+RUN mkdir /var/run/sshd && \
+    ssh-keygen -t rsa -f /etc/ssh/ssh_host_rsa_key -N '' && \
+    ssh-keygen -t ecdsa -f /etc/ssh/ssh_host_ecdsa_key -N '' && \
+    ssh-keygen -t ed25519 -f /etc/ssh/ssh_host_ed25519_key -N '' && \
+    echo 'root:root' |chpasswd && \
+    echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
+# uncomment two previous line if there is a need for root access through ssh
+
+EXPOSE 22
+
+# setup entry point
+ENTRYPOINT ["/usr/local/sbin/cmd_start"]
+CMD ["sshd", "bash"]

@@ -40,3 +40,7 @@ systemctl restart sshd.service
 ## start the sshd server 
 systemctl restart sshd.service
   
+  
+  
+# Making Common Image
+
