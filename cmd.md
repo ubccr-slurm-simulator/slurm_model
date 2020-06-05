@@ -47,10 +47,10 @@ cmd_start sshd
 # Making Common Image
 
 ```bash
-# Build
+## Build
 docker build -f centos_slurm_single_host_wlm/DockerfileCommon -t slurm_common:latest .
 
-# Run
-docker run -it --rm -h head-node -p 221:22 --name head-node slurm_common:latest
+## Run
+d
 docker run -it --rm -h compute000 -p 222:22 --name compute000 slurm_common:latest
 ```

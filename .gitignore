@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+# ignore RPMS
+/RPMS/x86_64
+.DS_Store
