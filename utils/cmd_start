@@ -49,13 +49,14 @@ start_process(){
 # Start process and confirm it launches by looking for a
 # confirm_sentence in log_file.
 # Format:
-# start_process_w_confirm name command pid_file log_file confirm_sentence
+# start_process_w_confirm name command pid_file log_file confirm_sentence user
 start_process_w_confirm(){
     name=$1
     command=$2
     pid_file=$3
     log_file=$4
     confirm_sentence=$5
+    user=${6:-x}
     timeout_time=2
 
     if [ -f "${pid_file}" ]; then
@@ -69,9 +70,14 @@ start_process_w_confirm(){
         cat "${log_file}" >> "${log_file}.old"
         rm "${log_file}"
     fi
-
-    echo "Launching ${name}"
-    ${command}
+    
+    if [ "$user" = "x" ]; then
+        echo "Launching ${name}"
+        ${command}
+    else
+        echo "Launching ${name} as ${user} user"
+        sudo -u "${user}" "${command}"
+    fi
 
     for ((i=0; i < timeout_time; i++))
     {
@@ -112,7 +118,7 @@ do
         ;;
     slurmd)
         start_process_w_confirm slurmd /usr/sbin/slurmd /run/slurmd.pid \
-            /var/log/slurm/slurmd.log started
+            /var/log/slurm/slurmd.log started slurm
         ;;
     httpd)
         echo "Launching httpd"

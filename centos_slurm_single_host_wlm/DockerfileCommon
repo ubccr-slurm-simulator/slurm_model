@@ -18,7 +18,11 @@ WORKDIR /root
 COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
 
 # add users
-RUN useradd -m -s /bin/bash admin && \
+RUN useradd -m -s /bin/bash slurm && \
+    echo 'slurm:slurm' |chpasswd && \
+    usermod -a -G wheel slurm && \
+    echo "slurm ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+    useradd -m -s /bin/bash admin && \
     echo 'admin:admin' |chpasswd && \
     usermod -a -G wheel admin && \
     echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
@@ -41,6 +45,14 @@ RUN mkdir /var/run/sshd && \
     echo 'root:root' |chpasswd && \
     echo 'PermitRootLogin yes' >> /etc/ssh/sshd_config
 # uncomment two previous line if there is a need for root access through ssh
+
+# setup munge
+RUN echo "secret munge key secret munge key secret munge key" >/etc/munge/munge.key &&\
+    chown -R munge:munge /var/log/munge /run/munge /var/lib/munge /etc/munge &&\
+    chmod 600 /etc/munge/munge.key &&\
+    cmd_start munged &&\
+    munge -n | unmunge &&\
+    cmd_stop munged
 
 EXPOSE 22
 
