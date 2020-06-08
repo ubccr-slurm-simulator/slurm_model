@@ -17,7 +17,8 @@ RUN \
         perl perl-ExtUtils-MakeMaker
 
 # source of slurm
-ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-19.05.2.tar.bz2
+ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
+
 
 # volume for final rpms dump
 VOLUME ./centos_slurm_single_host_wlm/RPMS
