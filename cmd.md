@@ -136,7 +136,7 @@ docker cp slurmdbd.conf head-node:etc/slurm/slurmdbd.conf
 
 ```bash
 # Build
-docker build -f centos_slurm_single_host_wlm/DockerfileCommon -t slurm_common:latest .
+docker build -f centos_slurm_single_host_wlm/Common.Dockerfile -t slurm_common:latest .
 
 # Start network
 docker network create -d bridge virtual-cluster
@@ -207,9 +207,9 @@ cmd_start slurmdbd slurmctrld
 
 ```bash
 # Build
-docker build -f centos_slurm_single_host_wlm/DockerfileCommon -t slurm_common:latest .
-docker build -f centos_slurm_single_host_wlm/DockerfileHeadNode -t slurm_head_node:latest .
-docker build -f centos_slurm_single_host_wlm/DockerfileComputeNode -t slurm_compute_node:latest .
+docker build -f centos_slurm_single_host_wlm/Common.Dockerfile -t slurm_common:latest .
+docker build -f centos_slurm_single_host_wlm/HeadNode.Dockerfile -t slurm_head_node:latest .
+docker build -f centos_slurm_single_host_wlm/ComputeNode.Dockerfile -t slurm_compute_node:latest .
 
 # Start network
 docker network create -d bridge virtual-cluster
@@ -223,5 +223,61 @@ docker run -it --rm -h head-node -p 222:22 --name head-node \
 docker run -it --rm -h compute000 --name compute000 \
    --network virtual-cluster \
    -v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
+```
+
+
+## Build on Lake effect
+
+### Install Docker
+```bash
+sudo yum install -y yum-utils
+
+sudo yum-config-manager \
+    --add-repo \
+    https://download.docker.com/linux/centos/docker-ce.repo
+
+sudo yum install docker-ce docker-ce-cli containerd.io
+```
+### Run Docker Daemon
+```bash
+sudo dockerd
+```
+### fix flag link error
+
+```bash
+
+```
+
+### Give Permission to bash script
+```bash
+cd /usr/local/sbin/
+sudo chmod 777 cmd_setup
+sudo chmod 777 cmd_start
+sudo chmod 777 cmd_stop
+```
+
+### Build
+```bash
+# Build
+sudo docker build -f centos_slurm_single_host_wlm/Common.Dockerfile -t slurm_common:latest .
+sudo docker build -f centos_slurm_single_host_wlm/HeadNode.Dockerfile -t slurm_head_node:latest .
+sudo docker build -f centos_slurm_single_host_wlm/ComputeNode.Dockerfile -t slurm_compute_node:latest .
+```
+### Run
+```bash
+# Start network
+sudo docker network create -d bridge virtual-cluster
+
+### run head-node 
+sudo docker run -it --rm -h head-node -p 222:22 --name head-node \
+   --network virtual-cluster \
+    -v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm slurm_head_node:latest
+
+
+### run compute-node
+sudo docker run -it --rm -h compute000 --name compute000   \
+ --network virtual-cluster \
+-v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
+```
 
 ```
