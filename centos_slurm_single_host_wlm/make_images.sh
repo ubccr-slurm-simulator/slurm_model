@@ -7,7 +7,7 @@ set -e
 ## Making Slurm RPMs
 
 #make image, in docker/centos_slurm_single_host_wlm/
-docker build -t slurm_rpm_maker:1 -f DockerfileMakeSlurmRPM .
+docker build -t slurm_rpm_maker:1 -f MakeSlurmRPM.Dockerfile .
 
 #create directory for RPMS storage
 mkdir -p RPMS
@@ -38,7 +38,7 @@ rm -rf RPMS
 ## Making Single Host Slurm WLM Image with Dependencies Installed for AKRR
 
 #make image, in docker/centos_slurm_single_host_wlm/
-docker build -t nsimakov/akrr_ready_centos_slurm_single_host_wlm:1 -f DockerfileAKRRReady .
+docker build -t nsimakov/akrr_ready_centos_slurm_single_host_wlm:1 -f AKRRReady.Dockerfile .
 
 #push to docker cloud
 docker push nsimakov/akrr_ready_centos_slurm_single_host_wlm:1
