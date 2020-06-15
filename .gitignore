@@ -129,5 +129,5 @@ dmypy.json
 .pyre/
 
 # ignore RPMS
-/RPMS/x86_64
+./centos_slurm_single_host_wlm/RPMS/
 .DS_Store
