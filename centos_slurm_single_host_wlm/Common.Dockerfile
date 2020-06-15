@@ -9,6 +9,8 @@ RUN \
     yum -y install --setopt=tsflags=nodocs \
         vim tmux mc perl-Switch\
         openssl openssh-server openssh-clients iproute \
+        perl-Date* \
+        gcc-c++\
         munge sudo && \
     yum clean all
 
@@ -58,4 +60,4 @@ EXPOSE 22
 
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["sshd", "bash"]
+CMD ["sshd"]

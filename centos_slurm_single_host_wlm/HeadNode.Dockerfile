@@ -42,4 +42,4 @@ EXPOSE 29002
 
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "bash_admin"]
+CMD ["munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "-loop"]

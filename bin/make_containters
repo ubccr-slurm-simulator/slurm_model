@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BASE_DIR="$( dirname "${BASEDIR}" )"
+
+cd $BASE_DIR
+
+docker build -f centos_slurm_single_host_wlm/Common.Dockerfile -t slurm_common:latest .
+docker build -f centos_slurm_single_host_wlm/HeadNode.Dockerfile -t slurm_head_node:latest .
+docker build -f centos_slurm_single_host_wlm/ComputeNode.Dockerfile -t slurm_compute_node:latest .
+

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+BIN_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+BASE_DIR="$( dirname "${BASEDIR}" )"
+
+cd $BASE_DIR
+
+# check if it exists if not clean-up and start new
+# docker network create -d bridge virtual-cluster
+
+docker run -d -h head-node -p 222:22 --name head-node \
+   --network virtual-cluster \
+    -v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm slurm_head_node:latest
+
+docker run -d -h compute000 --name compute000   \
+    --network virtual-cluster \
+    -v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
+
+docker run -d -h compute001 --name compute001 --cpuset-cpus="0-1" \
+    --network virtual-cluster \
+    -v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
+
+

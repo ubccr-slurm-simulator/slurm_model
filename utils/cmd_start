@@ -118,7 +118,7 @@ do
         ;;
     slurmd)
         start_process_w_confirm slurmd /usr/sbin/slurmd /run/slurmd.pid \
-            /var/log/slurm/slurmd.log started slurm
+            /var/log/slurm/slurmd.log started
         ;;
     httpd)
         echo "Launching httpd"

@@ -1,0 +1,50 @@
+#!/usr/bin/perl
+
+use strict;
+use Sys::Hostname;
+use File::Path qw(make_path);
+use File::Copy qw(move);
+use Date::Simple;
+use POSIX qw(strftime);
+use IO::Socket;
+use POSIX qw(WNOHANG setsid);
+
+open(my $logger, "| logger -p local0.notice");
+
+my $today = Date::Simple->new;
+
+my $logyear = $today->format("%Y");
+my $logmonth = $today->format("%m");
+my $logday = $today->format("%d");
+
+my $jobdate = $today->format("%Y%m%d");
+my $jobdatelong = strftime "%Y%m%d.%H.%M.%S", localtime;
+
+# Grab host short name XXX consider chaning in future
+my $host = ( split('\.', hostname()) )[0];
+
+my $jobid = $ENV{SLURM_JOB_ID};
+my $uid = $ENV{SLURM_JOB_UID};
+
+unless($jobid) {
+    print $logger "Prolog missing job id\n";
+    die "Missing SLURM_JOB_ID env variable. prolog should be executed from slurm" ;
+}
+
+unless($uid) {
+    print $logger "Prolog missing user id\n";
+    die "Missing SLURM_JOB_UID env variable. prolog should be executed from slurm" if $uid != 0;
+}
+
+print $logger "Starting prolog for job $jobid user $uid\n";
+
+# Only do this in the first node of a batch job
+
+my $firsthost = `nodeset -e "\$SLURM_NODELIST" | awk '{print\$1}'`;
+chomp($firsthost);
+
+
+print $logger "Ending prolog for job $jobid user $uid\n";
+close($logger);
+
+exit(0)
