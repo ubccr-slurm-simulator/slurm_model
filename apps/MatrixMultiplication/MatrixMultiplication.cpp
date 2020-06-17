@@ -23,30 +23,34 @@ void printMatrix(vector<double>&matrix, int stride){
     }
 }
 
-vector<double> mulitilicationHelper(vector<double> matrix,int stride){
+void mulitilicationHelper(vector<double> &matrix,int n){
     vector<double>temp = matrix;
-    for(int i = 0; i<stride; i++){
-        for(int j = 0; j<stride; j++){
-            int sum = 0;
-            for(int k = 0;k<stride;k++){
-                sum += temp[i * stride + k] * temp[k * stride+j];
+    //cout<<"temp is :"<<temp[0]<<" "<<temp[1]<<endl;
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j< n; j++){
+            double sum = 0;
+            for(int k = 0;k<n;k++){
+                sum += temp[i * n + k] * temp[k * n + j];
             }
-            matrix[i*stride+j] = sum;
+            matrix[i*n+j] = sum;
         }
     }
-    return matrix;
 }
 
-vector<double> multiplication(vector<double> matrix, int sleepSeconds,int roughSeconds, int stride){
+void multiplication(vector<double> &matrix, int sleepSeconds,int calcSeconds, int n){
     auto start = std::chrono::high_resolution_clock::now();
+    double calcSum = 0; // floating point calculation
     while(true){
-        vector<double>res = mulitilicationHelper(matrix, stride);
-        // running time is up, put to sleep
-        if((std::chrono::steady_clock::now() - start) > std::chrono::seconds(roughSeconds)){
-            cout<<"Running time is up, sleeping"<<endl;
-            return res;
+        mulitilicationHelper(matrix, n);
+        calcSum = calcSum+(2*n*n*n);
+        // runing time is up, put to sleep
+        if((std::chrono::steady_clock::now() - start) >= std::chrono::seconds(calcSeconds)){
+            //cout<<"Running time is up, " << "sleeping"<<endl;
+            break;
         }
     }
+    auto end = std::chrono::high_resolution_clock::now();
+    cout<<"FLOPS: "<<calcSum/calcSeconds<<endl;
 }
 
 
@@ -56,15 +60,10 @@ int main(int argc, char*args[]){
         cerr<<"Not enough arguments"<<endl;
         exit(0);
     }
-    int stride = atoi(args[1]);
-    int roughSeconds = atoi(args[2]);
+    int n = atoi(args[1]);
+    int calcSeconds = atoi(args[2]);
     int sleepSeconds = atoi(args[3]);
-    //vector<double> matrix(stride * stride,1);
-    vector<double> matrix;
-    matrix.push_back(1);
-    matrix.push_back(2);
-    matrix.push_back(3);
-    matrix.push_back(4);
+    vector<double> matrix(n * n,1);
     double timeCounter = 0;
 
     //generate random inital sleep time
@@ -75,13 +74,12 @@ int main(int argc, char*args[]){
 
     //working stage
     while(true){
-        vector<double>res = multiplication(matrix, sleepSeconds, roughSeconds, stride);
-        printMatrix(res, stride);
+        multiplication(matrix, sleepSeconds, calcSeconds, n);
+        //printMatrix(matrix, n);
         sleep(sleepSeconds);
+        for(auto elem : matrix) elem = 1;
 
     }
-
-
 
     return 0;
 }
