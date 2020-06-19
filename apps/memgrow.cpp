@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
     vector<int>vect(1,0);
     int size = atoi(argv[1]);
     cout<<size<<endl;
-    while(true){
+    for(int i = 0; i< size*1000*1000; i++){
         vect.push_back(size);
     }
     return 0;

@@ -16,7 +16,7 @@ docker run -d -h compute000 --name compute000   \
     --network virtual-cluster \
     -v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
 
-docker run -d -h compute001 --name compute001 --cpuset-cpus="0-1" \
+docker run -d -h compute001 --name compute001 \
     --network virtual-cluster \
     -v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
 

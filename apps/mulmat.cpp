@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <cstdlib>
+#include <stdint.h>
 #include <random>
 #include <chrono>
 #include <thread>
@@ -29,6 +30,7 @@ void mulitilicationHelper(vector<double> &matrix,int n){
     for(int i = 0; i < n; i++){
         for(int j = 0; j< n; j++){
             double sum = 0;
+            #pragma simd
             for(int k = 0;k<n;k++){
                 sum += temp[i * n + k] * temp[k * n + j];
             }
@@ -39,18 +41,18 @@ void mulitilicationHelper(vector<double> &matrix,int n){
 
 void multiplication(vector<double> &matrix, int sleepSeconds,int calcSeconds, int n){
     auto start = std::chrono::high_resolution_clock::now();
-    double calcSum = 0; // floating point calculation
+    int64_t calcSum = 0; // floating point calculation
     while(true){
         mulitilicationHelper(matrix, n);
-        calcSum = calcSum+(2*n*n*n);
+        calcSum ++;
         // runing time is up, put to sleep
-        if((std::chrono::steady_clock::now() - start) >= std::chrono::seconds(calcSeconds)){
+        if((std::chrono::high_resolution_clock::now()- start) >= std::chrono::seconds(calcSeconds)){
             //cout<<"Running time is up, " << "sleeping"<<endl;
             break;
         }
     }
     auto end = std::chrono::high_resolution_clock::now();
-    cout<<"FLOPS: "<<calcSum/calcSeconds<<endl;
+    cout<<"FLOPS: "<< 2.0*calcSum*n*n*n / calcSeconds <<endl;
 }
 
 
