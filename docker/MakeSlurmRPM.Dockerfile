@@ -13,7 +13,7 @@ RUN \
         mariadb-server mariadb-devel \
         munge munge-devel \
         readline readline-devel \
-        pam-devel \
+        hdf5 hdf5-devel pam-devel \
         perl perl-ExtUtils-MakeMaker python3
 
 # source of slurm
@@ -21,11 +21,11 @@ ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz
 
 
 # volume for final rpms dump
-VOLUME ./centos_slurm_single_host_wlm/RPMS
+VOLUME ./docker/RPMS
 
 # setup entry point
 WORKDIR /root
 
-COPY ./centos_slurm_single_host_wlm/make_slurm_rpms ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
+COPY ./docker/make_slurm_rpms ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
 CMD ["make_slurm_rpms"]

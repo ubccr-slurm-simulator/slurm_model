@@ -1,86 +1,50 @@
-# Centos-7 based Slurm WLM for Single Host
+# Centos-7 based Slurm WLM for Modeling with Docker
 
-This docker image to run Centos-7 based container
-with pre-installed Slurm Workload Manager to
-Run 
+Set of containers to rum Slurm in Docker for modeling purposes
 
-## Creating Image
+## Creating Images
 
-```
-!!!
-Docker build should be executed in akrr_src/docker directory
-(one level up from here)
-```
+> Docker build should be executed in root of slurm-model directory
+> (one level up from here)
+
 
 ### Making Slurm RPMs
 
 First we need slurm RPMs.
-DockerfileMakeSlurmRPM describes simple image for centos 7 rpm making.
-Here is listing on the whole process
+
+MakeSlurmRPM.Dockerfile describes simple image for centos 7 rpm making.
+Here is listing on the whole process:
 
 ```bash
-[[ -d "./centos_slurm_single_host_wlm/RPMS" ]] && rm -rf "./centos_slurm_single_host_wlm/RPMS" 
-#make image, in docker/centos_slurm_single_host_wlm/
-docker build -t slurm_rpm_maker:latest -f ./centos_slurm_single_host_wlm/DockerfileMakeSlurmRPM .
+# create directory for RPMS storage
+[[ ! -d "./docker/RPMS" ]] && mkdir -p docker/RPMS
+rm -rf "./docker/RPMS/*"
 
-#create directory for RPMS storage
-[[ ! -d "./centos_slurm_single_host_wlm/RPMS" ]] && mkdir -p centos_slurm_single_host_wlm/RPMS
+# make image
+docker build -t pseudo/slurm_rpm_maker:latest -f ./docker/MakeSlurmRPM.Dockerfile .
 
-#make slurm RPMS
+# make slurm RPMS
 docker run --name slurm_rpm_maker -h slurm_rpm_maker \
-           -v `pwd`/centos_slurm_single_host_wlm/RPMS:/RPMS \
+           -v `pwd`/docker/RPMS:/RPMS \
            --rm \
-           -it slurm_rpm_maker:latest make_slurm_rpms
-```docker/centos_slurm_single_host_wlm/README.MD:35
-
-## Making Single Host Slurm WLM Image
-
-```bash
-#make image, in docker/centos_slurm_single_host_wlm/
-docker build -t nsimakov/centos_slurm_single_host_wlm:latest -f ./centos_slurm_single_host_wlm/Dockerfile .
-
-#run (to check workability)
-docker run --name centos_slurm_single_host_wlm -h centos_slurm_single_host_wlm \
-       --rm -it nsimakov/centos_slurm_single_host_wlm:latest
-#in conteiner run something like squeue to check that it is working
-#push to docker cloud
-docker push nsimakov/centos_slurm_single_host_wlm:latest
+           -it pseudo/slurm_rpm_maker:latest make_slurm_rpms
 ```
 
-## Making Single Host Slurm WLM Image with Dependencies Installed for AKRR
+## Making Images for Head-Node and Compute-Nodes
 
 ```bash
-#make image, in docker/centos_slurm_single_host_wlm/
-docker build -t nsimakov/akrr_ready_centos_slurm_single_host_wlm:latest \
-       -f ./centos_slurm_single_host_wlm/DockerfileAKRRReady .
+# Build Common Image
+docker build -f docker/Common.Dockerfile -t pseudo/slurm_common:latest .
+# (Optionally) Run Common container to test it
+# docker run -it --rm -h compute000 -p 222:22 --name compute000 pseudo/slurm_common:latest
 
-#run (to check workability)
-docker run -it --rm \
-    -v ~/xmdow_wsp/akrr:/root/src/github.com/ubccr/akrr \
-    -e REPO_FULL_NAME=ubccr/akrr \
-    nsimakov/akrr_ready_centos_slurm_single_host_wlm:latest bash
+# Build Head-Node Image
+docker build -f docker/HeadNode.Dockerfile -t pseudo/slurm_head_node:latest .
+# (Optionally) Run Head-Node container to test it
+# docker run -it --rm -h head-node -p 222:22 --name head-node pseudo/slurm_head_node:latest
 
-#push to docker cloud
-docker push nsimakov/akrr_ready_centos_slurm_single_host_wlm:latest
-```
-
-## Testing AKRR Image
-
-```bash
-# make image in akrr root directory
-docker build -t pseudo_repo/akrr_runtest:latest -f Dockerfile_run_tests .
-
-# by default after test you'll drop to akrruser bash
-# run devel test (i.e. build by setup.py devel)
-docker run -it --rm -v $HOME/xdmod_wsp/akrr:/home/akrruser/akrr_src pseudo_repo/akrr_runtest:latest
-# run rpm test
-docker run -it --rm -e AKRR_SETUP_WAY=rpm  -v $HOME/xdmod_wsp/akrr:/home/akrruser/akrr_src \
-    pseudo_repo/akrr_runtest:latest
-# run in source test
-docker run -it --rm -e AKRR_SETUP_WAY=src  -v $HOME/xdmod_wsp/akrr:/home/akrruser/akrr_src \
-    pseudo_repo/akrr_runtest:latest
-# run in source test with non default user home
-docker run -it --rm -e AKRR_SETUP_WAY=src -e AKRR_SETUP_HOME=/home/akrruser/akrrhome\
-    -v $HOMExdmod_wsp/akrr:/home/akrruser/akrr_src \
-    pseudo_repo/akrr_runtest:latest
+# Build Compute-Node Image
+docker build -f docker/ComputeNode.Dockerfile -t pseudo/slurm_compute_node:latest .
+# (Optionally) Run Compute-Node container to test it
+# docker run -it --rm -h compute000 -p 222:22 --name compute000 pseudo/slurm_compute_node:latest
 ```

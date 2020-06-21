@@ -1,44 +1,31 @@
 #!/bin/bash
+# build all images
+
+CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+SLURM_MODEL_DIR="$( dirname "${CUR_DIR}" )"
 
 #exit on any error
 set -e
 
-###################
-## Making Slurm RPMs
+cd "${SLURM_MODEL_DIR}"
 
-#make image, in docker/centos_slurm_single_host_wlm/
-docker build -t slurm_rpm_maker:1 -f MakeSlurmRPM.Dockerfile .
+# Making Slurm RPMs
+[[ -d "${SLURM_MODEL_DIR}/docker/RPMS" ]] && rm -rf "${SLURM_MODEL_DIR}/docker/RPMS"
+rm -rf "${SLURM_MODEL_DIR}/docker/RPMS/*"
 
-#create directory for RPMS storage
-mkdir -p RPMS
-
-#make slurm RPMS
+# make image
+docker build -t pseudo/slurm_rpm_maker:latest -f ./docker/MakeSlurmRPM.Dockerfile .
 docker run --name slurm_rpm_maker -h slurm_rpm_maker \
-           -v `pwd`/RPMS:/RPMS \
+           -v `pwd`/docker/RPMS:/RPMS \
            --rm \
-           -it slurm_rpm_maker:1 make_slurm_rpms
+           -it pseudo/slurm_rpm_maker:latest make_slurm_rpms
 
-#delete image and container as they are not needed
-#docker container rm slurm_rpm_maker
-docker image rm slurm_rpm_maker:1
+# Build Common Image
+docker build -f docker/Common.Dockerfile -t pseudo/slurm_common:latest .
 
-###################
-## Making Single Host Slurm WLM Image
+# Build Head-Node Image
+docker build -f docker/HeadNode.Dockerfile -t pseudo/slurm_head_node:latest .
 
-#make image, in docker/centos_slurm_single_host_wlm/
-docker build -t nsimakov/centos_slurm_single_host_wlm:1 .
+# Build Compute-Node Image
+docker build -f docker/ComputeNode.Dockerfile -t pseudo/slurm_compute_node:latest .
 
-#push to docker cloud
-docker push nsimakov/centos_slurm_single_host_wlm:1
-
-#rm RPMs we don't need them any more
-rm -rf RPMS
-
-###################
-## Making Single Host Slurm WLM Image with Dependencies Installed for AKRR
-
-#make image, in docker/centos_slurm_single_host_wlm/
-docker build -t nsimakov/akrr_ready_centos_slurm_single_host_wlm:1 -f AKRRReady.Dockerfile .
-
-#push to docker cloud
-docker push nsimakov/akrr_ready_centos_slurm_single_host_wlm:1

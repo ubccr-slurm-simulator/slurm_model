@@ -1,4 +1,4 @@
-FROM slurm_common:latest
+FROM pseudo/slurm_common:latest
 
 LABEL description="HeadNode Image for Slurm Virtual Cluster"
 
@@ -21,7 +21,7 @@ RUN chmod g+rw /var/lib/mysql /var/log/mariadb /var/run/mariadb && \
     cmd_stop mysqld
 
 # copy slurm rpm
-COPY ./centos_slurm_single_host_wlm/RPMS/x86_64/slurm*.rpm /root/
+COPY ./docker/RPMS/x86_64/slurm*.rpm /root/
 
 #install Slurm
 RUN yum -y install \
@@ -42,4 +42,4 @@ EXPOSE 29002
 
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "-loop"]
+CMD ["-loop", "munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "bash_admin"]

@@ -10,14 +10,17 @@ RUN \
         vim tmux mc perl-Switch\
         openssl openssh-server openssh-clients iproute \
         perl-Date* \
-        gcc-c++\
-        munge sudo && \
+        gcc-c++ \
+        munge sudo python3 && \
     yum clean all
 
 WORKDIR /root
 
 # copy daemons starters
 COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
+
+# directories
+RUN mkdir /scratch && chmod 777 /scratch
 
 # add users
 RUN useradd -m -s /bin/bash slurm && \
@@ -58,6 +61,10 @@ RUN echo "secret munge key secret munge key secret munge key" >/etc/munge/munge.
 
 EXPOSE 22
 
+# install mini apps
+COPY ./apps /usr/local/apps
+RUN cd /usr/local/apps && make
+
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["sshd"]
+CMD ["sshd", "bash"]

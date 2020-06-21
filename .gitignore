@@ -132,3 +132,6 @@ dmypy.json
 /docker/RPMS
 /.idea
 .DS_Store
+/apps/memgrow
+/apps/mulmat
+*.o
