@@ -98,9 +98,10 @@ do
     case "$1" in
     mysqld)
         echo "Launching mysqld"
-        trap "/sbin/shutdown.sh mysqld; exit" SIGHUP SIGINT SIGTERM
+
         mysqld_safe &
         mysqladmin --silent --wait=30 ping
+        trap "mysqladmin -u root -p shutdown; echo 'mysqld turned off;exit" SIGHUP SIGINT SIGTERM
         ;;
     munged)
         start_process munged munged /run/munge/munged.pid munge
