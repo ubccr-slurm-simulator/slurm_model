@@ -174,17 +174,28 @@ do
     shift
 done
 
-if [ $run_bash -eq 1 ]; then
-    /bin/bash
-elif [ $run_bash_akrruser -eq 1 ]; then
-    su - akrruser
-elif [ $run_bash_admin -eq 1 ]; then
-    su - admin
-elif [ $run_bash_user1 -eq 1 ]; then
-    su - user1
-elif [ $loop -eq 1 ]; then
-    echo "All requested daemon launched"
-    while true; do
-        sleep 60
-    done
+if [ -t 0 ] ; then
+    if [ $run_bash -eq 1 ]; then
+        /bin/bash
+    elif [ $run_bash_akrruser -eq 1 ]; then
+        su - akrruser
+    elif [ $run_bash_admin -eq 1 ]; then
+        su - admin
+    elif [ $run_bash_user1 -eq 1 ]; then
+        su - user1
+    elif [ $loop -eq 1 ]; then
+        echo "All requested daemon launched"
+        while true; do
+            sleep 60
+        done
+    fi
+else
+    echo "not interactive run"
+    if [ $loop -eq 1 ]; then
+        echo "All requested daemon launched"
+        while true; do
+            sleep 60
+        done
+    fi
 fi
+
