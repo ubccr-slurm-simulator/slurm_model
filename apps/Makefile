@@ -2,7 +2,9 @@ CXX=g++
 CXXFLAGS = -std=c++11 -O3 -mtune=native 
 # -fopt-info-options=all
 
-all: memgrow mulmat
+TARGETS = memgrow mulmat
+
+all: $(TARGETS)
 
 memgrow: memgrow.o
 	$(CXX) $^ $(LIBS) -o $@
@@ -16,3 +18,5 @@ mulmat: mulmat.o
 clean:
 	rm -f *.o memgrow mulmut
 
+install: $(TARGETS)
+	cp memgrow mulmat /usr/local/bin
