@@ -18,6 +18,7 @@ docker network create -d bridge virtual-cluster
 docker run -it --rm -h head-node -p 222:22 --name head-node \
     --network virtual-cluster \
     -v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
+    -v `pwd`/micro1/home:/home \
     -v `pwd`/apps:/usr/local/apps \
     pseudo/slurm_head_node:latest
 
@@ -26,6 +27,7 @@ node_name=compute000
 docker run -it --rm -h ${node_name} --name ${node_name}   \
    --network virtual-cluster \
    -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
+   -v `pwd`/micro1/home:/home \
    -v `pwd`/apps:/usr/local/apps \
    pseudo/slurm_compute_node:latest
 
@@ -34,6 +36,7 @@ node_name=compute001
 docker run -it --rm -h ${node_name} --name ${node_name}   \
    --network virtual-cluster \
    -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
+   -v `pwd`/micro1/home:/home \
    pseudo/slurm_compute_node:latest
 ```
 
@@ -115,5 +118,18 @@ sacctmgr list associations format=Account,Cluster,User,Fairshare tree withd
 
 ```bash
 sudo su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/apps/sleep.job 60 0"
+
+sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/apps/sleep.job 60 0
+
+salloc -p normal -q normal -A account1 -N 1 -t 5:00
 ```
 
+
+```bash
+cd /home
+for u in admin  slurm  user1  user2  user3  user4  user5
+do
+    chown -R $u:$u $u
+done
+
+```

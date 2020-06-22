@@ -20,3 +20,6 @@
     ssactmgr modify association where user = <userName> account = <accountname> <cmd>
 ```
 
+```bash
+scontrol update NodeName=compute000 State=RESUME
+```
