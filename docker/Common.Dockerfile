@@ -18,7 +18,7 @@ WORKDIR /root
 
 # copy daemons starters
 COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
-
+COPY ./docker/vctools /vctools
 # directories
 RUN mkdir /scratch && chmod 777 /scratch
 
@@ -26,21 +26,7 @@ RUN mkdir /scratch && chmod 777 /scratch
 RUN useradd -m -s /bin/bash slurm && \
     echo 'slurm:slurm' |chpasswd && \
     usermod -a -G wheel slurm && \
-    echo "slurm ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-    useradd -m -s /bin/bash admin && \
-    echo 'admin:admin' |chpasswd && \
-    usermod -a -G wheel admin && \
-    echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
-    useradd -m -s /bin/bash user1 && \
-    echo 'user1:user' |chpasswd && \
-    useradd -m -s /bin/bash user2 && \
-    echo 'user2:user' |chpasswd && \
-    useradd -m -s /bin/bash user3 && \
-    echo 'user3:user' |chpasswd && \
-    useradd -m -s /bin/bash user4 && \
-    echo 'user4:user' |chpasswd && \
-    useradd -m -s /bin/bash user5 && \
-    echo 'user5:user' |chpasswd
+    echo "slurm ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers
     
 # configure sshd
 RUN mkdir /var/run/sshd && \

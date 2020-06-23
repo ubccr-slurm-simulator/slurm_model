@@ -22,7 +22,6 @@ RUN chmod g+rw /var/lib/mysql /var/log/mariadb /var/run/mariadb && \
 
 # copy slurm rpm
 COPY ./docker/RPMS/x86_64/slurm*.rpm /root/
-COPY ./micro1/bin/init_system /sbin/init_system
 
 #install Slurm
 RUN yum -y install \
@@ -43,4 +42,4 @@ EXPOSE 29002
 
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["-loop", "munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "bash"]
+CMD ["-loop", "/vctools/init_system", "munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "/vctools/init_slurm", "bash"]

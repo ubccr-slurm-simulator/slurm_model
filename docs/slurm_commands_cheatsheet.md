@@ -23,3 +23,5 @@
 ```bash
 scontrol update NodeName=compute000 State=RESUME
 ```
+sacctmgr list associations format=Account,Cluster,User,Fairshare tree withd
+scontrol show assoc

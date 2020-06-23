@@ -26,4 +26,4 @@ EXPOSE 29003
 
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["-loop", "munged", "slurmd", "sshd", "bash"]
+CMD ["-loop", "/vctools/init_system", "munged", "slurmd", "sshd", "/vctools/init_slurm", "bash"]

@@ -8,27 +8,40 @@ Scratch directory is mounted as volume from  /tmp and served as a shared file-sy
 
 # Starting/Stopping Virtual Cluster
 
-To start cluster in interactive mode:
+
 
 ```bash
 # create network
-docker network create -d bridge virtual-cluster
+docker network create -d bridge \
+    --subnet=172.31.0.0/16 \
+    --ip-range=172.31.0.0/16 \
+    --gateway=172.31.0.254 \
+    virtual-cluster
+
+# create volume for shared home directories
+docker volume create vc-home
+```
+
+To start cluster:
+
+```bash
+# volumes mounting
+mount_volumes="-v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
+    -v vc_home:/home \
+    -v `pwd`/micro1/vctools:/vctools \
+    -v `pwd`/apps:/usr/local/apps"
 
 # launch head-node in separate terminal
 docker run -it --rm -h head-node -p 222:22 --name head-node \
-    --network virtual-cluster \
-    -v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
-    -v `pwd`/micro1/home:/home \
-    -v `pwd`/apps:/usr/local/apps \
+    --network virtual-cluster --ip=172.31.0.1 \
+    ${mount_volumes} \
     pseudo/slurm_head_node:latest
 
 # launch compute-nodes in separate terminal
 node_name=compute000
 docker run -it --rm -h ${node_name} --name ${node_name}   \
-   --network virtual-cluster \
-   -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
-   -v `pwd`/micro1/home:/home \
-   -v `pwd`/apps:/usr/local/apps \
+   --network virtual-cluster --ip=172.31.0.100 \
+   ${mount_volumes} \
    pseudo/slurm_compute_node:latest
 
 # launch compute-nodes in separate terminal
@@ -43,9 +56,6 @@ docker run -it --rm -h ${node_name} --name ${node_name}   \
 To start cluster in detached mode:
 
 ```bash
-# create network
-docker network create -d bridge virtual-cluster
-
 # launch head-node
 docker run -d --rm -h head-node -p 222:22 --name head-node \
     --network virtual-cluster \
@@ -83,36 +93,12 @@ do
 done
 # possibly delete network
 docker network rm virtual-cluster
+# possibly delete home directories
+docker volume remove vc-home
 ```
 
 # Adding accounts
-
-```bash
-# as a root or slurm user
-# add/modify QOS
-sacctmgr  -i modify QOS set normal Priority=0
-sacctmgr  -i add QOS Name=supporters Priority=100
-# add cluster
-sacctmgr -i add cluster Name=micro Fairshare=1 QOS=normal,supporters
-# add accounts
-sacctmgr -i add account name=account0 Fairshare=100
-sacctmgr -i add account name=account1 Fairshare=100
-sacctmgr -i add account name=account2 Fairshare=100
-# add admin
-sacctmgr -i add user name=admin DefaultAccount=account0 MaxSubmitJobs=1000 AdminLevel=Administrator
-# add users
-sacctmgr -i add user name=user1 DefaultAccount=account1 MaxSubmitJobs=1000
-sacctmgr -i add user name=user2 DefaultAccount=account1 MaxSubmitJobs=1000
-sacctmgr -i add user name=user3 DefaultAccount=account1 MaxSubmitJobs=1000
-sacctmgr -i add user name=user4 DefaultAccount=account2 MaxSubmitJobs=1000
-sacctmgr -i add user name=user5 DefaultAccount=account2 MaxSubmitJobs=1000 
-# add users to qos level
-sacctmgr -i modify user set qoslevel="normal,supporters"
-
-# check results
-sacctmgr list associations format=Account,Cluster,User,Fairshare tree withd
-
-```
+Automatically from init_slurm script
 
 # Run some tests jobs
 

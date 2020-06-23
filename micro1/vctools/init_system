@@ -1,0 +1,50 @@
+#!/usr/bin/env bash
+
+echo "Adding nodes to /etc/hosts"
+cp /etc/hosts /etc/hosts.old
+grep -v `hostname -s` /etc/hosts.old > /etc/hosts
+rm /etc/hosts.old
+echo "head-node 172.31.0.1" >> /etc/hosts
+echo "compute000 172.31.0.100" >> /etc/hosts
+
+
+echo "Creating local user system accounts"
+if [[ "`hostname -s`" == "head-node" ]]; then
+    USERADD_FLAGS="-m"
+else
+    USERADD_FLAGS="-M"
+fi
+
+useradd $USERADD_FLAGS -s /bin/bash admin && \
+echo 'admin:admin' |chpasswd && \
+usermod -a -G wheel admin && \
+echo "admin ALL=(ALL) NOPASSWD: ALL" >> /etc/sudoers && \
+useradd $USERADD_FLAGS -s /bin/bash user1 && \
+echo 'user1:user' |chpasswd && \
+useradd $USERADD_FLAGS -s /bin/bash user2 && \
+echo 'user2:user' |chpasswd && \
+useradd $USERADD_FLAGS -s /bin/bash user3 && \
+echo 'user3:user' |chpasswd && \
+useradd $USERADD_FLAGS -s /bin/bash user4 && \
+echo 'user4:user' |chpasswd && \
+useradd $USERADD_FLAGS -s /bin/bash user5 && \
+echo 'user5:user' |chpasswd
+
+# lets populate history with frequent commands
+if [[ "`hostname -s`" == "head-node" ]]; then
+cat > /root/.bash_history << EOF
+tail -f /var/log/slurm/slurmctld.log
+cat /var/log/slurm/slurmctld.log
+sacctmgr list associations format=Account,Cluster,User,Fairshare tree withd
+scontrol show assoc
+su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/apps/sleep.job 60 0"
+watch squeue
+squeue
+sinfo
+EOF
+else
+cat > /root/.bash_history << EOF
+tail -f /var/log/slurm/slurmd.log
+cat /var/log/slurm/slurmd.log
+EOF
+fi
