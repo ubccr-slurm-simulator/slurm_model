@@ -44,6 +44,7 @@ sinfo
 EOF
 else
 cat > /root/.bash_history << EOF
+cmd_start /vctools/init_system munged slurmd sshd
 tail -f /var/log/slurm/slurmd.log
 cat /var/log/slurm/slurmd.log
 EOF

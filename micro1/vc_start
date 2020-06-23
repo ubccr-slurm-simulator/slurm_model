@@ -1,0 +1,78 @@
+#!/usr/bin/env bash
+
+network_name="virtual-cluster"
+volume_name="vc-home"
+max_compute_id=1
+
+
+CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CLUSTER_DIR="${CUR_DIR}"
+SLURM_MODEL_DIR="$( dirname "${CUR_DIR}" )"
+
+cd $CLUSTER_DIR
+
+# check if it exists if not clean-up and start new
+node_name=head-node
+if docker container inspect ${node_name} >/dev/null 2>&1; then
+    echo "Can not start because container ${node_name} already exists"
+fi
+for i in $(seq 0 ${max_compute_id})
+do
+    node_name=$(printf "compute%03d" $i)
+    if docker container inspect ${node_name} >/dev/null 2>&1; then
+      echo "Can not start because container ${node_name} already exists"
+    fi
+done
+# docker network create -d bridge virtual-cluster
+
+
+# create network
+if [ "$(docker network ls | grep -c " ${network_name} ")" -ge 1 ]; then
+  echo "${network_name} network already created will reuse it"
+  echo "To start clean delete it: docker network rm ${network_name}"
+else
+  docker network create -d bridge \
+    --subnet=172.31.0.0/16 \
+    --ip-range=172.31.0.0/16 \
+    --gateway=172.31.0.254 \
+    ${network_name}
+fi
+
+# create volume for shared home directories
+if [ "$(docker volume ls | grep -c " ${volume_name}$")" -ge 1 ]; then
+  echo "${volume_name} network already created will reuse it"
+  echo "To start clean delete it: docker volume rm ${volume_name}"
+else
+  docker volume create ${volume_name}
+fi
+
+# volumes mounting
+mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/etc:/etc/slurm -v /tmp:/scratch \
+    -v vc_home:/home \
+    -v ${CLUSTER_DIR}/vctools:/vctools \
+    -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps"
+
+# launch head-node in separate terminal
+echo "Starting head-node"
+docker run -d --rm -h head-node -p 222:22 --name head-node \
+    --network ${network_name} --ip=172.31.0.1 \
+    ${mount_volumes} \
+    pseudo/slurm_head_node:latest
+
+# launch compute-nodes in separate terminal
+for i in $(seq 0 ${max_compute_id})
+do
+    node_name=$(printf "compute%03d" $i)
+    ip_addr=$(printf "172.31.0.%d" $(expr 100 + $i))
+    echo "Starting ${node_name}"
+    docker run -d --rm -h ${node_name} --name ${node_name}   \
+       --network ${network_name} --ip=${ip_addr} \
+       ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
+       pseudo/slurm_compute_node:latest
+done
+
+echo "Done"
+
+
+
+

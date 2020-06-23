@@ -21,3 +21,9 @@ It showed up after adding shared home directory for all nodes.
 Writing ips explicitly in /etc/hosts helps and so spinning of containers with --ip options resolve the problem.
 
 Also add explicitly NodeAddr=<IP Address> in slurm.conf
+
+
+## Cgroups
+
+In order for cgroups to work inside docker host's /sys/fs/cgroup should be mounted to conteiner's one.
+-v /sys/fs/cgroup:/sys/fs/cgroup

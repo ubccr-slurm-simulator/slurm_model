@@ -1,0 +1,47 @@
+#!/usr/bin/env bash
+
+network_name="virtual-cluster"
+volume_name="vc-home"
+max_compute_id=1
+
+
+CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CLUSTER_DIR="${CUR_DIR}"
+SLURM_MODEL_DIR="$( dirname "${CUR_DIR}" )"
+
+cd $CLUSTER_DIR
+
+# check if it exists if not clean-up and start new
+node_name=head-node
+if docker container inspect ${node_name} >/dev/null 2>&1; then
+    echo "Stopping container ${node_name}"
+    docker container stop ${node_name}
+fi
+for i in $(seq 0 ${max_compute_id})
+do
+    node_name=$(printf "compute%03d" $i)
+    if docker container inspect ${node_name} >/dev/null 2>&1; then
+      echo "Stopping container ${node_name}"
+      docker container stop ${node_name}
+    fi
+done
+# docker network create -d bridge virtual-cluster
+
+
+# create network
+if [ "$(docker network ls | grep -c " ${network_name} ")" -ge 1 ]; then
+  echo "Removing ${network_name} network"
+  docker network rm ${network_name}
+fi
+
+# create volume for shared home directories
+if [ "$(docker volume ls | grep -c " ${volume_name}$")" -ge 1 ]; then
+  echo "${volume_name} network already created will reuse it"
+  docker volume rm ${volume_name}
+fi
+
+echo "Done"
+
+
+
+

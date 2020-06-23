@@ -41,39 +41,21 @@ docker run -it --rm -h head-node -p 222:22 --name head-node \
 node_name=compute000
 docker run -it --rm -h ${node_name} --name ${node_name}   \
    --network virtual-cluster --ip=172.31.0.100 \
-   ${mount_volumes} \
+   ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
    pseudo/slurm_compute_node:latest
 
 # launch compute-nodes in separate terminal
 node_name=compute001
 docker run -it --rm -h ${node_name} --name ${node_name}   \
-   --network virtual-cluster \
-   -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
-   -v `pwd`/micro1/home:/home \
+   --network virtual-cluster  --ip=172.31.0.101 \
+   ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
    pseudo/slurm_compute_node:latest
 ```
 
 To start cluster in detached mode:
 
 ```bash
-# launch head-node
-docker run -d --rm -h head-node -p 222:22 --name head-node \
-    --network virtual-cluster \
-    -v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
-    -v `pwd`/apps:/usr/local/apps \
-    pseudo/slurm_head_node:latest
-
-# launch compute-nodes
-for i in {0..1}
-do
-   node_name=$(printf "%03d" $i)
-   docker run -d --rm -h ${node_name} --name ${node_name}   \
-       --network virtual-cluster \
-       -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
-       -v `pwd`/apps:/usr/local/apps \
-       pseudo/slurm_compute_node:latest
-done
-
+./micro1/vcstart
 # access head-node
 docker exec -it head-node bash
 ```
