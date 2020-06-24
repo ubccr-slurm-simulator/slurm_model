@@ -8,9 +8,18 @@ Scratch directory is mounted as volume from  /tmp and served as a shared file-sy
 
 # Starting/Stopping Virtual Cluster
 
+To start cluster:
+```bash
+cd micro1
+./vc_strart
+```
 
+To start cluster manually:
 
 ```bash
+# change to micro1 directory
+cd ./micro1
+ 
 # create network
 docker network create -d bridge \
     --subnet=172.31.0.0/16 \
@@ -20,16 +29,12 @@ docker network create -d bridge \
 
 # create volume for shared home directories
 docker volume create vc-home
-```
 
-To start cluster:
-
-```bash
 # volumes mounting
-mount_volumes="-v `pwd`:/slurm_model -v `pwd`/micro1/etc:/etc/slurm -v /tmp:/scratch \
+mount_volumes="-v `pwd`/..:/slurm_model -v `pwd`/etc:/etc/slurm -v /tmp:/scratch \
     -v vc_home:/home \
-    -v `pwd`/micro1/vctools:/vctools \
-    -v `pwd`/apps:/usr/local/apps"
+    -v `pwd`/vctools:/vctools \
+    -v `pwd`/../apps:/usr/local/apps"
 
 # launch head-node in separate terminal
 docker run -it --rm -h head-node -p 222:22 --name head-node \
@@ -55,7 +60,7 @@ docker run -it --rm -h ${node_name} --name ${node_name}   \
 To start cluster in detached mode:
 
 ```bash
-./micro1/vcstart
+./vcstart
 # access head-node
 docker exec -it head-node bash
 ```
@@ -63,20 +68,7 @@ docker exec -it head-node bash
 To delete cluster:
 
 ```bash
-# terminate and remove head-node
-docker container stop head-node
-docker container rm head-node
-# terminate and remove compute-nodes
-for i in {0..1}
-do
-    node_name=$(printf "%03d" $i)
-    docker container stop ${node_name}
-    docker container rm ${node_name}
-done
-# possibly delete network
-docker network rm virtual-cluster
-# possibly delete home directories
-docker volume remove vc-home
+./vc_stop
 ```
 
 # Adding accounts

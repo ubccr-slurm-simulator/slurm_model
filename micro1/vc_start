@@ -15,12 +15,14 @@ cd $CLUSTER_DIR
 node_name=head-node
 if docker container inspect ${node_name} >/dev/null 2>&1; then
     echo "Can not start because container ${node_name} already exists"
+    exit 1
 fi
 for i in $(seq 0 ${max_compute_id})
 do
     node_name=$(printf "compute%03d" $i)
     if docker container inspect ${node_name} >/dev/null 2>&1; then
       echo "Can not start because container ${node_name} already exists"
+      exit 1
     fi
 done
 # docker network create -d bridge virtual-cluster
@@ -54,9 +56,9 @@ mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/etc:/etc/slu
 
 # launch head-node in separate terminal
 echo "Starting head-node"
-docker run -d --rm -h head-node -p 222:22 --name head-node \
+docker run -d --rm -h head-node -p 222:22 -p 2345:2345 --name head-node \
     --network ${network_name} --ip=172.31.0.1 \
-    ${mount_volumes} \
+    ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
     pseudo/slurm_head_node:latest
 
 # launch compute-nodes in separate terminal

@@ -27,3 +27,5 @@ Also add explicitly NodeAddr=<IP Address> in slurm.conf
 
 In order for cgroups to work inside docker host's /sys/fs/cgroup should be mounted to conteiner's one.
 -v /sys/fs/cgroup:/sys/fs/cgroup
+
+Try to run with elivated rights.
