@@ -13,7 +13,7 @@ RUN \
         mariadb-server mariadb-devel \
         munge munge-devel \
         readline readline-devel \
-        hdf5 hdf5-devel pam-devel \
+        hdf5 hdf5-devel pam-devel hwloc hwloc-devel \
         perl perl-ExtUtils-MakeMaker python3
 
 # source of slurm

@@ -23,11 +23,16 @@ rm -rf "./docker/RPMS/*"
 # make image
 docker build -t pseudo/slurm_rpm_maker:latest -f ./docker/MakeSlurmRPM.Dockerfile .
 
-# make slurm RPMS
+# make slurm RPMS from default tarball
 docker run --name slurm_rpm_maker -h slurm_rpm_maker \
            -v `pwd`/docker/RPMS:/RPMS \
            --rm \
            -it pseudo/slurm_rpm_maker:latest make_slurm_rpms
+# (if needed instead) debug version
+docker run --name slurm_rpm_maker -h slurm_rpm_maker \
+           -v `pwd`/docker/RPMS:/RPMS \
+           --rm \
+           -it pseudo/slurm_rpm_maker:latest -c "make_slurm_rpms debug"
 ```
 
 ## Making Images for Head-Node and Compute-Nodes
