@@ -14,6 +14,6 @@ fi
 
 echo "sleep for $sleep_time, exit with $exit_code"
 
-sleep $sleep_time
+srun sleep $sleep_time
 
 exit $exit_code
