@@ -41,8 +41,8 @@ tail -f /var/log/slurm/slurmctld.log
 cat /var/log/slurm/slurmctld.log
 sacctmgr list associations format=Account,Cluster,User,Fairshare tree withd
 scontrol show assoc
-su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -n 8 --mem=1000M -t 5:00 --profile=all /usr/local/apps/mulmat.job 512 30 1 30 30"
-su - user1 -c "sbatch -p normal -q normal -A account1 -N 2 -n 16 --mem=1000M -t 5:00 --profile=all /usr/local/apps/mulmat.job 512 30 1 30 30"
+su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -n 8 --mem=1000M -t 5:00 /usr/local/apps/mulmat.job 512 30 1 30 30"
+su - user1 -c "sbatch -p normal -q normal -A account1 -N 2 -n 16 --mem=1000M -t 5:00 /usr/local/apps/mulmat.job 512 30 1 30 30"
 watch squeue
 squeue
 sinfo

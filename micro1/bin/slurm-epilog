@@ -10,6 +10,7 @@ open(my $logger, "| logger -p local0.notice");
 
 my $jobid = $ENV{SLURM_JOB_ID};
 my $uid = $ENV{SLURM_JOB_UID};
+my $user = $ENV{SLURM_JOB_USER};
 
 my $today = Date::Simple->new;
 
@@ -90,6 +91,8 @@ system("/usr/bin/find /dev/shm -type f -uid $uid -exec rm {} \\\;");
 system("/usr/bin/find /sys/fs/cgroup/memory/slurm/uid_$uid -depth -type d -exec rmdir {} \\\;");
 system("/usr/bin/find /sys/fs/cgroup/cpu/slurm/uid_$uid -depth -type d -exec rmdir {} \\\;");
 #
+
+system("/usr/bin/sh5util -j $jobid --user $user;");
 
 print $logger "Ending epilog for job $jobid user $uid\n";
 close($logger);
