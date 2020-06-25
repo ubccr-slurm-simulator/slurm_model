@@ -93,3 +93,16 @@ do
 done
 
 ```
+
+# Monitoring IO for Profiler
+
+```bash
+# Monitor
+
+# monitor with PCP
+sudo apt install pcp pcp-gui
+
+# Stop
+```
+
+

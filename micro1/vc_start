@@ -49,7 +49,7 @@ else
 fi
 
 # volumes mounting
-mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/etc:/etc/slurm -v /tmp:/scratch \
+mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/etc:/etc/slurm -v /scratch:/scratch \
     -v vc_home:/home \
     -v ${CLUSTER_DIR}/vctools:/vctools \
     -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps"
