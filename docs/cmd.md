@@ -279,5 +279,7 @@ sudo docker run -it --rm -h compute000 --name compute000   \
  --network virtual-cluster \
 -v `pwd`/micro1/etc:/etc/slurm slurm_compute_node:latest
 ```
-
+### Remove all <none> tap images
+```bash
+docker rmi -f $(docker images | grep "<none>" | awk "{print \$3}")
 ```

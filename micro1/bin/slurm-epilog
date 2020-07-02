@@ -92,9 +92,9 @@ system("/usr/bin/find /sys/fs/cgroup/memory/slurm/uid_$uid -depth -type d -exec 
 system("/usr/bin/find /sys/fs/cgroup/cpu/slurm/uid_$uid -depth -type d -exec rmdir {} \\\;");
 #
 
-system("/usr/bin/sh5util -j $jobid --user $user;");
+#system("/usr/bin/sh5util -j $jobid --user $user");
+#system("mv /var/log/slurm/${jobid.h5} /scratch/acct_gather/$user");
 
 print $logger "Ending epilog for job $jobid user $uid\n";
 close($logger);
 exit(0);
-
