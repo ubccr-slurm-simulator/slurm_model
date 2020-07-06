@@ -2,7 +2,7 @@
 
 network_name="virtual-cluster"
 volume_name="vc-home"
-max_compute_id=10
+max_compute_id=934
 
 
 CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -68,6 +68,26 @@ for i in $(seq 0 ${max_compute_id})
 do
     node_name=$(printf "compute%03d" $i)
     ip_addr=$(printf "172.31.0.%d" $(expr 100 + $i))
+    if ((i >=155 && i <=310)); then
+      ip_addr=$(printf "172.31.1.%d" $(expr 100 - 155 + $i ))
+    fi
+
+    if((i >=311 && i<= 466));then
+      ip_addr=$(printf "172.31.2.%d" $(expr 100 - 311 + $i ))
+    fi
+
+    if((i >=467 && i<= 622));then
+      ip_addr=$(printf "172.31.3.%d" $(expr 100 - 467 + $i ))
+    fi
+
+    if((i >=623 && i<= 778));then
+      ip_addr=$(printf "172.31.4.%d" $(expr 100 - 623 + $i ))
+    fi
+
+    if((i >=779 && i<= 934));then
+      ip_addr=$(printf "172.31.5.%d" $(expr 100 - 779 + $i ))
+    fi
+
     echo "Starting ${node_name}"
     docker run -d --rm -h ${node_name} --name ${node_name}   \
        --network ${network_name} --ip=${ip_addr} \

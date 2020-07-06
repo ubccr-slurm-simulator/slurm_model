@@ -21,6 +21,7 @@ COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
 COPY ./docker/vctools /vctools
 # directories
 RUN mkdir /scratch && chmod 777 /scratch
+RUN mkdir /scratch/jobs && chmod 777 /scratch/jobs
 
 # add users
 RUN useradd -m -s /bin/bash slurm && \
