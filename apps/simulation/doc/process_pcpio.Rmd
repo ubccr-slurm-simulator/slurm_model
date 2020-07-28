@@ -1,0 +1,50 @@
+---
+title: "process_pcpio_stats"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+# Load fdata
+```{r}
+data = read.table('io.txt',sep=",",skip=16)
+colnames(data)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+data$datetime <- as.POSIXct(as.character(data$datetime))
+data
+
+```
+
+# Plot
+```{R}
+jobs_by_two_min <-data %>% filter(datetime >= as.POSIXct("2020-07-16 11:53:00") & datetime < as.POSIXct("2020-07-16 11:55:00"))
+jobs_by_five_min <- data %>% filter(datetime >= as.POSIXct("2020-07-16 11:44:00") & datetime < as.POSIXct("2020-07-16 11:54:00"))
+jobs_by_one_hour <- data %>% filter(datetime >= as.POSIXct("2020-07-16 11:44:00") & datetime < as.POSIXct("2020-07-16 12:44:00"))
+
+gplot_two_min <-ggplot(jobs_by_two_min,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+gplot_five_min <-ggplot(jobs_by_five_min,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+gplot_by_one_hour <-ggplot(jobs_by_one_hour,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+gplot<-ggplot(data,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+#gplot_two_min
+#gplot_five_min
+#gplot_by_one_hour
+gplot
+```
+# histogram
+```{R}
+five_min_size<-hist(jobs_by_five_min$write_bytes[jobs_by_five_min$write_bytes!=0],main="size of write bytes distribution(5 mins)")
+five_min_size
+
+five_min_peak_dist<-hist(jobs_by_five_min$peak_interval[jobs_by_five_min$peak_interval!=0],main="Distance between peaks (5 mins)")
+five_min_peak_dist
+
+one_hour_size<-hist(jobs_by_one_hour$write_bytes[jobs_by_one_hour$write_bytes!=0],main="Size of write bytes distribution (one hour)")
+one_hour_size
+
+one_hout_size<-hist(jobs_by_one_hour$peak_interval[jobs_by_one_hour$peak_interval!=0],main="Distance between peaks (one hour)",xaxt="second")
+one_hour_size
+```
+

@@ -56,4 +56,4 @@ EOF
 fi
 
 # for debugging
-yum install -y gdb-gdbserver gdb
+#yum install -y gdb-gdbserver gdb

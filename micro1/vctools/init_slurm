@@ -14,7 +14,7 @@ if [[ "`hostname -s`" == "head-node" ]]; then
     # add admin
     sacctmgr -i add user name=admin DefaultAccount=account0 MaxSubmitJobs=1000 AdminLevel=Administrator
     # add users
-    sacctmgr -i add user name=user1 DefaultAccount=account1 MaxSubmitJobs=1000
+    sacctmgr -i add user name=user1 DefaultAccount=account1 MaxSubmitJobs=100000
     sacctmgr -i add user name=user2 DefaultAccount=account1 MaxSubmitJobs=1000
     sacctmgr -i add user name=user3 DefaultAccount=account1 MaxSubmitJobs=1000
     sacctmgr -i add user name=user4 DefaultAccount=account2 MaxSubmitJobs=1000

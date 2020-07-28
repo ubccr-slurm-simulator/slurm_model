@@ -52,6 +52,11 @@ EXPOSE 22
 COPY ./apps /usr/local/apps
 RUN cd /usr/local/apps && make
 
+# edit system processor limits
+RUN sudo echo -e "# Default limit for number of user's processes to prevent \n \
+ *          \soft    nproc     unlimited \n root       soft    nproc     unlimited" \
+> /etc/security/limits.d/20-nproc.conf
+
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
 CMD ["sshd", "bash"]
