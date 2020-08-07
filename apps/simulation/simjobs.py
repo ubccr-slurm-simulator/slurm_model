@@ -16,18 +16,18 @@ class SimJobs:
         self.runningTime: int = args.runTime
         self.rowCount = 0
 
-    def sendToBatch(self, jobName, wallTime, nnode, ncpus, sleepTime):
+    def sendToBatch(self, jobName, wallTime, nnode, ncpus, startTime):
         # command send to batch to execute jobs
+        #-A account1 -p normal -q normal
         cmd = "sudo su - user1 -c \"sbatch " \
-              "-p normal -q normal -A account1 -O -N {} -n {} -t {} " \
-              "--mem=500M -J {} /usr/local/apps/sleep.job 210000\" ".format(nnode, ncpus, wallTime, jobName)
+              "-N {} -n {} --begin={} " \
+              "--mem=500M -J {} /usr/local/apps/sleep.job {}\" ".format(nnode, ncpus, startTime.strftime("%Y-%m-%dT%H:%M:%S"), jobName, wallTime)
         # command send to batch to get current sinfo with time stamp
-        getSinfo = "python3 -u simjobs_getSinfo.py >> sinfo.txt &"
         print(cmd)
         os.system(cmd)
-        os.system(getSinfo)
-        print("sleep {} seconds ".format(sleepTime))
-        time.sleep(int(sleepTime))
+        #get sinfo
+        # getSinfo = "python3 -u simjobs_getSinfo.py >> sinfo.txt &"
+        #os.system(getSinfo)
 
     def readFile(self):
         data = []
@@ -40,6 +40,7 @@ class SimJobs:
         return data
 
     def processIntput(self, data: list, endTime: datetime):
+        beginTime = datetime.datetime.now()
         for row in data:
             # skip the header
             curTime = datetime.datetime.now()
@@ -47,15 +48,14 @@ class SimJobs:
                 if self.rowCount == 0:
                     self.rowCount += 1
                     continue
-                wallTime: str = self.formatTime(row[-3])
+                wallTime: str = int(row[-3])
                 nnodes: int = row[17]
                 ncpus: int = row[18]
                 jobName: str = row[25]
-                if row[-1] == "NA":
-                    sleepTime = 0
-                else:
-                    sleepTime: int = int(row[-1]) // self.ratio
-                self.sendToBatch(jobName, wallTime, nnodes, ncpus, sleepTime)
+                if self.rowCount == 1:
+                    startTime = beginTime + datetime.timedelta(seconds=1)
+                self.sendToBatch(jobName, wallTime, nnodes, ncpus, startTime)
+                startTime = startTime + datetime.timedelta(seconds=int(row[-1]))
                 self.rowCount += 1
             else:
                 print("Run time is up,simulation can't finished all requested jobs")
@@ -76,27 +76,33 @@ class SimJobs:
         hours = (seconds - (days * secondsToday)) // secondsTohour
         mins = (seconds - (days * secondsToday) - (hours * secondsTohour)) // secondsTominute
         seconds = seconds - (days * secondsToday) - (hours * secondsTohour) - (mins * secondsTominute)
-        # prevent time set to 0-00:00:00 which cause it to run forever -> set to run at least 1 second
+
+         #prevent time set to 0-00:00:00 which cause it to run forever -> set to run at least 1 second
         if days == 0 and hours == 0 and mins == 0 and seconds == 0:
-            seconds += 1
-        res = "{}-{:0>2d}:{:0>2d}:{:0>2d}".format(days, hours, mins, seconds)
+           seconds += 1
+
+        # Round down to actual time then format to proper time
+        res = "{}-{:0>2d}:{:0>2d}:{:0>2d}".format(days, hours, mins, seconds-1)
         return res
 
     def run(self):
         startTime = datetime.datetime.now()
         print("Start at " + str(startTime))
-        endTime = datetime.datetime.now() + datetime.timedelta(seconds=self.runningTime)
+        if self.runningTime == 0 :
+            endTime = datetime.datetime.now()+datetime.timedelta(hours=1000) # pretending running forever
+        else:
+            endTime = datetime.datetime.now() + datetime.timedelta(seconds=self.runningTime)
         print("end: " + str(endTime))
 
         data = self.readFile()
         print("Starting processing file")
         self.processIntput(data, endTime)
         print("All simulation has been submitted")
-        while datetime.datetime.now() < endTime:  # wait until running time is reached
-            time.sleep(1)
-        print("Run time is up, canceling all jobs")
-        os.system("sudo scancel -u user1")  # cancel all jobs
-        print("All jobs has been cancel")
+        #while datetime.datetime.now() < endTime:  # wait until running time is reached
+        #    time.sleep(1)
+        #print("Run time is up, canceling all jobs")
+        #os.system("sudo scancel -u user1")  # cancel all jobs
+        #print("All jobs has been cancel")
 
         t = time.localtime()
         current_time = time.strftime("%Y-%m-%d %H:%M:%S", t)
@@ -117,7 +123,7 @@ if __name__ == '__main__':
     parser.add_argument("-t", "--trimDownRatio", type=int, default=1,
                         help="trim the wall time down by ratio,default = 1")
 
-    parser.add_argument("-rt", "--runTime", type=int, default=10, help="Set time allow program to run in seconds")
+    parser.add_argument("-rt", "--runTime", type=int, default=0, help="Set time allow program to run in seconds")
 
     args = parser.parse_args()
     if args.trimDownRatio:

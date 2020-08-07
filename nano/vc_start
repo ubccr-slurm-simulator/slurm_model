@@ -2,14 +2,18 @@
 
 network_name="virtual-cluster"
 volume_name="vc-home"
-max_compute_id=4
-
+max_compute_id=0
+profile_frequency=0
 
 CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CLUSTER_DIR="${CUR_DIR}"
 SLURM_MODEL_DIR="$( dirname "${CUR_DIR}" )"
 
 cd $CLUSTER_DIR
+
+profile_frequency=$1
+
+echo "profile frequency level: ${profile_frequency}"
 
 # check if it exists if not clean-up and start new
 node_name=head-node
@@ -48,19 +52,44 @@ else
   docker volume create ${volume_name}
 fi
 
-# volumes mounting
-mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model:Z -v ${CLUSTER_DIR}/etc:/etc/slurm:Z -v /scratch:/scratch:Z \
-    -v vc_home:/home:Z \
-    -v ${CLUSTER_DIR}/vctools:/vctools:Z \
-    -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps:Z \
-    -v ${CLUSTER_DIR}/bin:/usr/local/bin/:Z\
-    -v /sacct_log:/sacct_log:Z"
+if [ "${profile_frequency}" == 1 ]; then
+  mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/profile_10s/etc:/etc/slurm -v /scratch:/scratch \
+    -v vc_home:/home \
+    -v ${CLUSTER_DIR}/vctools:/vctools \
+    -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps \
+    -v ${CLUSTER_DIR}/bin:/usr/local/bin/ \
+    -v /sacct_log:/sacct_log"
+
+elif [ "${profile_frequency}" == 2 ]; then
+    mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/profile_20s/etc:/etc/slurm -v /scratch:/scratch \
+    -v vc_home:/home \
+    -v ${CLUSTER_DIR}/vctools:/vctools \
+    -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps \
+    -v ${CLUSTER_DIR}/bin:/usr/local/bin/ \
+    -v /sacct_log:/sacct_log"
+
+elif [ "${profile_frequency}" == 3 ]; then
+    mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/profile_30s/etc:/etc/slurm -v /scratch:/scratch \
+    -v vc_home:/home \
+    -v ${CLUSTER_DIR}/vctools:/vctools \
+    -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps \
+    -v ${CLUSTER_DIR}/bin:/usr/local/bin/ \
+    -v /sacct_log:/sacct_log"
+else
+  mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/profile_none/etc:/etc/slurm -v /scratch:/scratch \
+    -v vc_home:/home \
+    -v ${CLUSTER_DIR}/vctools:/vctools \
+    -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps \
+    -v ${CLUSTER_DIR}/bin:/usr/local/bin/ \
+    -v /sacct_log:/sacct_log"
+fi
+
 
 # launch head-node in separate terminal
 echo "Starting head-node"
- docker run -d  -h head-node -p 222:22 -p 2345:2345 --name head-node \
+ docker run -d --rm -h head-node -p 222:22 -p 2345:2345 --name head-node \
     --network ${network_name} --ip=172.31.0.1 \
-    ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup:Z \
+    ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
     pseudo/slurm_head_node:latest
 
   #docker cp /home/nsimakov/Desktop/slurm_model/micro1/bin/innodb.cnf head-node:/etc/my.cnf.d/innodb.cnf
@@ -107,7 +136,7 @@ do
     fi
 
     echo "Starting ${node_name}"
-    docker run -d  -h ${node_name} --name ${node_name}   \
+    docker run   -d --rm -h ${node_name} --name ${node_name}   \
        --network ${network_name} --ip=${ip_addr} \
        ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup:Z \
        pseudo/slurm_compute_node:latest

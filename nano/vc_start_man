@@ -1,0 +1,69 @@
+#!/usr/bin/env bash
+
+network_name="virtual-cluster"
+volume_name="vc-home"
+
+
+CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+CLUSTER_DIR="${CUR_DIR}"
+SLURM_MODEL_DIR="$( dirname "${CUR_DIR}" )"
+cd $CLUSTER_DIR
+re='^[0-9]+$'
+if [ $# -eq 1 ];then
+    i=$1
+
+    # create volume for shared home directories
+    if [ "$(docker volume ls | grep -c " ${volume_name}$")" -ge 1 ]; then
+      echo "${volume_name} network already created will reuse it"
+      echo "To start clean delete it: docker volume rm ${volume_name}"
+    else
+      docker volume create ${volume_name}
+    fi
+
+    # volumes mounting
+    mount_volumes="-v ${SLURM_MODEL_DIR}:/slurm_model -v ${CLUSTER_DIR}/etc:/etc/slurm -v /scratch:/scratch \
+        -v vc_home:/home \
+        -v ${CLUSTER_DIR}/vctools:/vctools \
+        -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps \
+        -v ${CLUSTER_DIR}/bin:/usr/local/bin/ \
+        -v /sacct_log:/sacct_log"
+
+
+    # launch compute-nodes in separate terminal
+    node_name=$(printf "compute%03d" ${i})
+    ip_addr=$(printf "172.31.0.%d" $(expr 100 + $i))
+    if ((i >=155 && i <=310)); then
+      ip_addr=$(printf "172.31.1.%d" $(expr 100 - 155 + $i ))
+    fi
+
+    if((i >=311 && i<= 466));then
+      ip_addr=$(printf "172.31.2.%d" $(expr 100 - 311 + i ))
+    fi
+
+    if((i >=467 && i<= 622));then
+      ip_addr=$(printf "172.31.3.%d" $(expr 100 - 467 + i ))
+    fi
+
+    if((i >=623 && i<= 778));then
+      ip_addr=$(printf "172.31.4.%d" $(expr 100 - 623 + i ))
+    fi
+
+    if((i >=779 && i<= 934));then
+      ip_addr=$(printf "172.31.5.%d" $(expr 100 - 779 + i ))
+    fi
+
+    echo "Starting ${node_name}"
+    docker run -d --rm -h ${node_name} --name ${node_name}   \
+       --network ${network_name} --ip=${ip_addr} \
+       ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
+       pseudo/slurm_compute_node:latest
+
+    echo "Done"
+    else
+        echo "Please provide only one argument"
+  fi
+
+
+
+
+

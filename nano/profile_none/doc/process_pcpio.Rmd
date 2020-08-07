@@ -12,33 +12,34 @@ library(lubridate)
 
 # Load fdata
 ```{r}
-total = read.table("first_100_io_converted.txt",sep=",",skip=16)
-colnames(data)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-total$datetime <- as.POSIXct(as.character(data$datetime))
+setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_none/doc")
+total = read.table("profile_io_converted.txt",sep=",",skip=16)
+colnames(total)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+total$datetime <- as.POSIXct(as.character(total$datetime))
 total
 
-sinfo = read.table('sinfo_converted.txt',sep=",")
-colnames(sinfo)=c("datetime","nodes","drain_nodes")
-sinfo$datetime <- as.POSIXct(as.character(sinfo$datetime))
-sinfo
+#sinfo = read.table('sinfo_converted.txt',sep=",")
+#colnames(sinfo)=c("datetime","nodes","drain_nodes")
+#sinfo$datetime <- as.POSIXct(as.character(sinfo$datetime))
+#sinfo
 ```
 
 # Plot tran
 ```{R}
-jobs_by_first_day <-total %>% filter(datetime >= as.POSIXct("2020-07-23 18:05:00") & datetime < as.POSIXct("2020-07-24 18:04:59"))
-jobs_by_second_day <- total %>% filter(datetime >= as.POSIXct("2020-07-24 18:05:00") & datetime < as.POSIXct("2020-07-25 18:04:59"))
-jobs_by_third_day <- total %>% filter(datetime >= as.POSIXct("2020-07-25 18:05:00"))
+#jobs_by_first_day <-total %>% filter(datetime >= as.POSIXct("2020-07-23 18:05:00") & datetime < as.POSIXct("2020-07-24 18:04:59"))
+#jobs_by_second_day <- total %>% filter(datetime >= as.POSIXct("2020-07-24 18:05:00") & datetime < as.POSIXct("2020-07-25 18:04:59"))
+#jobs_by_third_day <- total %>% filter(datetime >= as.POSIXct("2020-07-25 18:05:00"))
 
-gplot_first_day <-ggplot(jobs_by_first_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
-gplot_second_day <-ggplot(jobs_by_second_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
-gplot_third_day <-ggplot(jobs_by_third_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_first_day <-ggplot(jobs_by_first_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_second_day <-ggplot(jobs_by_second_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_third_day <-ggplot(jobs_by_third_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
 gplot_total<-ggplot(total,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-gplot_first_day
-gplot_second_day
-gplot_third_day
-gplot_data
+#gplot_first_day
+#gplot_second_day
+#gplot_third_day
+gplot_total
 
-ggplot(sinfo,aes(x=datetime,y=nodes))+geom_line(aes(y=nodes),color="blue")+geom_line(aes(y=drain_nodes),color="red") +labs(title="Utilization")
+#ggplot(sinfo,aes(x=datetime,y=nodes))+geom_line(aes(y=nodes),color="blue")+geom_line(aes(y=drain_nodes),color="red") +labs(title="Utilization")
 ```
 # Plot 
 # group by datetime and write
@@ -60,8 +61,7 @@ ggplot(total,aes(datetime,read),group1)+geom_point()+geom_line()+scale_y_continu
 
 # peak interval(job submitted interval)
 ```{r}
-ggplot(total,aes(datetime,peak_interval),group1)+geom_point()+geom_line()+scale_y_continuous(tran="log10")
-ggplot(total[which(total$peak_interval>0),],aes(x=peak_interval, colour=region, fill=region))+geom_histogram(position = "dodge2",binwidth = 200)+scale_y_log10()
+
 ```
 
 # file usage

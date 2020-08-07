@@ -2,6 +2,7 @@ FROM pseudo/slurm_common:latest
 
 LABEL description="HeadNode Image for Slurm Virtual Cluster"
 
+USER root
 # install dependencies
 RUN \
     yum -y install --setopt=tsflags=nodocs \

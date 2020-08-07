@@ -16,7 +16,7 @@ rm -rf "${SLURM_MODEL_DIR}/docker/RPMS/*"
 # make image
 docker build -t pseudo/slurm_rpm_maker:latest -f ./docker/MakeSlurmRPM.Dockerfile .
 docker run --name slurm_rpm_maker -h slurm_rpm_maker \
-           -v `pwd`/docker/RPMS:/RPMS \
+           -v `pwd`/docker/RPMS:/RPMS:Z \
            --rm \
            -it pseudo/slurm_rpm_maker:latest make_slurm_rpms
 

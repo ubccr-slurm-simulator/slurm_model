@@ -99,7 +99,7 @@ class Convert:
 
 
 if __name__ == '__main__':
-    if len(sys.argv) < 3:
+    if len(sys.argv) < 2:
         print("Please provide jobs file to run")
         exit(-1)
     if len(sys.argv) > 2:
