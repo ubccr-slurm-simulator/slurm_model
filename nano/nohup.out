@@ -1,0 +1,519 @@
+profile frequency level: 0
+97624dd98a685a9a9d1a11b773154fd46ea73b11a3fc2f90d2eb4da5494a5157
+vc-home
+Starting head-node
+5b1efd8463ccb3df64b531804b6890c88357ae874aa3013d9c0c5c72112afd89
+Starting compute000
+af5f06e01e0d13d75d50d34b35550fd47ec215fc3bfe3ea94785859eb9326e1f
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+profile frequency level: 0
+136319f18ea2c2dd054a3d3223df3e880f57d8bc0658dac3ef9f1d98163a83ef
+vc-home
+Starting head-node
+f988c5f88a550db66278a806b9e500c7ed73de8bf41322ab833e46d10b631264
+Starting compute000
+ee692d03e978b4d82d9e4d29facb964ccfa1f265fa40cc2ff9704f0f0fb8b0e2
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+0
+/home/centos/slurm_model/nano/profile_none/res/eight_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 387595 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 1
+6033a5fb00240a958449ce8255dc3f527c8994cb5d778baeab9cbfc7a287e6cf
+vc-home
+Starting head-node
+0db5a568a822b878b65a87513d575b99aff0f27b4ddbad66079bd12b489cd9bc
+Starting compute000
+eee506a82170f8e56762b8dfd1a206548c6b0d10766677676716dc6a80200f98
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+1
+/home/centos/slurm_model/nano/profile_10s/res/eight_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 403131 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 2
+580b610ea094d38c7dda8bd31159cd814d517dbb8ab88669787a7863d371af04
+vc-home
+Starting head-node
+5e345f245fcc3ffbf01e6941bfc332871f85c5b3706c1286cbcfbd260792a224
+Starting compute000
+28e5eb4d566b2c25d4ab72c845472028756827c1c7c9894ef17df18fddfff253
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+2
+/home/centos/slurm_model/nano/profile_20s/res/eight_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 418739 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 3
+e2806376ff6d84052fed071172d525857ccd7dfc9af2c296893123a6195e4469
+vc-home
+Starting head-node
+ff54f8dcd26851c5e921184e16231be0488fd9bbb3a5c1ce704e9b055515a56f
+Starting compute000
+73b5f7796c9e80a9a36a4fdc8837dbcfb8a445f68402b3b65d6209d032944bee
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+3
+/home/centos/slurm_model/nano/profile_30s/res/eight_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 434826 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+All simulation has finished
+profile frequency level: 0
+5415913b6eb4d0817cccaf9bc7fb8cb52f0e90fefe7a5182bae25d76b6c5c931
+vc-home
+Starting head-node
+c1ef55e0d97b265a0c14bbfb8aa5001d65334b5cd22cd232b417827d59b86efd
+Starting compute000
+99833480737dddadda471c4d7b9e9d500ecea4b70e08e49b2eba09b96fe9d7e6
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+0
+/home/centos/slurm_model/nano/profile_none/res/four_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 450517 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 1
+3720ca0ec258148f1e0438c8b4d0efb5bc8eeef0b481cb4125acc809b3ad2f76
+vc-home
+Starting head-node
+af40a9b9fec43bfc804e7b29c7133d02bfb30789aafb82617de88594a9825877
+Starting compute000
+54852adfc2ce3f10cf60f2de01d72835734b0cfb33e945af00411a6e69fb7c83
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+1
+/home/centos/slurm_model/nano/profile_10s/res/four_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 466082 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 2
+63f0486f1353510367c32f9ec63913b0375b999fc0f670a5e3857db5b1d9ad4a
+vc-home
+Starting head-node
+ee7f0e24ba47abc8fa6b51edf8529355719b687cbeae7b7776e38e1a836162a6
+Starting compute000
+abb6d069ff1088b46ed1dea7f5c82d32fb4adcae123bf11303b27c664e45807e
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+2
+/home/centos/slurm_model/nano/profile_20s/res/four_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 482141 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 3
+1a4497cf648632e8137ef42a9c3827cb8b83081c95644b89544da9ea6a223f55
+vc-home
+Starting head-node
+8d88ac5ae2fd0db6d908d1e32d05079e92b3585532cdffee259fc353171edc24
+Starting compute000
+aaabafb88a77af343fa442d4744e47baaa099d0ad623c6d15c0f9afdc91f88be
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+3
+/home/centos/slurm_model/nano/profile_30s/res/four_cores/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 497720 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+All simulation has finished
+profile frequency level: 0
+18283076c3b7a47f005f7c327d545cf878c4742652170573441cd01155e69516
+vc-home
+Starting head-node
+59176beb76623f4f8ba7d3dd9798fd688c79bf2b32db8d3cbec1ac248894e5e9
+Starting compute000
+81bdffdec13fad754656617cc21f224a06d60cadb6ff4457d1ee2734adaabe01
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+0
+/home/centos/slurm_model/nano/profile_none/res/single_core/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 521728 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 1
+9816b5a902f7fcc863b41b3ac276bb8419cbf46f40da143d9c850f77af671aa1
+vc-home
+Starting head-node
+43370b64f2a899db14fcf214573ca2908245e207f95e252284c3b6a63bfa6454
+Starting compute000
+5aee1cac0d61b96c93c894d5e204776e7aadb7a218a0503770741fc083dd8fb9
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+1
+/home/centos/slurm_model/nano/profile_10s/res/single_core/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 537330 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 2
+dbdf28446e2220d1fc8ab1ffc3095a86014d60bc74f3032febeb540dfc282bd4
+vc-home
+Starting head-node
+38702e808bfdb072b5cbf7911293af03f8604ee5e711abe6f8473358b600d696
+Starting compute000
+75a08cca5325d6bc891caa753aacf695a965d312a2006d20a3e5f37a13da75ec
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+2
+/home/centos/slurm_model/nano/profile_20s/res/single_core/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 552944 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+profile frequency level: 3
+2a863de4139c74e9ce27b66df7157b1cc12d72f0551a61b6026d171e5668c261
+vc-home
+Starting head-node
+15d83d6bdb1dae60d426bee42dc7bac1687952489a29a36ce123365b93382dcd
+Starting compute000
+40264c40ed0b141b834086c5a3144ea76c04400a5b14bee675908b2ce9f77d7e
+Done
+Comfirming accounting infromation
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+sacctmgr: error: slurm_persist_conn_open_without_init: failed to open persistent connection to localhost:29001: Connection refused
+sacctmgr: error: slurmdbd: Sending PersistInit msg: Connection refused
+sacctmgr: error: Problem talking to the database: Connection refused
+Accounting is up
+3
+/home/centos/slurm_model/nano/profile_30s/res/single_core/sleep
+Starting pmdumtext
+Starting simulation
+comfirming sentence
+confirm all jobs has been submitted,and finished
+./nano_simulation.sh: line 106: 568540 Killed                  pmdumptext -Xlimu -f %F\ \%T -d "," disk.partitions.write[vdb1] disk.partitions.write_bytes[vdb1] disk.partitions.read[vdb1] disk.partitions.read_bytes[vdb1] filesys.used[/dev/vdb1] filesys.usedfiles[/dev/vdb1] &>"${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/"profile_io.out"
+Stopping container head-node
+head-node
+Stopping container compute000
+compute000
+Removing virtual-cluster network
+virtual-cluster
+vc-home network already created will reuse it
+vc-home
+Done
+All simulation has finished
