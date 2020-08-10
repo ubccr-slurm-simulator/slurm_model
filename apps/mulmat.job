@@ -1,11 +1,12 @@
 #!/usr/bin/bash
 matrix_size=128
-calc_time=30
-mib_per_seconds=10
-grow_time=30
-sleep_time=30
+calc_time=1
+mib_per_seconds=1
+grow_time=1
+sleep_time=1
 if [ $# -ge 1 ]; then
-    matrix_size=$1
+    #matrix_size=$1
+    run_time=$1
 fi
 if [ $# -ge 2 ]; then
     calc_time=$2
@@ -22,4 +23,4 @@ fi
 echo "mulmat matrix_size=$matrix_size calc_time=$calc_time mib_per_seconds=$mib_per_seconds grow_time=$grow_time sleep_time=$sleep_time"
 
 #srun sleep $sleep_time 30
-srun /usr/local/apps/mulmat $matrix_size $calc_time $mib_per_seconds $grow_time $sleep_time
+srun /usr/local/apps/mulmat $matrix_size $calc_time $mib_per_seconds $grow_time $sleep_time $run_time

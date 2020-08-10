@@ -80,7 +80,7 @@ else
     -v vc_home:/home \
     -v ${CLUSTER_DIR}/vctools:/vctools \
     -v ${SLURM_MODEL_DIR}/apps:/usr/local/apps \
-    -v ${CLUSTER_DIR}/bin:/usr/local/bin/ \
+    -v ${CLUSTER_DIR}/profile_none/bin:/usr/local/bin/ \
     -v /sacct_log:/sacct_log"
 fi
 

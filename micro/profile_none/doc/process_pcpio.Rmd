@@ -1,0 +1,90 @@
+---
+title: "process_pcpio_stats"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+# Load fdata
+```{r}
+setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_none/")
+total = read.table("res/single_core/profile_io_converted.txt",sep=",",skip=16)
+colnames(total)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+total$datetime <- as.POSIXct(as.character(total$datetime))
+total
+
+#sinfo = read.table('sinfo_converted.txt',sep=",")
+#colnames(sinfo)=c("datetime","nodes","drain_nodes")
+#sinfo$datetime <- as.POSIXct(as.character(sinfo$datetime))
+#sinfo
+```
+```{R}
+eight_cores_mulmat = read.table("res/eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
+colnames(eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_cores_mulmat$datetime))
+```
+
+# Plot tran
+```{R}
+#jobs_by_first_day <-total %>% filter(datetime >= as.POSIXct("2020-07-23 18:05:00") & datetime < as.POSIXct("2020-07-24 18:04:59"))
+#jobs_by_second_day <- total %>% filter(datetime >= as.POSIXct("2020-07-24 18:05:00") & datetime < as.POSIXct("2020-07-25 18:04:59"))
+#jobs_by_third_day <- total %>% filter(datetime >= as.POSIXct("2020-07-25 18:05:00"))
+
+#gplot_first_day <-ggplot(jobs_by_first_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_second_day <-ggplot(jobs_by_second_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_third_day <-ggplot(jobs_by_third_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+gplot_total<-ggplot(total,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+#gplot_first_day
+#gplot_second_day
+#gplot_third_day
+gplot_total
+
+#ggplot(sinfo,aes(x=datetime,y=nodes))+geom_line(aes(y=nodes),color="blue")+geom_line(aes(y=drain_nodes),color="red") +labs(title="Utilization")
+```
+# Plot 
+# group by datetime and write
+```{r}
+total$region <- 0L
+total$region[total$datetime >= as.POSIXct("2020-07-23 18:05:00") & total$datetime < as.POSIXct("2020-07-24 18:04:59")] <- 1L
+total$region[total$datetime >= as.POSIXct("2020-07-24 18:05:00") & total$datetime < as.POSIXct("2020-07-25 18:04:59")] <- 2L
+total$region[total$datetime >= as.POSIXct("2020-07-25 18:05:00")] <- 3L
+total$region <- factor(total$region)
+ggplot(total[which(total$write_bytes>0),],aes(x=write_bytes, colour=region, fill=region))+geom_histogram(position = "dodge2",binwidth = 2000000)
+write_plot<-ggplot(total,aes(datetime,write),group1)+geom_point()+geom_line()+scale_y_continuous(tran="log10")
+write_plot
+```
+# read
+```{r}
+ggplot(total[which(total$read>0),],aes(x=read, colour=region, fill=region))+geom_histogram(position = "dodge2",binwidth = 2000000)
+ggplot(total,aes(datetime,read),group1)+geom_point()+geom_line()+scale_y_continuous(tran="log10")
+```
+
+# peak interval(job submitted interval)
+```{r}
+
+```
+
+# file usage
+```{r}
+file_usage_average<-total%>%
+group_by(datetime=floor_date(datetime, "1 hour")) %>%
+summarize(write_bytes = sum(write_bytes)/3600,read_bytes=sum(read_bytes)/3600,file_usage=sum(usedfiles-original_file_usage)/3600,used=sum(used-original_storage_space)/3600)
+file_usage_average
+ggplot(file_usage_average[which(file_usage_average$file_usage>0),],aes(x=datetime,y=file_usage))+geom_point()+geom_line()+labs(title="files usage average over time")
+ggplot(file_usage_average,aes(x=datetime,y=used))+geom_point()+geom_line()+labs(title="space usage average over time")
+
+file_usage_average$region <- 0L
+file_usage_average$region[file_usage_average$datetime >= as.POSIXct("2020-07-23 18:00:00") & file_usage_average$datetime < as.POSIXct("2020-07-24 17:59:59")] <- 1L
+file_usage_average$region[file_usage_average$datetime >= as.POSIXct("2020-07-24 18:00:00") & file_usage_average$datetime < as.POSIXct("2020-07-25 17:59:59")] <- 2L
+file_usage_average$region[file_usage_average$datetime >= as.POSIXct("2020-07-25 18:00:00")] <- 3L
+file_usage_average$region <- factor(file_usage_average$region)
+ggplot(file_usage_average[which(file_usage_average$write_bytes>0),],aes(x=usedfiles, colour=region, fill=region))+geom_histogram(position = "dodge2")
+ggplot(file_usage_average[which(file_usage_average$write_bytes>0),],aes(x=datetime,y=usedfiles, colour=region, fill=region))+geom_point()+geom_point()
+```
+
+

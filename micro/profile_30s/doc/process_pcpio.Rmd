@@ -13,21 +13,16 @@ library(lubridate)
 # Load fdata
 ```{r}
 setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_30s")
-single_core = read.table("res/single_core/sleep/profile_io_converted.txt",sep=",",skip=16)
-four_cores = read.table("res/four_cores/sleep/profile_io_converted.txt",sep=",",skip=16)
-eight_cores = read.table("res/eight_cores/sleep/profile_io_converted.txt",sep=",",skip=16)
-four_eight_cores = read.table("res/four_eight_cores/sleep/profile_io_converted.txt",sep=",",skip=16)
-eight_eight_cores = read.table("res/eight_eight_cores/sleep/profile_io_converted.txt",sep=",",skip=16)
+single_core = read.table("res/single_core/profile_io_converted.txt",sep=",",skip=16)
+four_cores = read.table("res/four_cores/profile_io_converted.txt",sep=",",skip=16)
+eight_cores = read.table("res/eight_cores/profile_io_converted.txt",sep=",",skip=16)
 colnames(single_core)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
 single_core$datetime <- as.POSIXct(as.character(single_core$datetime))
 colnames(four_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
 four_cores$datetime <- as.POSIXct(as.character(four_cores$datetime))
 colnames(eight_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
 eight_cores$datetime <- as.POSIXct(as.character(eight_cores$datetime))
-colnames(four_eight_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-four_eight_cores$datetime <- as.POSIXct(as.character(four_eight_cores$datetime))
-colnames(eight_eight_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-eight_eight_cores$datetime <- as.POSIXct(as.character(eight_eight_cores$datetime))
+
 #sinfo = read.table('sinfo_converted.txt',sep=",")
 #colnames(sinfo)=c("datetime","nodes","drain_nodes")
 #sinfo$datetime <- as.POSIXct(as.character(sinfo$datetime))
@@ -52,41 +47,15 @@ eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_cores_mulmat$dateti
 ggplot(single_core,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
 ggplot(four_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
 ggplot(eight_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-ggplot(four_eight_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-ggplot(eight_eight_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
 
 #ggplot(sinfo,aes(x=datetime,y=nodes))+geom_line(aes(y=nodes),color="blue")+geom_line(aes(y=drain_nodes),color="red") +labs(title="Utilization")
 ```
-
-# mulmat plot
+# Plot
 ```{R}
-setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_30s")
-single_core_mulmat = read.table("res/single_core/mulmat/profile_io_converted.txt",sep=",",skip=16)
-four_cores_mulmat = read.table("res/four_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
-eight_cores_mulmat = read.table("res/eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
-four_eight_cores_mulmat = read.table("res/four_eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
-eight_eight_cores_mulmat = read.table("res/eight_eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
-colnames(single_core_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-single_core_mulmat$datetime <- as.POSIXct(as.character(single_core_mulmat$datetime))
-colnames(four_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-four_cores_mulmat$datetime <- as.POSIXct(as.character(four_cores_mulmat$datetime))
-colnames(eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_cores_mulmat$datetime))
-colnames(four_eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-four_eight_cores_mulmat$datetime <- as.POSIXct(as.character(four_eight_cores_mulmat$datetime))
-colnames(eight_eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
-eight_eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_eight_cores_mulmat$datetime))
-```
+#ggarrange(single_core_plot, four_coures_plot,eight_cores_plot,ncol = 1, nrow = 3)
+ggplot(eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
 
-```{r}
-single_core_mulmat_plot<-ggplot(single_core_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-four_coures_mulmat_plot<-ggplot(four_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-eight_cores_mulmat_plot<-ggplot(eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-single_core_mulmat_plot
-four_coures_mulmat_plot
-eight_cores_mulmat_plot
-ggplot(four_eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
-ggplot(eight_eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+#ggplot(sinfo,aes(x=datetime,y=nodes))+geom_line(aes(y=nodes),color="blue")+geom_line(aes(y=drain_nodes),color="red") +labs(title="Utilization")
 ```
 # group by datetime and write
 ```{r}

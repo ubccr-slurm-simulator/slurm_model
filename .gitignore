@@ -135,3 +135,6 @@ dmypy.json
 /apps/memgrow
 /apps/mulmat
 *.o
+*.txt
+*.log
+*.out

@@ -21,7 +21,7 @@ class SimJobs:
         #-A account1 -p normal -q normal
         cmd = "sudo su - user1 -c \"sbatch " \
               "-N {} -n {} --begin={} " \
-              "--mem=500M -J {} /usr/local/apps/sleep.job {}\" ".format(nnode, ncpus, startTime.strftime("%Y-%m-%dT%H:%M:%S"), jobName, wallTime)
+              "--mem=200M -J {} /usr/local/apps/mulmat.job {}\" ".format(nnode, ncpus, startTime.strftime("%Y-%m-%dT%H:%M:%S"), jobName, wallTime)
         # command send to batch to get current sinfo with time stamp
         print(cmd)
         os.system(cmd)
@@ -41,6 +41,8 @@ class SimJobs:
 
     def processIntput(self, data: list, endTime: datetime):
         beginTime = datetime.datetime.now()
+        print("begin at :"+str(beginTime))
+
         for row in data:
             # skip the header
             curTime = datetime.datetime.now()
@@ -56,6 +58,7 @@ class SimJobs:
                     startTime = beginTime + datetime.timedelta(seconds=1)
                 self.sendToBatch(jobName, wallTime, nnodes, ncpus, startTime)
                 startTime = startTime + datetime.timedelta(seconds=int(row[-1]))
+                print("start at :" + str(startTime))
                 self.rowCount += 1
             else:
                 print("Run time is up,simulation can't finished all requested jobs")
