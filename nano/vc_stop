@@ -2,7 +2,7 @@
 
 network_name="virtual-cluster"
 volume_name="vc-home"
-max_compute_id=0
+max_compute_id=3
 
 CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 CLUSTER_DIR="${CUR_DIR}"

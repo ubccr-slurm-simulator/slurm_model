@@ -1,7 +1,10 @@
-# slurm_model
-Slurm model is a simulator that runs across multiple docker containers on a single work station or
-computer node, which allow time accelerated simulation of work load on HPC resources.
- 
+# Slurm
+Slurm is an workload manager for super computers. Is a free and open source job scheduler for Linux and Unix liked kernels 
+- [Reference can be found](https://slurm.schedmd.com/overview.html)
+
+# Slurm Testbed
+Slurm testbed is based on docker, which provide a plateform for testing differenct configuration of slurm as well as model system performance based on historical workload. In addition, it's also a platform for the furture development of slurm simulator
+
 ## How to use:
 ### Install docker:
 ```
@@ -9,11 +12,11 @@ https://docs.docker.com/
 ```
 ## Make slurm images:
 ```
-./slurm_model/docker/make_images
+sudo ./slurm_model/docker/make_images
 ```
 ### Start docker containers:
 ```
-./micro1_vc_start
+sudo ./micro1_vc_start
 ```
 ---
 ## In docker containers

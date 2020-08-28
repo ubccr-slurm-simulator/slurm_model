@@ -5,6 +5,7 @@ import inspect
 import os
 import sys
 import time
+import math
 
 cur_dir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
 
@@ -13,7 +14,7 @@ class SimJobs:
     def __init__(self, args):
         self.filename = args.filename[0]
         self.ratio = args.trimDownRatio
-        self.runningTime: int = args.runTime
+        self.runningTime = args.runTime
         self.rowCount = 0
 
     def sendToBatch(self, jobName, wallTime, nnode, ncpus, startTime):
@@ -25,9 +26,8 @@ class SimJobs:
         # command send to batch to get current sinfo with time stamp
         print(cmd)
         os.system(cmd)
-        #get sinfo
-        # getSinfo = "python3 -u simjobs_getSinfo.py >> sinfo.txt &"
-        #os.system(getSinfo)
+        getSinfo = "python3 -u /slurm_model/apps/simulation/simjobs_getSinfo.py >> sinfo.txt &"
+        os.system(getSinfo)
 
     def readFile(self):
         data = []
@@ -40,6 +40,11 @@ class SimJobs:
         return data
 
     def processIntput(self, data: list, endTime: datetime):
+        # Record to beginning time of the whole set of simulation
+        # if first job, add extra one second to give enough time for slurm to process,then the whole process begin
+        # add padding between each job
+        #                          ->new start time is curTime + waltime + padding time
+
         beginTime = datetime.datetime.now()
         print("begin at :"+str(beginTime))
 
@@ -50,14 +55,22 @@ class SimJobs:
                 if self.rowCount == 0:
                     self.rowCount += 1
                     continue
-                wallTime: str = int(row[-3])
+                wallTime: str = math.floor(int(row[-3])/self.ratio)
                 nnodes: int = row[17]
                 ncpus: int = row[18]
                 jobName: str = row[25]
                 if self.rowCount == 1:
                     startTime = beginTime + datetime.timedelta(seconds=1)
                 self.sendToBatch(jobName, wallTime, nnodes, ncpus, startTime)
-                startTime = startTime + datetime.timedelta(seconds=int(row[-1]))
+
+                #add padding between each job
+                #startTime = startTime + datetime.timedelta(seconds=int(row[-3])) + datetime.timedelta(seconds=int(row[-1]))
+
+                #Production Run
+                temp = math.floor(int(row[-1]) / self.ratio) if row[-1]!="NA"else 0
+                print(temp)
+                startTime = startTime + datetime.timedelta(seconds = temp)
+
                 print("start at :" + str(startTime))
                 self.rowCount += 1
             else:
@@ -101,6 +114,7 @@ class SimJobs:
         print("Starting processing file")
         self.processIntput(data, endTime)
         print("All simulation has been submitted")
+
         #while datetime.datetime.now() < endTime:  # wait until running time is reached
         #    time.sleep(1)
         #print("Run time is up, canceling all jobs")

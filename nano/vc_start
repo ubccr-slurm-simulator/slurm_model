@@ -2,7 +2,7 @@
 
 network_name="virtual-cluster"
 volume_name="vc-home"
-max_compute_id=0
+max_compute_id=3
 profile_frequency=0
 
 CUR_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
@@ -87,7 +87,7 @@ fi
 
 # launch head-node in separate terminal
 echo "Starting head-node"
- docker run -d --rm -h head-node -p 222:22 -p 2345:2345 --name head-node \
+ docker run -d  -h head-node -p 222:22 -p 2345:2345 --name head-node \
     --network ${network_name} --ip=172.31.0.1 \
     ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup \
     pseudo/slurm_head_node:latest
@@ -136,7 +136,7 @@ do
     fi
 
     echo "Starting ${node_name}"
-    docker run   -d --rm -h ${node_name} --name ${node_name}   \
+    docker run   -d -h ${node_name} --name ${node_name}   \
        --network ${network_name} --ip=${ip_addr} \
        ${mount_volumes} -v /sys/fs/cgroup:/sys/fs/cgroup:Z \
        pseudo/slurm_compute_node:latest

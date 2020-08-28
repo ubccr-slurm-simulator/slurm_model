@@ -8,15 +8,30 @@ SIMULATOR_DIR="${SLURM_MODEL_DIR}/apps/simulation"
 
 set -e
 
-max_execution_times=4
-CORE_COUNT="single_core"
-APP="mulmat"
-job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_single_core.csv"
+max_execution_times=3
+CORE_COUNT=$1
+APP=$2
+if [ "${CORE_COUNT}" == "single_core_3" ]; then
+  job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_single_core.csv"
+elif [ "${CORE_COUNT}" == "two_cores_3" ]; then
+  job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_two_cores.csv"
+elif [ "${CORE_COUNT}" == "four_cores_3" ]; then
+  job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_four_cores.csv"
+elif [ "${CORE_COUNT}" == "eight_cores_3" ]; then
+  job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_eight_cores.csv"
+elif [ "${CORE_COUNT}" == "four_eight_cores_3" ]; then
+  job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_four_eight_cores.csv"
+elif [ "${CORE_COUNT}" == "eight_eight_cores_3" ]; then
+  job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_eight_eight_cores.csv"
+
+fi
+
+#job_traces_dir="/slurm_model/nano/job_traces/jobs_single_node/job_traces_four_cores.csv"
 cd $CLUSTER_DIR
 
 #mkdir -p doc/nano/single_core/
 confirm_proces(){
-  timeout_time=700
+  timeout_time=1000
   confirm_sentence="All simulation has been submitted"
   echo "comfirming sentence"
   for ((i=0; i < timeout_time; i++))
@@ -33,9 +48,10 @@ confirm_proces(){
         fi
         sleep 1
     }
+    echo "comfirmed"
 }
 confirm_accounting_information(){
-  timeout_time=50
+  timeout_time=60
   echo "Comfirming accounting infromation"
   for ((i=0; i < timeout_time; i++))
     {
@@ -50,12 +66,12 @@ confirm_accounting_information(){
     }
 }
 
-for ((index=0; index<${max_execution_times}; index++))
+for ((index=2; index<${max_execution_times}; index++))
 do
 ./vc_start ${index}
 confirm_accounting_information
   if [ "${check_account_result}" == 0 ];then
-    sleep 1
+    sleep 3
     echo ${index}
     if [ ${index} == 0 ]; then
       mkdir -p ${CUR_DIR}/profile_none/doc
@@ -88,12 +104,13 @@ confirm_accounting_information
     #echo "Submitted, sleep"
     #sleep 601
     if [ "${check_result}" == 0 ];then
-      sleep 10
+      sleep 90
       pkill -9 pmdumptext
       sleep 2
       docker exec head-node sacct --parsable --noheader --allocations --duplicates --format jobid,jobidraw,cluster,partition,account,group,gid,user,uid,submit,eligible,start,end,elapsed,exitcode,state,nnodes,ncpus,reqcpus,reqmem,reqgres,reqtres,timelimit,nodelist,jobname \
       --starttime 2020-05-01T00:00:00 --endtime 2020-12-30T00:00:00 >& "${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/sacct.log &
       sleep 5
+      docker cp head-node:/var/log/slurm/slurmctld.log  "${RES_SAVE_DIR}"/"${CORE_COUNT}"/"${APP}"/slurm_control.log
       ./vc_stop
     else
       echo "Something is wrong,can confirm all process has finised"

@@ -1,0 +1,10 @@
+#!/usr/bin/bash
+
+#echo "HI HI HI THIS IS EPILOG CONTROLLER">> /scratch/controller.txt
+
+#sudo chmod a+rwX/scratch/acct_gather
+#sudo chmod a+rwX /scratch/acct_gather/$SLURM_JOB_USER
+#sudo chmod a+rw /scratch/acct_gather/$SLURM_JOB_USER/${SLURM_JOB_ID}*
+#/usr/bin/sh5util -j $SLURM_JOB_ID --user $SLURM_JOB_USER -o /scratch/jobs/job_${SLURM_JOB_ID}.h5
+#>& /scratch/sh5util.log
+

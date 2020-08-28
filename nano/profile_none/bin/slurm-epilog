@@ -1,0 +1,100 @@
+#!/usr/bin/perl
+
+use strict;
+use File::Path qw(remove_tree);
+use Sys::Hostname;
+use Date::Simple;
+use POSIX qw(strftime);
+
+open(my $logger, "| logger -p local0.notice");
+
+my $jobid = $ENV{SLURM_JOB_ID};
+my $uid = $ENV{SLURM_JOB_UID};
+my $user = $ENV{SLURM_JOB_USER};
+
+my $today = Date::Simple->new;
+
+my $logyear = $today->format("%Y");
+my $logmonth = $today->format("%m");
+my $logday = $today->format("%d");
+
+my $jobdatelong = strftime "%Y%m%d.%H.%M.%S", localtime;
+
+unless($jobid) {
+    print $logger "Epilog missing job id\n";
+    die "Missing SLURM_JOBID env variable. epilog should be executed from slurm" ;
+}
+
+unless($uid) {
+    print $logger "Epilog missing user id\n";
+    die "Missing SLURM_UID env variable. epilog should be executed from slurm" if $uid != 0;
+}
+
+print $logger "Starting epilog for job $jobid user $uid\n";
+
+# PCP End of job logging
+my $fullhost = hostname();
+#my $logdir = "/gpfs/projects/ccr/pcp/pcp-archives/$logyear/$logmonth/$fullhost/$logyear-$logmonth-$logday";
+
+#system("env PMLOGGER_EPILOG=yes pmlogger -U pcp -c /etc/pcp/pmlogger/pmlogger-config.ubccr -s 1 -l /tmp/job-$jobid-end-$jobdatelong.log $logdir/job-$jobid-end-$jobdatelong &> /dev/null");
+
+#remove_tree("/scratch/$jobid");
+
+#
+#--------------------------------------
+# Clean up job processes and cgroups
+#--------------------------------------
+
+my @pids = qx{/usr/bin/find /sys/fs/cgroup/cpu/slurm/uid_$uid/job_$jobid -name cgroup.procs -exec cat {} \\;};
+
+for my $p (@pids) {
+    chomp($p);
+    print $logger "Killing $p for job $jobid user $uid\n";
+    system("/usr/bin/kill -9 $p");
+}
+
+system("/usr/bin/find /sys/fs/cgroup/memory/slurm/uid_$uid/job_$jobid -depth -type d -exec rmdir {} \\\;");
+system("/usr/bin/find /sys/fs/cgroup/cpu/slurm/uid_$uid/job_$jobid -depth -type d -exec rmdir {} \\\;");
+
+#
+#--------------------------------------
+# Clean up user processes
+#--------------------------------------
+
+#
+# Don't try to kill user root or system daemon jobs
+#
+if($uid <= 100) {
+    exit 0;
+}
+
+my @job_list = qx{/usr/bin/squeue --noheader --format=%i --user=$uid --node=localhost};
+
+for my $jid (@job_list) {
+    if($jid != $jobid) {
+        print $logger "Exiting because user $uid still has jobs: $jid\n";
+        exit(0);
+    }
+}
+
+#
+# No other SLURM jobs, purge all remaining processes of this user
+#
+system("/usr/bin/pkill -KILL -U $uid");
+#
+# Clean out any /dev/shm files owned by this user
+#
+system("/usr/bin/find /dev/shm -type f -uid $uid -exec rm {} \\\;");
+#
+# Clean up cgroups
+#
+system("/usr/bin/find /sys/fs/cgroup/memory/slurm/uid_$uid -depth -type d -exec rmdir {} \\\;");
+system("/usr/bin/find /sys/fs/cgroup/cpu/slurm/uid_$uid -depth -type d -exec rmdir {} \\\;");
+#
+
+#system("/usr/bin/sh5util -j $jobid --user $user");
+#system("mv /var/log/slurm/${jobid.h5} /scratch/acct_gather/$user");
+
+print $logger "Ending epilog for job $jobid user $uid\n";
+close($logger);
+exit(0);

@@ -1,0 +1,173 @@
+---
+title: "process_pcpio_stats"
+output: html_document
+---
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(ggpubr)
+```
+
+# Load fdata
+```{r}
+setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_20s")
+single_core = read.table("res/single_core_2/sleep/profile_io_converted.txt",sep=",",skip=16)
+two_cores = read.table("res/two_cores_3/sleep/profile_io_converted.txt",sep=",",skip=16)
+two_cores
+four_cores = read.table("res/four_cores_2/sleep/profile_io_converted.txt",sep=",",skip=16)
+eight_cores = read.table("res/eight_cores_2/sleep/profile_io_converted.txt",sep=",",skip=16)
+four_eight_cores = read.table("res/four_eight_cores_2/sleep/profile_io_converted.txt",sep=",",skip=16)
+eight_eight_cores = read.table("res/eight_eight_cores_2/sleep/profile_io_converted.txt",sep=",",skip=16)
+colnames(single_core)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+single_core$datetime <- as.POSIXct(as.character(single_core$datetime))
+colnames(two_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+two_cores$datetime <- as.POSIXct(as.character(two_cores$datetime))
+colnames(four_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+four_cores$datetime <- as.POSIXct(as.character(four_cores$datetime))
+colnames(eight_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+eight_cores$datetime <- as.POSIXct(as.character(eight_cores$datetime))
+colnames(four_eight_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+four_eight_cores$datetime <- as.POSIXct(as.character(four_eight_cores$datetime))
+colnames(eight_eight_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+eight_eight_cores$datetime <- as.POSIXct(as.character(eight_eight_cores$datetime))
+#sinfo = read.table('sinfo_converted.txt',sep=",")
+#colnames(sinfo)=c("datetime","nodes","drain_nodes")
+#sinfo$datetime <- as.POSIXct(as.character(sinfo$datetime))
+#sinfo
+single_core
+two_cores
+```
+# Process Sacct
+```{r}
+single_core_sacct = read.table("res/single_core_2/sleep/sacct.log",sep="|")
+colnames(single_core_sacct)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid","submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname","na")
+single_core_sacct$start <- as.POSIXct(as.character(single_core_sacct$start),format="%Y-%m-%dT%H:%M:%S")
+single_core_sacct$end <- as.POSIXct(as.character(single_core_sacct$end),format="%Y-%m-%dT%H:%M:%S")
+single_core_sacct
+
+
+two_cores_sacct = read.table("res/two_cores_3/sleep/sacct.log",sep="|")
+colnames(two_cores_sacct)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid","submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname","na")
+two_cores_sacct
+two_cores_sacct$start <- as.POSIXct(as.character(two_cores_sacct$start),format="%Y-%m-%dT%H:%M:%S")
+two_cores_sacct$end <- as.POSIXct(as.character(two_cores_sacct$end),format="%Y-%m-%dT%H:%M:%S")
+two_cores_sacct
+
+four_cores_sacct = read.table("res/four_cores_2/sleep/sacct.log",sep="|")
+colnames(four_cores_sacct)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid","submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname","na")
+four_cores_sacct$start <- as.POSIXct(as.character(four_cores_sacct$start),format="%Y-%m-%dT%H:%M:%S")
+four_cores_sacct$end <- as.POSIXct(as.character(four_cores_sacct$end),format="%Y-%m-%dT%H:%M:%S")
+four_cores_sacct
+
+
+eight_cores_sacct = read.table("res/eight_cores_2/sleep/sacct.log",sep="|")
+colnames(eight_cores_sacct)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid","submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname","na")
+eight_cores_sacct$start <- as.POSIXct(as.character(eight_cores_sacct$start),format="%Y-%m-%dT%H:%M:%S")
+eight_cores_sacct$end <- as.POSIXct(as.character(eight_cores_sacct$end),format="%Y-%m-%dT%H:%M:%S")
+eight_cores_sacct
+```
+#Combine
+```{R}
+library(sqldf)
+# single_cores
+single_core_combined= sqldf("select * from single_core_sacct
+                left join single_core
+                ON single_core.datetime BETWEEN single_core_sacct.start AND single_core_sacct.end")
+single_core_combined
+ggplot(single_core_combined,aes(datetime,write_bytes,color = factor(single_core_combined$jobid)))+geom_line()+geom_point()
+
+# two_cores
+two_cores_combined= sqldf("select * from two_cores_sacct
+                left join two_cores
+                ON two_cores.datetime BETWEEN two_cores_sacct.start AND two_cores_sacct.end")
+two_cores_combined
+ggplot(two_cores_combined,aes(datetime,write_bytes,color = factor(two_cores_combined$jobid)))+geom_line()+geom_point()
+
+# four_cores
+four_cores_combined= sqldf("select * from four_cores_sacct
+                left join four_cores
+                ON four_cores.datetime BETWEEN four_cores_sacct.start AND four_cores_sacct.end")
+four_cores_combined
+ggplot(four_cores_combined,aes(datetime,write_bytes,color = factor(four_cores_combined$jobid)))+geom_line()+geom_point()
+
+#eight_cores
+eight_cores_combined= sqldf("select * from eight_cores_sacct
+                left join eight_cores
+                ON eight_cores.datetime BETWEEN eight_cores_sacct.start AND eight_cores_sacct.end")
+eight_cores_combined
+ggplot(eight_cores_combined,aes(datetime,write_bytes,color = factor(eight_cores_combined$jobid)))+geom_line()+geom_point()
+
+```
+
+#single core with mulmat
+```{R}
+eight_cores_mulmat = read.table("res/eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
+colnames(eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_cores_mulmat$datetime))
+```
+# Plot tran
+```{R}
+#jobs_by_first_day <-total %>% filter(datetime >= as.POSIXct("2020-07-23 18:05:00") & datetime < as.POSIXct("2020-07-24 18:04:59"))
+#jobs_by_second_day <- total %>% filter(datetime >= as.POSIXct("2020-07-24 18:05:00") & datetime < as.POSIXct("2020-07-25 18:04:59"))
+#jobs_by_third_day <- total %>% filter(datetime >= as.POSIXct("2020-07-25 18:05:00"))
+
+#gplot_first_day <-ggplot(jobs_by_first_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_second_day <-ggplot(jobs_by_second_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+#gplot_third_day <-ggplot(jobs_by_third_day,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()+scale_y_continuous(tran = "log10")
+single_core_plot<-ggplot(single_core,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+four_coures_plot<-ggplot(four_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+eight_cores_plot<-ggplot(eight_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+single_core_plot
+four_coures_plot
+eight_cores_plot
+ggplot(four_eight_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+ggplot(eight_eight_cores,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+
+```
+# mulmat plot
+```{R}
+setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_10s")
+single_core_mulmat = read.table("res/single_core/mulmat/profile_io_converted.txt",sep=",",skip=16)
+four_cores_mulmat = read.table("res/four_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
+eight_cores_mulmat = read.table("res/eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
+four_eight_cores_mulmat = read.table("res/four_eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
+eight_eight_cores_mulmat = read.table("res/eight_eight_cores/mulmat/profile_io_converted.txt",sep=",",skip=16)
+colnames(single_core_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+single_core_mulmat$datetime <- as.POSIXct(as.character(single_core_mulmat$datetime))
+colnames(four_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+four_cores_mulmat$datetime <- as.POSIXct(as.character(four_cores_mulmat$datetime))
+colnames(eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_cores_mulmat$datetime))
+colnames(four_eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+four_eight_cores_mulmat$datetime <- as.POSIXct(as.character(four_eight_cores_mulmat$datetime))
+colnames(eight_eight_cores_mulmat)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+eight_eight_cores_mulmat$datetime <- as.POSIXct(as.character(eight_eight_cores_mulmat$datetime))
+```
+
+```{r}
+single_core_mulmat_plot<-ggplot(single_core_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+four_coures_mulmat_plot<-ggplot(four_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+eight_cores_mulmat_plot<-ggplot(eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+single_core_mulmat_plot
+four_coures_mulmat_plot
+eight_cores_mulmat_plot
+ggplot(four_eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+ggplot(eight_eight_cores_mulmat,aes(datetime,write_bytes,group=1))+geom_line()+geom_point()
+```
+# Plot
+# group by datetime and write
+```{r}
+total$region <- 0L
+total$region[total$datetime >= as.POSIXct("2020-07-23 18:05:00") & total$datetime < as.POSIXct("2020-07-24 18:04:59")] <- 1L
+total$region[total$datetime >= as.POSIXct("2020-07-24 18:05:00") & total$datetime < as.POSIXct("2020-07-25 18:04:59")] <- 2L
+total$region[total$datetime >= as.POSIXct("2020-07-25 18:05:00")] <- 3L
+total$region <- factor(total$region)
+ggplot(total[which(total$write_bytes>0),],aes(x=write_bytes, colour=region, fill=region))+geom_histogram(position = "dodge2",binwidth = 2000000)
+write_plot<-ggplot(total,aes(datetime,write),group1)+geom_point()+geom_line()+scale_y_continuous(tran="log10")
+write_plot
+```
+
+
