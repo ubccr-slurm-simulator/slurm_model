@@ -26,6 +26,6 @@ VOLUME ./docker/RPMS
 # setup entry point
 WORKDIR /root
 
-COPY ./docker/make_slurm_rpms ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
+COPY ./docker/make_slurm_rpms ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /usr/local/sbin/
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
 CMD ["make_slurm_rpms"]

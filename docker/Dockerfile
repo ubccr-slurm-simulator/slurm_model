@@ -27,7 +27,7 @@ RUN rpm --install \
     rm slurm*.rpm
 
 # copy daemons starters
-COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
+COPY ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /usr/local/sbin/
 
 # add users
 RUN useradd -m -s /bin/bash akrruser && \

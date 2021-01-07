@@ -17,7 +17,7 @@ RUN \
 WORKDIR /root
 
 # copy daemons starters
-COPY ./utils/cmd_setup ./utils/cmd_start ./utils/cmd_stop /usr/local/sbin/
+COPY ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /usr/local/sbin/
 COPY ./docker/vctools /vctools
 # directories
 RUN mkdir /scratch && chmod 777 /scratch
