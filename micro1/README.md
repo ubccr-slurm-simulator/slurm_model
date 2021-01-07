@@ -34,7 +34,7 @@ docker volume create vc-home
 mount_volumes="-v `pwd`/..:/slurm_model -v `pwd`/etc:/etc/slurm -v /tmp:/scratch \
     -v vc_home:/home \
     -v `pwd`/vctools:/vctools \
-    -v `pwd`/../apps:/usr/local/apps"
+    -v `pwd`/../miniapps:/usr/local/miniapps"
 
 # launch head-node in separate terminal
 docker run -it --rm -h head-node -p 222:22 --name head-node \
@@ -77,7 +77,7 @@ Automatically from init_slurm script
 # Run some tests jobs
 
 ```bash
-sudo su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/apps/sleep.job 60 0"
+sudo su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/miniapps/sleep.job 60 0"
 
 sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/apps/sleep.job 60 0
 

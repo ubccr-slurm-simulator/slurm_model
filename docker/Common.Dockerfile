@@ -47,7 +47,7 @@ RUN echo "secret munge key secret munge key secret munge key" >/etc/munge/munge.
 
 EXPOSE 22
 
-# install mini apps
+# install mini miniapps
 COPY ./apps /usr/local/apps
 RUN cd /usr/local/apps && make
 
