@@ -3,6 +3,10 @@
 # sometimes /usr/local/sbin is not in PATH
 export PATH="/usr/local/sbin:$PATH"
 
+SLURMDBD_PID=${SLURMDBD_PID:-/run/slurmdbd.pid}
+SLURMCTLD_PID=${SLURMCTLD_PID:-/run/slurmctld.pid}
+SLURMD_PID=${SLURMD_PID:-/run/slurmd.pid}
+
 kill_process(){
   kill -SIGTERM $1
   while [ -f /proc/$1 ];do sleep 1;done
@@ -36,13 +40,13 @@ do
         stop_process sshd /run/sshd.pid
         ;;
     slurmdbd)
-        stop_process slurmdbd /run/slurmdbd.pid
+        stop_process slurmdbd ${SLURMDBD_PID}
         ;;
     slurmctld)
-        stop_process slurmctld /run/slurmctld.pid
+        stop_process slurmctld ${SLURMCTLD_PID}
         ;;
     slurmd)
-        stop_process slurmd /run/slurmd.pid
+        stop_process slurmd ${SLURMD_PID}
         ;;
     httpd)
         httpd -k graceful-stop

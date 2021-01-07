@@ -13,11 +13,20 @@ loop=0
 
 run_bash=0
 
+run_bash_slurm=0
+
 run_bash_akrruser=0
 
 run_bash_admin=0
 
 run_bash_user1=0
+
+SLURMDBD_LOG=${SLURMDBD_LOG:-/var/log/slurm/slurmdbd.log}
+SLURMDBD_PID=${SLURMDBD_PID:-/run/slurmdbd.pid}
+SLURMCTLD_LOG=${SLURMCTLD_LOG:-/var/log/slurm/slurmctld.log}
+SLURMCTLD_PID=${SLURMCTLD_PID:-/run/slurmctld.pid}
+SLURMD_LOG=${SLURMD_LOG:-/var/log/slurm/slurmd.log}
+SLURMD_PID=${SLURMD_PID:-/run/slurmd.pid}
 
 start_process(){
     name=$1
@@ -70,7 +79,7 @@ start_process_w_confirm(){
         cat "${log_file}" >> "${log_file}.old"
         rm "${log_file}"
     fi
-    
+
     if [ "$user" = "x" ]; then
         echo "Launching ${name}"
         ${command}
@@ -89,6 +98,10 @@ start_process_w_confirm(){
     }
 
     echo "Something wrong with ${name}, can not find key-phrase in log"
+    ps -Af
+    echo ${log_file}
+    ls -l ${log_file}
+    cat ${log_file}
     return 1
 }
 
@@ -110,33 +123,27 @@ do
         start_process sshd /usr/sbin/sshd /run/sshd.pid
         ;;
     slurmdbd)
-        start_process_w_confirm slurmdbd /usr/sbin/slurmdbd /run/slurmdbd.pid \
-            /var/log/slurm/slurmdbd.log started
+        start_process_w_confirm slurmdbd /usr/sbin/slurmdbd ${SLURMDBD_PID} \
+            ${SLURMDBD_LOG} started
         ;;
     slurmctld)
-        start_process_w_confirm slurmctld /usr/sbin/slurmctld /run/slurmctld.pid \
-            /var/log/slurm/slurmctld.log started
+        start_process_w_confirm slurmctld /usr/sbin/slurmctld ${SLURMCTLD_PID} \
+            ${SLURMCTLD_LOG} started
         ;;
     slurmd)
-        start_process_w_confirm slurmd /usr/sbin/slurmd /run/slurmd.pid \
-            /var/log/slurm/slurmd.log started
-        ;;
-    httpd)
-        echo "Launching httpd"
-        httpd
+        start_process_w_confirm slurmd /usr/sbin/slurmd ${SLURMD_PID} \
+            ${SLURMD_LOG} started root
         ;;
     self_contained_slurm_wlm)
         cmd_start munged sshd mysqld slurmdbd slurmctld slurmd
         ;;
-    akrr_v1)
-        echo "Launching akrr v1.0"
-        AKRRUSER_HOME=${AKRRUSER_HOME:-/home/akrruser}
-        AKRRUSER=${AKRRUSER:-akrruser}
-        sudo -u $AKRRUSER /usr/bin/python2 $AKRRUSER_HOME/akrr/src/akrrscheduler.py start
-        ;;
     bash)
         echo "Will launching bash at the end"
         run_bash=1
+        ;;
+    bash_slurm)
+        echo "Will launching bash at the end as slurm"
+        run_bash_slurm=1
         ;;
     bash_akrruser)
         echo "Will launching bash at the end as akrruser"
@@ -177,6 +184,8 @@ done
 if [ -t 0 ] ; then
     if [ $run_bash -eq 1 ]; then
         /bin/bash
+    elif [ $run_bash_slurm -eq 1 ]; then
+        su - slurm
     elif [ $run_bash_akrruser -eq 1 ]; then
         su - akrruser
     elif [ $run_bash_admin -eq 1 ]; then
