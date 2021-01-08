@@ -10,7 +10,7 @@ do
         echo "Stated modelling with dtstart ${dtstart}, i ${i}"
         docker-compose up -d
         sleep 10
-        docker exec -it micro2_headnode_1 /opt/slurm_sim_tools/src/run_slurm.py -s /opt/slurm -e /opt/cluster/micro2/etc \
+        docker exec micro2_headnode_1 /opt/slurm_sim_tools/src/run_slurm.py -s /opt/slurm -e /opt/cluster/micro2/etc \
                     -t /opt/cluster/micro2/job_traces/jobs500.events \
                     -r /root/results/jobs500/dtstart_${dtstart}_${i} -a /opt/cluster/micro2/utils/sacctmgr.script \
                     -d -v -dtstart ${dtstart} --no-slurmd &> ./results/jobs500/dtstart_${dtstart}_${i}.log
