@@ -1,7 +1,7 @@
 FROM centos:7
 
 LABEL description="image to make slurm rpm"
-
+USER root
 # install dependencies
 RUN \
     yum -y update && \
@@ -18,7 +18,6 @@ RUN \
 
 # source of slurm
 ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
-
 
 # volume for final rpms dump
 VOLUME ./docker/RPMS

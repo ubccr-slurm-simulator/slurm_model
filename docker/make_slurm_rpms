@@ -16,5 +16,6 @@ elif [[ "$build_opt" == "debug" ]]; then
 else
     echo "Unknown build configuration."
 fi
-
+mkdir -p /RPMS/x86_64
 cp -rf rpmbuild/RPMS/x86_64 /RPMS
+echo "DONE"

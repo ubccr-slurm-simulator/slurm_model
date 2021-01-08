@@ -1,0 +1,65 @@
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+library(ggpubr)
+```
+
+# Load fdata
+```{r}
+setwd("/Users/yuqinglin/PycharmProjects/slurm_model/nano/profile_20s")
+single_core = read.table("res/single_core_3/sleep/profile_io_converted.txt",sep=",",skip=16)
+colnames(single_core)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+single_core$datetime <- as.POSIXct(as.character(single_core$datetime))
+two_cores = read.table("res/two_cores_3/sleep/profile_io_converted.txt",sep=",",skip=16)
+colnames(two_cores)=c("datetime","write","write_bytes","read","read_bytes","used","usedfiles","peak_interval")
+two_cores$datetime <- as.POSIXct(as.character(two_cores$datetime))
+two_cores
+
+ggplot(two_cores,aes(datetime,write_bytes))+geom_line()+geom_point()
+```
+
+# Process sacct
+```{r}
+single_core_sacct = read.table("res/single_core_3/sleep/sacct.log",sep="|")
+colnames(single_core_sacct)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid","submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname","na")
+single_core_sacct$start <- as.POSIXct(as.character(single_core_sacct$start),format="%Y-%m-%dT%H:%M:%S")
+single_core_sacct$end <- as.POSIXct(as.character(single_core_sacct$end),format="%Y-%m-%dT%H:%M:%S")
+single_core_sacct
+
+two_cores_sacct = read.table("res/two_cores_3/sleep/sacct.log",sep="|")
+colnames(two_cores_sacct)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid","submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname","na")
+two_cores_sacct$start <- as.POSIXct(as.character(two_cores_sacct$start),format="%Y-%m-%dT%H:%M:%S")
+two_cores_sacct$end <- as.POSIXct(as.character(two_cores_sacct$end),format="%Y-%m-%dT%H:%M:%S")
+two_cores_sacct
+```
+
+#Combine
+```{R}
+library(sqldf)
+# single_cores
+single_core_combined= sqldf("select * from single_core_sacct
+                left join single_core
+                ON single_core.datetime BETWEEN single_core_sacct.start AND single_core_sacct.end")
+single_core_combined
+ggplot(single_core_combined,aes(datetime,write_bytes,color = factor(jobid)))+geom_line()+geom_point()
+
+
+
+two_core_combined_2= sqldf("select * from two_cores_sacct
+                left join two_cores
+                ON two_cores.datetime BETWEEN two_cores_sacct.start AND two_cores_sacct.end+70")
+ggplot(two_core_combined_2,aes(datetime,write_bytes,color = factor(two_core_combined_2$jobid)))+geom_line()+geom_point()
+
+two_core_combined_1= sqldf("select * from two_cores_sacct
+                left join two_cores
+                ON two_cores.datetime BETWEEN two_cores_sacct.start AND two_cores_sacct.end")
+two_core_combined_1
+p2<-ggplot(two_core_combined_1,aes(datetime,write_bytes,color = factor(two_core_combined_1$jobid)))+geom_line()+geom_point()
+
+
+ggarrange(p1, p2, heights = c(1, 1),
+          ncol = 1, nrow = 2)
+```

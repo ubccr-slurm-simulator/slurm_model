@@ -2,10 +2,12 @@ FROM pseudo/slurm_common:latest
 
 LABEL description="Compute Node Image for Slurm Virtual Cluster"
 
+USER root
+
 # copy slurm rpm
 COPY ./docker/RPMS/x86_64/slurm*.rpm /root/
-COPY ./micro1/bin/slurm-epilog /usr/local/bin/slurm-epilog
-COPY ./micro1/bin/slurm-prolog /usr/local/bin/slurm-prolog
+#COPY ./micro1/bin/slurm-epilog /usr/local/bin/slurm-epilog
+#COPY ./micro1/bin/slurm-prolog /usr/local/bin/slurm-prolog
 COPY ./docker/password-auth /etc/pam.d/password-auth
 
 #install Slurm

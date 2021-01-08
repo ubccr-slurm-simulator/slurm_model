@@ -79,7 +79,7 @@ Automatically from init_slurm script
 ```bash
 sudo su - user1 -c "sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/miniapps/sleep_srun.job 60 0"
 
-sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/apps/sleep_srun.job 60 0
+sbatch -p normal -q normal -A account1 -N 1 -t 5:00 /usr/local/miniapps/sleep_srun.job 60 0
 
 salloc -p normal -q normal -A account1 -N 1 -t 5:00
 ```

@@ -21,6 +21,7 @@ COPY ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /
 COPY ./docker/vctools /vctools
 # directories
 RUN mkdir /scratch && chmod 777 /scratch
+RUN mkdir /scratch/jobs && chmod 777 /scratch/jobs
 
 # add users
 RUN useradd -m -s /bin/bash slurm && \
@@ -47,9 +48,14 @@ RUN echo "secret munge key secret munge key secret munge key" >/etc/munge/munge.
 
 EXPOSE 22
 
-# install mini miniapps
-COPY ./apps /usr/local/apps
-RUN cd /usr/local/apps && make
+# install miniapps
+COPY ./miniapps /usr/local/miniapps
+RUN cd /usr/local/miniapps && make
+
+# edit system processor limits
+RUN sudo echo -e "# Default limit for number of user's processes to prevent \n \
+ *          \soft    nproc     unlimited \n root       soft    nproc     unlimited" \
+> /etc/security/limits.d/20-nproc.conf
 
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]

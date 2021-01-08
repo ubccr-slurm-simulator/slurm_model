@@ -94,12 +94,13 @@ int main(int argc, char*args[]){
     int mib_per_second = atoi(args[3]);
     int grow_seconds = atoi(args[4]);
     int sleepSeconds = atoi(args[5]);
+    int runningTime = atoi(args[6]);
 
-    cout<<"n="<<n<<"\n";
-    cout<<"calcSeconds="<<calcSeconds<<"\n";
-    cout<<"mib_per_second="<<mib_per_second<<"\n";
-    cout<<"grow_seconds="<<grow_seconds<<"\n";
-    cout<<"sleepSeconds="<<sleepSeconds<<"\n";
+    //cout<<"n="<<n<<"\n";
+    //cout<<"calcSeconds="<<calcSeconds<<"\n";
+    //cout<<"mib_per_second="<<mib_per_second<<"\n";
+    //cout<<"grow_seconds="<<grow_seconds<<"\n";
+    //cout<<"sleepSeconds="<<sleepSeconds<<"\n";
 
     vector<double> matrix(n * n,1);
     double timeCounter = 0;
@@ -111,13 +112,13 @@ int main(int argc, char*args[]){
     //cout<<"Initial sleep is over, begin multiplcation"<<endl;
 
     //working stage
-    while(true){
+    int curTime = 0;
+    while(curTime < runningTime){
         multiplication(matrix, n, calcSeconds);
-        grow(mib_per_second, grow_seconds);
+        //grow(mib_per_second, grow_seconds);
         sleep(sleepSeconds);
         for(auto elem : matrix) elem = 1;
-
+        curTime+=3;
     }
-
     return 0;
 }

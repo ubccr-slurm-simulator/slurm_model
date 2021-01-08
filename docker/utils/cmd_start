@@ -66,7 +66,8 @@ start_process_w_confirm(){
     log_file=$4
     confirm_sentence=$5
     user=${6:-x}
-    timeout_time=2
+    timeout_time=120
+    echo "${confirm_sentence}"
 
     if [ -f "${pid_file}" ]; then
         if [  -d "/proc/$(cat "${pid_file}")" ]; then
@@ -90,6 +91,7 @@ start_process_w_confirm(){
 
     for ((i=0; i < timeout_time; i++))
     {
+
         if grep -q "${confirm_sentence}" "${log_file}" ; then
             echo "${name} is up"
             return 0

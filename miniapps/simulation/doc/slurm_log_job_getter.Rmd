@@ -1,0 +1,64 @@
+# Title     : TODO
+# Objective : TODO
+# Created by: yuqinglin
+# Created on: 8/12/20
+
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+library(dplyr)
+library(ggplot2)
+library(lubridate)
+```
+
+
+# Load fdata
+```{r}
+slt = read.table('/Users/yuqinglin/PycharmProjects/slurm_model/miniapps/simulation/slurm.log',sep="|")
+colnames(slt)=c("jobid","jobidraw","cluster","partition","account","group","gid","user","uid",
+                "submit","eligible","start","end","elapsed","exitcode","state","nnodes","ncpus","reqcpus","reqmem","reqgres","reqtres","timelimit","nodelist","jobname")
+
+slt$submit <- as.POSIXct(as.character(slt$submit), format="%Y-%m-%dT%H:%M:%S")
+slt$start <- as.POSIXct(as.character(slt$start), format="%Y-%m-%dT%H:%M:%S")
+slt$end  <- as.POSIXct(as.character(slt$end), format="%Y-%m-%dT%H:%M:%S")
+slt$walltime <- as.numeric(slt$end - slt$start);
+slt$submitUnixTime <- as.numeric(slt$submit)
+slt
+```
+
+```{r}
+slt %>%
+  group_by(start_hour=floor_date(start, unit="1 mins")) %>%
+  summarise(n=n(),cpu_hours=sum(ncpus*walltime/3600)) %>% ungroup()
+
+cpu_hour<-ggplot(job,aes(x=start_hour,y=cpu_hours))+geom_point()+geom_line()+scale_y_continuous(trans = "log10")
+cpu_hour+abs(title = "cpu hour")
+
+plot<-ggplot(slt,aes(x=start,y=walltime))+geom_point()+geom_line()+scale_y_continuous(trans = "log10")
+plot+labs(title = "walltime")
+```
+```{r}
+slt$region <- 0L
+slt$region[slt$start >= as.POSIXct("2020-07-23 18:05:00") & slt$start < as.POSIXct("2020-07-24 18:04:59")] <- 1L
+slt$region[slt$start >= as.POSIXct("2020-07-24 18:05:00") & slt$start < as.POSIXct("2020-07-25 18:04:59")] <- 2L
+slt$region[slt$start >= as.POSIXct("2020-07-25 18:05:00")] <- 3L
+slt$region <- factor(slt$region)
+ggplot(slt[which(slt$walltime>0),],aes(x=start,y=walltime))+geom_point()+geom_line()+scale_y_continuous(tran="log10")
+ggplot(slt[which(slt$walltime>0),],aes(x=walltime, colour=region, fill=region))+geom_histogram(position = "dodge2",binwidth = 10000)+scale_y_log10()
+#write_plot<-ggplot(slt,aes(start,write),group1)+geom_point()+geom_line()+scale_y_continuous(tran="log10")
+#write_plot
+```
+
+```{r}
+
+res<- slt %>% filter(start >= "2020-05-26 14:45:00" & start< "2020-05-26 14:50:00")
+write.csv(res,file='//Users/yuqinglin/Desktop/rOut/output1.csv')
+  write.csv(slt,file='//Users/yuqinglin/Desktop/rOut/slurm_log.csv')
+```
+
+
