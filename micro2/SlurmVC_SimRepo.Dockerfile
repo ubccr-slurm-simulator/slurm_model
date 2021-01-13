@@ -15,7 +15,7 @@ RUN yum -y update && \
         hdf5 hdf5-devel pam-devel hwloc hwloc-devel \
         perl perl-ExtUtils-MakeMaker python3 python36-PyMySQL python36-psutil \
         sudo perl-Date* && \
-    pip3 install pandas
+    pip3 install pandas py-cpuinfo
 
 
 # add users
