@@ -61,6 +61,31 @@ docker run --name slurm -h slurm --rm -v $(pwd)/micro2/results:/root/results \
 docker run --name slurm -h slurm --rm -v $(pwd)/micro2/results:/root/results \
     nsimakov/slurm_vc:slurm-20.02-sim sshd munged mysqld \
     /opt/cluster/micro2/utils/run_jobs500_frontend.sh
+
+# Run shrinked jobs500
+nohup docker run --name slurm -h slurm --rm -v $(pwd)/micro2/results:/root/results \
+    nsimakov/slurm_vc:slurm-20.02-sim sshd munged mysqld \
+    /opt/cluster/micro2/utils/run_jobs500_shrinked_frontend.sh &>  run_jobs500_shrinked_frontend.out &
+
+# Run jobs500
+nohup docker run --name slurm -h slurm --rm -v $(pwd)/micro2/results:/root/results \
+    nsimakov/slurm_vc:slurm-20.02-sim sshd munged mysqld \
+    /opt/cluster/micro2/utils/run_jobs500_frontend.sh &>  run_jobs500_frontend.out &
+
+
+sed -i 's/}]/}/g' dtstart_10_3/perf_stat.log
+
+# fixing some staff
+for dtstart in 10 30 50 70 90 110
+do
+    for i in {1..4}
+    do
+        echo "Stated modelling with dtstart ${dtstart}, i ${i}"
+        sed -i 's/}]/}/g' dtstart_${dtstart}_${i}/perf_stat.log
+        echo "\n]" >> dtstart_10_4/perf_profile.log
+    done
+done
+
 ```
 
 # Running Virtual Cluster
@@ -88,5 +113,7 @@ cd micro2
 ./run_jobs500.sh
 ```
 
+# on time
 
+Tue 12 Jan 2021 09:58:59 AM EST
  
