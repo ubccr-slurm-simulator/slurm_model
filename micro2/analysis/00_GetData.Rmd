@@ -1,0 +1,129 @@
+---
+title: "Getting Data"
+author: nikolays
+date: 1/11/21
+output: html_notebook
+---
+
+
+```{r setup}
+setwd(path.expand("~/slurm_sim_ws/slurm_model/micro2/analysis"))
+library(stringr)
+library(rjson)
+library(dplyr)
+library(lubridate)
+
+#detach("package:RSlurmSimTools", unload=TRUE)
+#devtools::document(path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"))
+#devtools::install_local(path=path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"), force=TRUE)
+library(RSlurmSimTools)
+
+
+library(dplyr)
+
+reticulate::source_python(file.path(system.file("python", package = "RSlurmSimTools"),"hostlist.py"))
+```
+
+
+```{r}
+m_read_jobcomp <- function(results_root_dir, slurm_mode, dtstart, run_id, tz) {
+    m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", i))
+    m_jobcomp_filename <- file.path(m_result_root_dir, "jobcomp.log")
+    m_perf_stat_filename <- file.path(m_result_root_dir, "perf_stat.log")
+    
+    if(!dir.exists(m_result_root_dir)) {
+        warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+        return(NULL);
+    }
+    m_perf_stat <- read_perf_stat(m_perf_stat_filename, tz=tz)
+    m_jobcomp <- read_jobcomp_log(m_jobcomp_filename, tz=tz, init_time=m_perf_stat$slurmctld_create_time)
+    m_jobcomp$slurm_mode <- slurm_mode
+    m_jobcomp$dtstart <- dtstart
+    m_jobcomp$run_id <- run_id
+    m_jobcomp
+}
+
+tz <- "America/New_York"
+jobcomp <- NULL
+
+for(dtstart in c(10, 30, 50, 70, 90, 110)) {
+    for(i in 1:4) {
+        jobcomp <- rbind(jobcomp, m_read_jobcomp(
+            "../results/jobs500_shrinked", "normal", dtstart, i, tz))
+    }
+}
+for(dtstart in c(10, 30, 50, 70, 90, 110)) {
+    for(i in 1:4) {
+        jobcomp <- rbind(jobcomp, m_read_jobcomp(
+            "../results/jobs500_shrinked_frontend", "frontend", dtstart, i, tz))
+    }
+}
+for(dtstart in c(10, 30, 50, 70, 90, 110)) {
+    for(i in 1:4) {
+        jobcomp <- rbind(jobcomp, m_read_jobcomp(
+            "../results/jobs500_shrinked_frontend_short", "frontend_t", dtstart, i, tz))
+    }
+}
+
+for(dtstart in c(10)) {
+    for(i in 1:7) {
+        jobcomp <- rbind(jobcomp, m_read_jobcomp(
+            "../results/jobs500_shrinked_v2", "normal_v2", dtstart, i, tz))
+    }
+}
+for(dtstart in c(10)) {
+    for(i in 1:7) {
+        jobcomp <- rbind(jobcomp, m_read_jobcomp(
+            "../results/jobs500_shrinked_frontend_v2", "frontend_v2", dtstart, i, tz))
+    }
+}
+
+table(jobcomp$slurm_mode)
+
+jobcomp
+```
+
+
+
+```{r}
+# single dtstart
+jobcomp %>% filter(dtstart==10 & slurm_mode=="normal") %>% group_by(dtstart, ref_job_id) %>%
+    summarise(dwait = max(waittime)-min(waittime),
+              dlwait=paste(waittime-min(waittime), collapse=","),
+              #start=paste(t_start, collapse=","),
+              submit=paste(t_submit, collapse=","), .groups = "drop_last") %>%
+    arrange(-dwait)
+```
+
+```{r}
+# single dtstart
+jobcomp %>% group_by(slurm_mode, dtstart, ref_job_id) %>%
+    summarise(dwait_max = max(waittime)-min(waittime),
+              sd_wait = sd(waittime),
+              dlwait=paste(waittime-min(waittime), collapse=","),
+              #start=paste(t_start, collapse=","),
+              submit=paste(t_submit, collapse=","), .groups = "drop_last") %>%
+    arrange(-dwait_max)
+```
+
+```{r}
+# single dtstart
+jobcomp %>% filter(ref_job_id==1016) %>% group_by(slurm_mode, dtstart, ref_job_id) %>%
+    summarise(dwait_max = max(waittime)-min(waittime),
+              sd_wait = sd(waittime),
+              dlwait=paste(waittime-min(waittime), collapse=","),
+              #start=paste(t_start, collapse=","),
+              walltime=paste(walltime, collapse=","),
+              submit=paste(t_submit, collapse=","), .groups = "drop_last") %>%
+    arrange(-dwait_max)
+```
+```{r}
+# single dtstart
+jobcomp %>% group_by(slurm_mode, dtstart, ref_job_id) %>%
+    summarise(dwait_max = max(waittime)-min(waittime),
+              sd_wait = sd(waittime), .groups = "drop_last") %>%
+    group_by(slurm_mode, dtstart) %>%
+    summarise(sum_dwait_max = sum(dwait_max),
+              avr_sd_wait = mean(sd_wait), .groups = "drop_last") %>%
+    arrange(dtstart,slurm_mode)
+```
