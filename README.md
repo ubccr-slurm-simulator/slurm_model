@@ -3,7 +3,7 @@ Slurm is an workload manager for super computers. Is a free and open source job 
 - [Reference can be found](https://slurm.schedmd.com/overview.html)
 
 # Slurm Testbed
-Slurm testbed is based on docker, which provide a plateform for testing differenct configuration of slurm as well as model system performance based on historical workload. In addition, it's also a platform for the furture development of slurm simulator
+Slurm testbed is based on docker, which provides a environment for testing different configuration of Slurm as well as model system performance based on historical workload. In addition, it's also a platform for the future development of slurm simulator
 
 ## How to use:
 ### Install docker:
