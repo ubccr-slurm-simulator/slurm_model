@@ -12,8 +12,25 @@ else
 fi
 
 
-echo "sleep for $sleep_time, exit with $exit_code"
+if [ $# -eq 0 ]; then
+    sleep_time=1
+    exit_code=0
+elif [ $# -eq 1 ]; then
+    sleep_time=$1
+    exit_code=0
+else
+    sleep_time=$1
+    exit_code=$2
+fi
 
-sleep $sleep_time
-
-exit $exit_code
+if [[ "$sleep_time" -ge "0" ]]; then
+    echo "sleep for $sleep_time, exit with $exit_code"
+    sleep $sleep_time
+    exit $exit_code
+else
+    echo "stay in infinite loop"
+    while :
+    do
+        sleep 600
+    done
+fi
