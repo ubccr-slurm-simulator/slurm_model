@@ -138,3 +138,6 @@ dmypy.json
 *.txt
 *.log
 *.out
+
+/micro2/results
+/micro2/slurm-17.11/results
