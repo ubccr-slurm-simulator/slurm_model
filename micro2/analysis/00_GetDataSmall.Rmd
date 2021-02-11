@@ -1,0 +1,811 @@
+---
+title: "Getting Data"
+author: nikolays
+date: 1/11/21
+output: html_notebook
+---
+
+
+```{r setup}
+setwd(path.expand("~/slurm_sim_ws/slurm_model/micro2/analysis"))
+library(stringr)
+library(rjson)
+library(dplyr)
+library(lubridate)
+
+#detach("package:RSlurmSimTools", unload=TRUE)
+#devtools::document(path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"))
+#devtools::install_local(path=path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"), force=TRUE)
+library(RSlurmSimTools)
+
+
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+library(DepthProc)
+reticulate::source_python(file.path(system.file("python", package = "RSlurmSimTools"),"hostlist.py"))
+library(gplots)
+```
+
+
+```{r}
+# on time
+# epoch is seconds from 1970-01-01 UTC
+# slurm in logs and jobcomp.log also uses local time
+# to get proper distribution over the day hours we need to use local time
+# here some tests on convertion of logs to local time
+tz <- "America/New_York"
+jobcomp_submit_time_s <- "2021-02-02T17:10:27"
+slurmctld_create_time_d <- 1612285817.19
+jobcomp_submit_time_s <- "2020-05-31T20:00:36"
+slurmctld_create_time_d <- 1590969606.298101
+
+jobcomp_submit_time_s <- "2021-02-02T17:37:08.270"
+slurmctld_create_time_d <-1612305428.270000
+
+as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%OS")
+as.double(as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%OS"))
+as.POSIXct(slurmctld_create_time_d, origin="1970-01-01")
+
+#as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%S", tz = "GMT")
+#as.double(as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%S", tz = "GMT"))
+#with_tz(as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%S", tz = "GMT"), tz)
+#as.double(as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%S", tz = "GMT"), tz)
+
+
+# to convert UTC time time, first read with GMT and convert to local
+as.POSIXct(jobcomp_submit_time_s, format = "%Y-%m-%dT%H:%M:%S", tz = tz)
+
+
+
+slurmctld_create_time_d
+as.POSIXct(slurmctld_create_time_d, origin="1970-01-01", tz=tz)
+as.POSIXct(slurmctld_create_time_d, origin="1970-01-01", tz="GMT")
+with_tz(as.POSIXct(slurmctld_create_time_d, origin="1970-01-01", tz="GMT"), tz)
+as.double(as.POSIXct(slurmctld_create_time_d, origin="1970-01-01", tz="GMT"), tz)
+with_tz(as.POSIXct(slurmctld_create_time_d, origin="1970-01-01", tz=tz), tz)
+as.double(as.POSIXct(slurmctld_create_time_d, origin="1970-01-01", tz=tz), tz)
+# for epoch as.POSIXct do convert properly
+Sys.timezone(location = TRUE)
+
+#"slurmctld_create_time": 1612282691.52,
+#[2020-05-31T20:00:08.190] sim: process create real utime: 1612282691520000 process create sim utime: 1590969606298101
+1612282691.52-1612282691.520000
+#[2020-05-31T20:00:08.190] sim: current real utime: 1612282693412736, current sim utime: 1590969608190838
+1590969600-1590969606
+1590969600-1590969608
+```
+
+
+```
+run_sim.py [local time]
+[2021-02-02 13:59:12,655]-[INFO]: slurmctld: /home/nikolays/slurm_sim_ws/slurm_sim/sbin/slurmctld
+jobcomp.log [local time too]
+JobId=1001 UserId=user5(1005) StartTime=2021-02-02T13:59:49 EndTime=2021-02-02T13:59:49 SubmitTime=2021-02-02T13:59:49
+slurmctld.log [local time too]
+[2021-02-02T13:59:20.283] debug:  Sim: thread_id_save ...
+
+
+#normal within docker
+../dtstart_10_4.log: 2021-01-28 23:04:47,844
+[2021-01-28 23:04:55,577]-[INFO]: Current time 1611875095.5778291
+[2021-01-28 23:04:55,578]-[INFO]: slurmdbd_create_time=1611875082.37
+[2021-01-28 23:04:55,578]-[INFO]: slurmctld_create_time=1611875090.09
+Submitted batch job 1001
+Thu Jan 28 23:05:00 UTC 2021
+
+head perf_stat.log
+ "slurmdbd_create_time": 1611875082.37,
+ "slurmctld_create_time": 1611875090.09,
+head jobcomp.log
+SubmitTime=2021-01-28T23:05:00
+[2021-01-28T23:04:50.939] debug:  Log file re-opened
+
+
+So docker uses UTC time by default
+
+```
+
+```{r}
+read_jobcomp <- function(results_root_dir, slurm_mode, dtstart, run_id, tz) {
+    m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id))
+    m_jobcomp_filename <- file.path(m_result_root_dir, "jobcomp.log")
+    m_perf_stat_filename <- file.path(m_result_root_dir, "perf_stat.log")
+    
+    if(!dir.exists(m_result_root_dir)) {
+        warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+        return(NULL);
+    }
+    if(!file.exists(m_jobcomp_filename)) {
+        warning(sprintf("File %s does not exists!", m_jobcomp_filename))
+        return(NULL);
+    }
+    if(!file.exists(m_perf_stat_filename)) {
+        warning(sprintf("File %s does not exists!", m_perf_stat_filename))
+        return(NULL);
+    }
+    m_perf_stat <- read_perf_stat(m_perf_stat_filename, tz=tz)
+    m_jobcomp <- read_jobcomp_log(m_jobcomp_filename, tz=tz, init_time=m_perf_stat$slurmctld_create_time)
+    m_jobcomp$slurm_mode <- slurm_mode
+    m_jobcomp$dtstart <- dtstart
+    m_jobcomp$run_id <- run_id
+    m_jobcomp
+}
+
+read_jobcomp_sim <- function(results_root_dir, slurm_mode, dtstart, run_id, tz="") {
+    m_jobcomp <- read_jobcomp(results_root_dir, slurm_mode, dtstart, run_id, tz)
+    if(!is.null(m_jobcomp)) {
+        m_jobcomp$ref_job_id <- m_jobcomp$job_id
+    }
+    
+    init_time <- min(m_jobcomp$submit_time)-dtstart
+    
+    if(!is.na(init_time)) {
+        for(col in c("submit_time","eligible_time","start_time","end_time")){
+            col_t <- paste0("t_", str_replace(col,"_time",""))
+            m_jobcomp[[col_t]] <- m_jobcomp[[col]] - init_time
+        }
+    }
+    m_jobcomp
+}
+
+read_perf_stat <- function(filename, tz="") {
+    perf_stat <- fromJSON(file = filename)
+    # older runs uses epoch
+    if(!(is.null(perf_stat$slurmctld_create_time) || is.na(perf_stat$slurmctld_create_time))) {
+        if(grepl("^[0-9.]+$", perf_stat$slurmctld_create_time, perl=T)) {
+            perf_stat$slurmctld_create_time <- as.POSIXct(perf_stat$slurmctld_create_time, origin="1970-01-01", tz=tz)
+        } else {
+            perf_stat$slurmctld_create_time <- as.POSIXct(perf_stat$slurmctld_create_time, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+        }
+    }
+    if(!(is.null(perf_stat$slurmdbd_create_time) || is.na(perf_stat$slurmdbd_create_time))) {
+        if(grepl("^[0-9.]+$", perf_stat$slurmdbd_create_time, perl=T)) {
+            perf_stat$slurmdbd_create_time <- as.POSIXct(perf_stat$slurmdbd_create_time, origin="1970-01-01", tz=tz)
+        } else {
+            perf_stat$slurmdbd_create_time <- as.POSIXct(perf_stat$slurmdbd_create_time, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+        }
+    }
+    if(!(is.null(perf_stat$slurmd_create_time) || is.na(perf_stat$slurmd_create_time))) {
+        if(grepl("^[0-9.]+$", perf_stat$slurmd_create_time, perl=T)) {
+            perf_stat$slurmd_create_time <- as.POSIXct(perf_stat$slurmd_create_time, origin="1970-01-01", tz=tz)
+        } else {
+            perf_stat$slurmd_create_time <- as.POSIXct(perf_stat$slurmd_create_time, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+        }
+    }
+    perf_stat
+}
+
+parse_slurmctrl_log <- function(filename) {
+    process_slurmctld_log <- path.expand("~/slurm_sim_ws/slurm_sim_tools/src/process_slurmctld_log.py")
+    slurmctld_csv <- sprintf("%s.csv", str_replace(filename, "\\.[A-Za-z0-9]+$",""))
+    command <- sprintf("%s -l %s -c %s", process_slurmctld_log, filename, slurmctld_csv)
+    system(command)
+}
+
+read_events <- function(filename, start_time, tz="") {
+    events <- read_delim(
+        filename, ";", col_types = cols(
+            job_id = col_double(),
+            metric = col_character(),
+            t = col_character(),
+            value = col_character()))
+    
+    # events has local time
+    events$t <- as.POSIXct(events$t, format = "%Y-%m-%d %H:%M:%OS", tz = tz)
+    
+    if(as.character(start_time)=="first_event_time")  {
+        m_start_time <- as.double(events$t[[1]])
+        
+    } else if(as.character(start_time)=="from_events")  {
+        # both times in UTC
+        process_create_real_time <- filter(events, metric=="process_create_real_time")
+        process_create_sim_time <- filter(events, metric=="process_create_sim_time")
+        if(nrow(process_create_real_time) && nrow(process_create_sim_time)) {
+            # older runs uses epoch
+            if(grepl("^[0-9.]+$", process_create_sim_time$value, perl=T)) {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, origin="1970-01-01", tz=tz)
+            } else {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+            }
+        } else {
+            m_start_time <- events$t[[1]]
+        }
+    } else {
+        m_start_time <- start_time
+    }
+
+    events$dt <- as.double(events$t) - as.double(m_start_time)
+    
+    slurm_start_time <- filter(events, metric=="slurm_start_time")
+    if(nrow(slurm_start_time)) {
+        events$dt2 <- as.double(events$t) - as.double(slurm_start_time$t[[1]])
+    } else {
+        events$dt2 <- events$dt
+    }
+    
+    events
+}
+
+read_results <- function(results_dir, tz="", start_time="create_time") {
+    r <- list()
+    r$perf_stat <- read_perf_stat(file.path(results_dir, "perf_stat.log"), tz=tz)
+
+    parse_slurmctrl_log(file.path(results_dir, "slurmctld.log"))
+    if(start_time=="create_time"){
+        m_start_time <- r$perf_stat$slurmctld_create_time
+    } else if(start_time=="first_event_time")  {
+        m_start_time <- "first_event_time"
+    } else if(start_time=="from_events")  {
+        m_start_time <- "from_events"
+    } else {
+        warning("Unknown start time, will use from_events")
+        m_start_time <- "from_events"
+    }
+    r$events <- read_events(file.path(results_dir, "slurmctld.csv"), m_start_time, tz)
+    
+    
+    if(start_time=="first_event_time")  {
+        m_start_time <- r$events$t[[1]]
+    } else if(start_time=="from_events")  {
+        # both times in UTC
+        process_create_real_time <- filter(r$events, metric=="process_create_real_time")
+        process_create_sim_time <- filter(r$events, metric=="process_create_sim_time")
+        if(nrow(process_create_real_time) && nrow(process_create_sim_time)) {
+            # older runs uses epoch
+            if(grepl("^[0-9.]+$", process_create_sim_time$value, perl=T)) {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, origin="1970-01-01", tz=tz)
+            } else {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+            }
+        } else {
+            m_start_time <- events$t[[1]]
+        }
+    }
+    r$jobcomp <- read_jobcomp_log(file.path(results_dir, "jobcomp.log"), tz=tz, init_time=m_start_time)
+r$jobcomp$submit_time[[1]]
+    r
+}
+
+read_multiple_runs <- function(results_dir, tz, slurm_mode, dtstart_list, run_id_list) {
+    if(!dir.exists(results_dir)) {
+        warning(sprintf("Directory %s does not exists!", results_dir))
+        return(NULL);
+    }
+    for(dtstart in dtstart_list) {
+        for(run_id in run_id_list) {
+            m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id))
+            
+            if(!dir.exists(m_result_root_dir)) {
+                warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+                return(NULL);
+            }
+            r <- read_results(m_result_root_dir,tz)
+            
+        }
+    }
+}
+
+tz <- "GMT"
+results_dir <- path.expand("~/slurm_sim_ws/slurm_model/micro2/results/small2_v2_normal_v1/dtstart_10_1")
+#results_dir <- path.expand("~/slurm_sim_ws/slurm_model/micro2/results/jobs500_shrinked_normal_v1/dtstart_10_1")
+
+
+#r <- read_results(path.expand("~/slurm_sim_ws/slurm_model/micro2/results/small2_normal_v1/dtstart_10_1"), tz)
+results <- list(perf_stat=list(), events=list(), jobcomp=list())
+
+results_dir <- path.expand("~/slurm_sim_ws/slurm_model/micro2/results/small2_v2_normal_v1")
+slurm_mode <- "normal"
+for(dtstart in 10:29) {
+    for(run_id in 1:2) {
+        m_results_dir <- sprintf("%s/dtstart_%d_%d", results_dir, dtstart, run_id)
+        
+        id <- sprintf("%s_%d_%d", slurm_mode, dtstart, run_id)
+        
+        r <- read_results(m_results_dir, tz, start_time="create_time")
+        r$perf_stat$slurm_mode <- slurm_mode
+        r$events$slurm_mode <- slurm_mode
+        r$jobcomp$slurm_mode <- slurm_mode
+        
+        r$perf_stat$dtstart <- dtstart
+        r$events$dtstart <- dtstart
+        r$jobcomp$dtstart <- dtstart
+        
+        r$perf_stat$run_id <- run_id
+        r$events$run_id <- run_id
+        r$jobcomp$run_id <- run_id
+        
+        
+        results$perf_stat[[id]] <- r$perf_stat
+        results$events[[id]] <- r$events
+        results$jobcomp[[id]] <- r$jobcomp
+    }
+}
+
+tz <- ""
+# results_dir <- path.expand("~/slurm_sim_ws/slurm_model/micro2/results/small2_sim_v2_speed1")
+# slurm_mode <- "sim"
+# for(dtstart in c(10)) {
+#     for(run_id in 1:20) {
+#         m_results_dir <- sprintf("%s/dtstart_%d_%d", results_dir, dtstart, run_id)
+#         
+#         if(!dir.exists(m_results_dir)) {
+#             warning(sprintf("Directory %s does not exists!", m_results_dir))
+#             next
+#         }
+#         
+#         id <- sprintf("%s_%d_%d", slurm_mode, dtstart, run_id)
+#         
+#         r <- read_results(m_results_dir, tz, start_time="from_events")
+#         r$perf_stat$slurm_mode <- slurm_mode
+#         r$events$slurm_mode <- slurm_mode
+#         r$jobcomp$slurm_mode <- slurm_mode
+#         
+#         r$perf_stat$dtstart <- dtstart
+#         r$events$dtstart <- dtstart
+#         r$jobcomp$dtstart <- dtstart
+#         
+#         r$perf_stat$run_id <- run_id
+#         r$events$run_id <- run_id
+#         r$jobcomp$run_id <- run_id
+#         
+#         
+#         results$perf_stat[[id]] <- r$perf_stat
+#         results$events[[id]] <- r$events
+#         results$jobcomp[[id]] <- r$jobcomp
+#     }
+# }
+results_dir <- path.expand("~/slurm_sim_ws/slurm_model/micro2/results/small2_v2_sim_v1_speed1")
+slurm_mode <- "sim"
+for(dtstart in 10:11) {
+    for(run_id in 1:1) {
+        m_results_dir <- sprintf("%s/dtstart_%d_%d", results_dir, dtstart, run_id)
+        
+        if(!dir.exists(m_results_dir)) {
+            warning(sprintf("Directory %s does not exists!", m_results_dir))
+            next
+        }
+        
+        id <- sprintf("%s_%d_%d", slurm_mode, dtstart, run_id)
+        
+        r <- read_results(m_results_dir, tz, start_time="from_events")
+        r$perf_stat$slurm_mode <- slurm_mode
+        r$events$slurm_mode <- slurm_mode
+        r$jobcomp$slurm_mode <- slurm_mode
+        
+        r$perf_stat$dtstart <- dtstart
+        r$events$dtstart <- dtstart
+        r$jobcomp$dtstart <- dtstart
+        
+        r$perf_stat$run_id <- run_id
+        r$events$run_id <- run_id
+        r$jobcomp$run_id <- run_id
+        
+        
+        results$perf_stat[[id]] <- r$perf_stat
+        results$events[[id]] <- r$events
+        results$jobcomp[[id]] <- r$jobcomp
+    }
+}
+
+events <- bind_rows(results$events)
+
+
+job_trace <- read_delim(path.expand("~/slurm_sim_ws/slurm_model/micro2/job_traces/small2.csv"), ";",
+           col_types=cols(
+              dt = col_double(),
+              job_id = col_double(),
+              wall_time = col_double(),
+              user = col_character(),
+              wall_limit = col_double(),
+              n_tasks = col_double(),
+              ntasks_per_node = col_double(),
+              account = col_character(),
+              partition = col_character(),
+              qos = col_character(),
+              constraint = col_character(),
+              mem = col_double(),
+              gres = col_character()
+            )
+)
+job_trace$dt <- job_trace$dt + 9.151
+job_trace$to_timelimit <- job_trace$wall_time < 0
+job_trace$wall_time[job_trace$to_timelimit] <- job_trace$wall_limit[job_trace$to_timelimit]
+results$events$sim_10_1 %>% filter(! metric %in% c("process_create_real_time","process_create_sim_time"))
+#results$events$sim2_10_1 %>% filter(! metric %in% c("process_create_real_time","process_create_sim_time"))
+results$events$normal_19_1
+```
+
+
+# submit_job
+
+```{r}
+tmp <- events %>% filter(metric %in% c("submit_job")) %>% dplyr::select(-metric, -value, -t, -dt) %>%
+    left_join(job_trace %>% dplyr::select(job_id, dt_set=dt),by="job_id") %>%
+    mutate(ddt2=abs(dt2-dt_set)) %>%
+    group_by(slurm_mode,job_id) %>%
+    summarise(
+        min_dt2=round(min(dt2),3),
+        mean_dt2=round(mean(dt2),3),
+        max_dt2=round(max(dt2),3),
+        min_ddt2=round(min(ddt2),3),
+        mean_ddt2=round(mean(ddt2),3),
+        max_ddt2=round(max(ddt2),3), 
+        .groups="drop") %>%
+    arrange(job_id,slurm_mode)
+
+tmp %>% group_by(slurm_mode) %>%
+    summarise(max_max_ddt2=max(max_ddt2), sum_max_ddt2=sum(max_ddt2))
+tmp %>% dplyr::select(slurm_mode,job_id,mean_dt2) %>% spread(slurm_mode,mean_dt2)
+tmp
+```
+max departure from scheduled submission is 0.046 (old)
+
+# launch_job
+
+```{r rows.print=25}
+tmp <- events %>% filter(metric %in% c("launch_job")) %>% dplyr::select(-metric, -value, -t, -dt) %>%
+    group_by(slurm_mode,job_id) %>%
+    summarise(
+        median_dt2=round(median(dt2),3),
+        maxmin_dt2=round(max(dt2)-min(dt2),3),
+        .groups="drop") %>%
+    arrange(job_id,slurm_mode)
+
+tmp %>% gather(key, value, c("median_dt2", "maxmin_dt2")) %>%
+    unite(temp, slurm_mode, key, sep="_") %>%
+    spread(temp, value) %>% arrange(normal_median_dt2)
+tmp %>% dplyr::select(-maxmin_dt2) %>%
+    spread(slurm_mode, median_dt2) %>% arrange(normal) %>%
+    mutate(dlaunch1=normal-sim,dlaunch2=normal-sim2)
+    
+tmp %>% group_by(slurm_mode) %>%
+    summarise(max_maxmin_dt2=max(maxmin_dt2), sum_maxmin_dt2=sum(maxmin_dt2), .groups="drop")
+```
+Max departure from launch time is 3 seconds
+
+
+# wall time and wait time
+
+```{r}
+ww_events <- events %>% filter(metric %in% c("submit_job", "launch_job", "job_epilog_complete")) %>% 
+    # job_epilog_complete comes for each node so first leave only last
+    arrange(slurm_mode, dtstart, run_id, dt2) %>%
+    group_by(slurm_mode, dtstart, run_id, job_id, metric) %>%
+    summarise(dt2=last(dt2),.groups="drop") %>%
+    # now we can spread
+    tidyr::spread(key=metric, value=dt2) %>%
+    dplyr::select(slurm_mode, dtstart, run_id, job_id, submit_job, launch_job, job_epilog_complete) %>%
+    mutate(waittime=launch_job-submit_job, walltime=job_epilog_complete-launch_job)
+
+ww_events
+```
+## Wait time
+
+```{r rows.print=25}
+ww_events %>% group_by(slurm_mode, job_id) %>%
+    summarise(
+        median_waittime=round(median(waittime),3),
+        maxmin_waittime=round(max(waittime)-min(waittime),3),
+        .groups="drop") %>%
+    gather(key, value, c("median_waittime", "maxmin_waittime")) %>%
+    unite(temp, slurm_mode, key, sep="_") %>%
+    spread(temp, value) %>%
+    mutate(dwaittime = normal_median_waittime - sim_median_waittime)
+#%>%
+#    dplyr::select(c("job_id", "dwaittime", "normal_median_waittime", "sim_median_waittime", "normal_maxmin_waittime", "sim_maxmin_waittime"))
+
+```
+
+## Walltime
+
+```{r rows.print=25}
+walltime <- ww_events %>% group_by(slurm_mode, job_id) %>%
+    summarise(
+        median_walltime=round(median(walltime),3),
+        maxmin_walltime=round(max(walltime)-min(walltime),3),
+        .groups="drop") %>%
+    gather(key, value, c("median_walltime", "maxmin_walltime")) %>%
+    unite(temp, slurm_mode, key, sep="_") %>%
+    spread(temp, value) %>%
+    #dplyr::select(c("job_id", "normal:median_walltime", "sim:median_walltime", "normal:maxmin_walltime", "sim:maxmin_walltime")) %>%
+    left_join(job_trace %>% dplyr::select(job_id, walltime_set=wall_time, to_timelimit),by="job_id") %>%
+    mutate(dwalltime=normal_median_walltime-sim_median_walltime)
+walltime
+```
+
+
+
+## Distance on Waittime
+
+
+```{r fig.width=5, fig.height=5}
+wh <- ww_events %>% 
+    unite(id,slurm_mode, dtstart, run_id) %>% 
+    dplyr::select(id, job_id, waittime) %>% 
+    spread(id, waittime)
+wh_matrix <- as.matrix(dplyr::select(wh, -job_id))
+row.names(wh_matrix) <- wh$job_id
+#jobcomp_waittime_matrix
+
+d <- dist(t(wh_matrix))
+heatmap.2(as.matrix(d),symm = T,trace = "none", density.info = "none", scale = "none", col="bluered")
+heatmap.2(as.matrix(d),symm = T, Colv = NA, Rowv = NA,dendrogram="none",trace = "none", density.info = "none", scale = "none", col="bluered")
+```
+
+```{r}
+metric_filter <- c("process_create_real_time","process_create_sim_time", "uid", "job_name",
+                   "request_complete_job","request_terminate_job")
+results$events$normal_10_1 %>%
+    filter(! metric %in% metric_filter) %>% filter(metric %in% "launch_job") %>%
+    dplyr::select(job_id,metric,dt2,value)
+```
+
+```{r}
+results$events$sim_10_1  %>% 
+    filter(! metric %in% metric_filter) %>%filter(metric %in% "launch_job") %>%
+    dplyr::select(job_id,metric,dt2,value)
+```
+
+```{r}
+results$events$normal_10_2 %>% filter(metric=="nodes") %>% dplyr::select(job_id,value, dt2) %>% arrange(dt2)
+results$events$normal_10_2
+```
+
+```{r}
+results$events$sim_10_1 %>% filter(metric=="nodes") %>% dplyr::select(job_id,value, dt2) %>% arrange(dt2)
+results$events$sim_10_1
+```
+
+```{r}
+results$events$sim2_10_1 %>% filter(metric=="nodes") %>% dplyr::select(job_id,value, dt2) %>% arrange(dt2)
+results$events$sim2_10_1
+```
+
+# time_limit_exhausted
+
+```{r}
+jobs_id_to_timelimit <- unique(filter(events, metric=="time_limit_exhausted")$job_id)
+tl_events <- events %>% filter(metric %in% c("time_limit_exhausted", "job_epilog_complete") & job_id %in% jobs_id_to_timelimit) %>% 
+    # job_epilog_complete comes for each node so first leave only last
+    arrange(slurm_mode, dtstart, run_id, dt2) %>%
+    group_by(slurm_mode, dtstart, run_id, job_id, metric) %>%
+    summarise(dt2=last(dt2),.groups="drop") %>%
+    # now we can spread
+    tidyr::spread(key=metric, value=dt2) %>%
+    mutate(epilog_time=job_epilog_complete-time_limit_exhausted)
+tl_events
+tl_events %>% group_by(slurm_mode, job_id) %>% summarise(epilog_time=mean(epilog_time),.groups="drop")
+tl_events %>% group_by(slurm_mode) %>% summarise(epilog_time=mean(epilog_time),.groups="drop")
+
+ggplot(tl_events,aes(x=as.factor(job_id), y=epilog_time, color=slurm_mode)) +
+    geom_boxplot()
+
+```
+
+```{r}
+tl_events <- events %>% filter(metric %in% c("request_complete_job", "job_epilog_complete") & (!job_id %in% jobs_id_to_timelimit)) %>% 
+    # job_epilog_complete comes for each node so first leave only last
+    arrange(slurm_mode, dtstart, run_id, dt2) %>%
+    group_by(slurm_mode, dtstart, run_id, job_id, metric) %>%
+    summarise(dt2=last(dt2),.groups="drop") %>%
+    # now we can spread
+    tidyr::spread(key=metric, value=dt2) %>%
+    mutate(epilog_time=job_epilog_complete-request_complete_job)
+tl_events
+tl_events %>% group_by(slurm_mode) %>% summarise(epilog_time=mean(epilog_time),.groups="drop")
+
+ggplot(tl_events,aes(x=as.factor(job_id), y=epilog_time, color=slurm_mode)) +
+    geom_boxplot()
+```
+```{r fig.width=11.5, fig.height=8.5}
+tl_events_normal <- tl_events %>% filter(slurm_mode=="normal")
+ggplot(tl_events_normal,aes(x=epilog_time)) +
+    facet_wrap(~as.factor(job_id))+
+    geom_histogram(binwidth=0.0005)
+ggplot(tl_events_normal,aes(x=epilog_time)) +
+    geom_histogram(binwidth=0.0002)
+param <- MASS::fitdistr(tl_events_normal$epilog_time, "gamma")
+param
+m_x <- seq(min(tl_events_normal$epilog_time), max(tl_events_normal$epilog_time), length.out = 100)
+ggplot() + #,aes(x=epilog_time)) +
+    geom_histogram(data = tl_events_normal, mapping = aes(x=epilog_time, y=..density..), binwidth=0.0002, ) +
+    geom_line(aes(x=m_x,y=dgamma(m_x, shape = param$estimate[1], rate = param$estimate[2])))
+```
+
+```{r}
+
+events_job <- events %>% filter(metric %in% c(
+    "submit_job", "launch_job", "request_complete_job","request_terminate_job", "job_epilog_complete",
+    "time_limit_exhausted","request_kill_timelimit","request_complete_job","message_epilog_complete","job_epilog_complete"
+)) %>% arrange(run_id,job_id,dt)
+
+
+events %>% filter(metric %in% c("submit_job")) %>%
+    group_by(job_id,metric)
+    summarise(mean(dt)
+events %>% arrange(run_id,job_id,dt)
+
+```
+
+```{r}
+tz <- "America/New_York"
+jobcomp <- NULL
+
+for(dtstart in c(10)) {
+    for(i in 1:10) {
+       jobcomp <- rbind(
+           jobcomp, 
+           m_read_jobcomp("../results/small2_normal_v1", "normal_v1", dtstart, i, tz), 
+           m_read_jobcomp("../results/small2_frontend_v1", "frontend_v1", dtstart, i, tz))
+    }
+}
+for(dtstart in c(10)) {
+    for(i in 1:10) {
+        jobcomp <- rbind(
+            jobcomp, 
+            m_read_jobcomp_sim("../results/small2_sim_v1_speed1", "sim_v1_speed1", dtstart, i, tz)
+        )
+    }
+}
+
+#jobcomp <- rbind(jobcomp, m_read_jobcomp_sim("../results/small2_sim_v1_speed1", "sim_v1_speed1",dtstart=10L, run_id=1L, tz))
+jobcomp$work_dir <- NULL
+table(jobcomp$slurm_mode)
+
+# Check if ref_job_id matches actual job_id
+sum(jobcomp$ref_job_id!=jobcomp$job_id)
+```
+
+
+
+
+# Jobs Alone
+
+```{r}
+#jobcomp3 <- jobcomp %>% dplyr::select(
+#    slurm_mode, run_id, job_id, user, job_state, partition, nodes, cpus, gres, time_limit, t_submit, t_eligible, t_start, t_end,waittime,walltime,node_list, qos, account)
+
+jobcomp3 <- jobcomp %>% dplyr::select(
+    slurm_mode, run_id, job_id, t_submit, t_eligible, t_start, t_end,waittime,walltime,node_list, qos, account)
+
+#dput(colnames(jobcomp))
+
+jobcomp3 %>% filter(slurm_mode=="normal_v1"&run_id==1) %>% arrange(job_id)
+```
+
+
+```{r}
+jobcomp3 %>% filter(slurm_mode=="sim_v1_speed1"&run_id==1) %>% arrange(job_id)
+```
+
+```{r}
+# single dtstart
+jobcomp %>% group_by(slurm_mode, dtstart, ref_job_id) %>%
+    summarise(dwait_max = max(waittime)-min(waittime),
+              sd_wait = sd(waittime),
+              dlwait=paste(waittime-min(waittime), collapse=","),
+              #start=paste(t_start, collapse=","),
+              waittime=paste(walltime, collapse=","),
+              walltime=paste(walltime, collapse=","),
+              submit=paste(round(t_submit,1), collapse=","), .groups = "drop_last") %>%
+    arrange(-dwait_max)
+```
+
+```{r}
+# single dtstart
+jobcomp %>% group_by(slurm_mode, dtstart, ref_job_id) %>%
+    summarise(dwait_max = max(waittime)-min(waittime),
+              sd_wait = sd(waittime), .groups = "drop_last") %>%
+    group_by(slurm_mode, dtstart) %>%
+    summarise(sum_dwait_max = sum(dwait_max),
+              avr_sd_wait = mean(sd_wait), .groups = "drop_last") %>%
+    arrange(dtstart,slurm_mode)
+```
+
+# Analysis on selection, same dtstart
+
+```{r}
+jobcomp2 <- filter(jobcomp, slurm_mode %in% c("frontend_v2", "normal_v2", "sim_speed10") & dtstart==10)
+jobcomp2$slurm_mode[jobcomp2$slurm_mode=="frontend_v2"] <- "F2"
+jobcomp2$slurm_mode[jobcomp2$slurm_mode=="normal_v2"] <- "N2"
+jobcomp2$slurm_mode[jobcomp2$slurm_mode=="sim_speed10"] <- "S"
+
+jobcomp2$id <- sprintf("%s_%02d", jobcomp2$slurm_mode, jobcomp2$run_id)
+```
+
+
+## Stats
+
+```{r rows.print=50}
+df <- jobcomp2 %>% group_by(slurm_mode, run_id) %>% summarise(
+    id=last(id),
+    mean_waittime=mean(waittime),
+    sd_waittime=sd(waittime), .groups="drop_last")
+
+df
+
+ggplot(df, aes(x=mean_waittime, fill=slurm_mode)) +
+    geom_histogram(position="dodge")
+
+ks.test(
+    as.numeric(filter(df, slurm_mode=="F2")$mean_waittime),
+    as.numeric(filter(df, slurm_mode=="N2")$mean_waittime))
+
+ks.test(
+    as.numeric(filter(df, slurm_mode=="S")$mean_waittime),
+    as.numeric(filter(df, slurm_mode=="N2")$mean_waittime))
+```
+
+```{r rows.print=50}
+df <- jobcomp2 %>% group_by(slurm_mode, run_id) %>% 
+    summarise(
+        id=last(id),
+        mean_waittime=mean(waittime),
+        sd_waittime=sd(waittime), .groups="drop_last") %>%
+    group_by(slurm_mode) %>% 
+    summarise(
+        mean_mean_waittime=mean(mean_waittime),
+        sd_mean_waittime=sd(mean_waittime),
+        n=n(), .groups="drop_last")
+df
+```
+
+
+
+
+## Order
+
+```{r rows.print=50}
+df <- jobcomp2 %>% group_by(slurm_mode, run_id) %>%
+    mutate(rank=rank(start_time, na.last = TRUE, ties.method = c("average"))) %>%
+    ungroup()
+
+jobcomp_rank <- df %>%
+    dplyr::select(id, job_id, rank) %>% 
+    spread(id, rank)
+
+jobcomp_rank_matrix <- as.matrix(dplyr::select(jobcomp_rank, -job_id))
+row.names(jobcomp_rank_matrix) <- jobcomp_rank$job_id
+#jobcomp_waittime_matrix
+
+d <- dist(t(jobcomp_rank_matrix))
+d
+heatmap(as.matrix(d),symm = T)
+heatmap(as.matrix(d),symm = T, Colv = NA, Rowv = NA)
+```
+
+
+## Multivariate Analysis
+
+```{r fig.width=5, fig.height=5}
+#x <- mvrnorm(100, c(0, 0), diag(2))
+#y <- mvrnorm(100, c(0, 0), diag(2) * 1.4)
+x <- t(jobcomp_waittime_matrix)[1:13,]
+y <- t(jobcomp_waittime_matrix)[14:20,]+200
+
+#mWilcoxonTest(x, y, depth_params = list(ndir = 10000))
+mWilcoxonTest(x, y, depth_params = list(method = "Euclidean"))
+mWilcoxonTest(x, y, depth_params = list(method = "LP"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+#
+
+
+
+
+
+

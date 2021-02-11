@@ -20,19 +20,29 @@ library(RSlurmSimTools)
 
 
 library(dplyr)
-
+library(tidyr)
+library(ggplot2)
+library(DepthProc)
 reticulate::source_python(file.path(system.file("python", package = "RSlurmSimTools"),"hostlist.py"))
 ```
 
 
 ```{r}
 m_read_jobcomp <- function(results_root_dir, slurm_mode, dtstart, run_id, tz) {
-    m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", i))
+    m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id))
     m_jobcomp_filename <- file.path(m_result_root_dir, "jobcomp.log")
     m_perf_stat_filename <- file.path(m_result_root_dir, "perf_stat.log")
     
     if(!dir.exists(m_result_root_dir)) {
         warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+        return(NULL);
+    }
+    if(!file.exists(m_jobcomp_filename)) {
+        warning(sprintf("File %s does not exists!", m_jobcomp_filename))
+        return(NULL);
+    }
+    if(!file.exists(m_perf_stat_filename)) {
+        warning(sprintf("File %s does not exists!", m_perf_stat_filename))
         return(NULL);
     }
     m_perf_stat <- read_perf_stat(m_perf_stat_filename, tz=tz)
@@ -42,29 +52,46 @@ m_read_jobcomp <- function(results_root_dir, slurm_mode, dtstart, run_id, tz) {
     m_jobcomp$run_id <- run_id
     m_jobcomp
 }
+m_read_jobcomp_sim <- function(results_root_dir, slurm_mode, dtstart, run_id, tz) {
+    m_jobcomp <- m_read_jobcomp(results_root_dir, slurm_mode, dtstart, run_id, tz)
+    if(!is.null(m_jobcomp)) {
+        m_jobcomp$ref_job_id <- m_jobcomp$job_id
+    }
+    
+    init_time <- min(m_jobcomp$submit_time)-dtstart
+    
+    if(!is.na(init_time)) {
+        for(col in c("submit_time","eligible_time","start_time","end_time")){
+            col_t <- paste0("t_", str_replace(col,"_time",""))
+            m_jobcomp[[col_t]] <- m_jobcomp[[col]] - init_time
+        }
+    }
+    
+    m_jobcomp
+}
 
 tz <- "America/New_York"
 jobcomp <- NULL
 
-for(dtstart in c(10, 30, 50, 70, 90, 110)) {
-    for(i in 1:4) {
-        jobcomp <- rbind(jobcomp, m_read_jobcomp(
-            "../results/jobs500_shrinked", "normal", dtstart, i, tz))
-    }
-}
-for(dtstart in c(10, 30, 50, 70, 90, 110)) {
-    for(i in 1:4) {
-        jobcomp <- rbind(jobcomp, m_read_jobcomp(
-            "../results/jobs500_shrinked_frontend", "frontend", dtstart, i, tz))
-    }
-}
-for(dtstart in c(10, 30, 50, 70, 90, 110)) {
-    for(i in 1:4) {
-        jobcomp <- rbind(jobcomp, m_read_jobcomp(
-            "../results/jobs500_shrinked_frontend_short", "frontend_t", dtstart, i, tz))
-    }
-}
-
+# for(dtstart in c(10, 30, 50, 70, 90, 110)) {
+#     for(i in 1:4) {
+#         jobcomp <- rbind(jobcomp, m_read_jobcomp(
+#             "../results/jobs500_shrinked", "normal", dtstart, i, tz))
+#     }
+# }
+# for(dtstart in c(10, 30, 50, 70, 90, 110)) {
+#     for(i in 1:4) {
+#         jobcomp <- rbind(jobcomp, m_read_jobcomp(
+#             "../results/jobs500_shrinked_frontend", "frontend", dtstart, i, tz))
+#     }
+# }
+# for(dtstart in c(10, 30, 50, 70, 90, 110)) {
+#     for(i in 1:4) {
+#         jobcomp <- rbind(jobcomp, m_read_jobcomp(
+#             "../results/jobs500_shrinked_frontend_short", "frontend_t", dtstart, i, tz))
+#     }
+# }
+# 
 for(dtstart in c(10)) {
     for(i in 1:7) {
         jobcomp <- rbind(jobcomp, m_read_jobcomp(
@@ -72,23 +99,73 @@ for(dtstart in c(10)) {
     }
 }
 for(dtstart in c(10)) {
-    for(i in 1:7) {
+    for(i in 1:13) {
         jobcomp <- rbind(jobcomp, m_read_jobcomp(
             "../results/jobs500_shrinked_frontend_v2", "frontend_v2", dtstart, i, tz))
     }
 }
-
+# for(dtstart in c(10)) {
+#     for(i in 1:10) {
+#         df <- m_read_jobcomp(
+#             "../results/jobs500_shrinked_sim_speed5", "sim_speed5", dtstart, i, tz)
+#         df$ref_job_id <- df$job_id
+#         jobcomp <- rbind(jobcomp, df)
+#     }
+# }
+# for(dtstart in c(10)) {
+#     for(i in 1:10) {
+#         df <- m_read_jobcomp(
+#             "../results/jobs500_shrinked_sim_speed10", "sim_speed10", dtstart, i, tz)
+#         df$ref_job_id <- df$job_id
+#         jobcomp <- rbind(jobcomp, df)
+#     }
+# }
+# for(dtstart in c(10)) {
+#     for(i in 1:4) {
+#         df <- m_read_jobcomp(
+#             "../results/jobs500_shrinked_sim_speed1", "sim_speed1", dtstart, i, tz)
+#         df$ref_job_id <- df$job_id
+#         jobcomp <- rbind(jobcomp, df)
+#     }
+# }
+for(dtstart in c(10)) {
+    for(i in 1:8) {
+       jobcomp <- rbind(jobcomp, m_read_jobcomp(
+             "../results/jobs500_shrinked_v10", "normal_v10", dtstart, i, tz))
+    }
+}
+for(dtstart in c(10)) {
+    for(i in 1:8) {
+       jobcomp <- rbind(jobcomp, m_read_jobcomp(
+             "../results/jobs500_shrinked_frontend_v10", "frontend_v10", dtstart, i, tz))
+    }
+}
+for(dtstart in c(10)) {
+    for(i in 1:10) {
+        jobcomp <- rbind(
+            jobcomp, 
+            m_read_jobcomp_sim("../results/jobs500_shrinked_sim_v10_speed10", "sim_v10_speed10", dtstart, i, tz),
+            m_read_jobcomp_sim("../results/jobs500_shrinked_sim_v10_speed5", "sim_v10_speed5", dtstart, i, tz),
+            m_read_jobcomp_sim("../results/jobs500_shrinked_sim_v10_speed2", "sim_v10_speed2", dtstart, i, tz),
+            m_read_jobcomp_sim("../results/jobs500_shrinked_sim_v10_speed1", "sim_v10_speed1", dtstart, i, tz)
+        )
+    }
+}
+jobcomp <- rbind(jobcomp, m_read_jobcomp_sim("../results/jobs500_shrinked_sim_v11_speed5", "sim_v11_speed5",dtstart=10L, run_id=1L, tz))
+jobcomp$work_dir <- NULL
 table(jobcomp$slurm_mode)
 
-jobcomp
+# Check if ref_job_id matches actual job_id
+sum(jobcomp$ref_job_id!=jobcomp$job_id)
 ```
 
 
 
 ```{r}
 # single dtstart
-jobcomp %>% filter(dtstart==10 & slurm_mode=="normal") %>% group_by(dtstart, ref_job_id) %>%
+jobcomp %>% filter(dtstart==10 & slurm_mode=="frontend_v2") %>% group_by(dtstart, ref_job_id) %>%
     summarise(dwait = max(waittime)-min(waittime),
+              sd_wait = sd(waittime),
               dlwait=paste(waittime-min(waittime), collapse=","),
               #start=paste(t_start, collapse=","),
               submit=paste(t_submit, collapse=","), .groups = "drop_last") %>%
@@ -127,3 +204,127 @@ jobcomp %>% group_by(slurm_mode, dtstart, ref_job_id) %>%
               avr_sd_wait = mean(sd_wait), .groups = "drop_last") %>%
     arrange(dtstart,slurm_mode)
 ```
+
+# Analysis on selection, same dtstart
+
+```{r}
+jobcomp2 <- filter(jobcomp, slurm_mode %in% c("frontend_v2", "normal_v2", "sim_speed10") & dtstart==10)
+jobcomp2$slurm_mode[jobcomp2$slurm_mode=="frontend_v2"] <- "F2"
+jobcomp2$slurm_mode[jobcomp2$slurm_mode=="normal_v2"] <- "N2"
+jobcomp2$slurm_mode[jobcomp2$slurm_mode=="sim_speed10"] <- "S"
+
+jobcomp2$id <- sprintf("%s_%02d", jobcomp2$slurm_mode, jobcomp2$run_id)
+```
+
+
+## Stats
+
+```{r rows.print=50}
+df <- jobcomp2 %>% group_by(slurm_mode, run_id) %>% summarise(
+    id=last(id),
+    mean_waittime=mean(waittime),
+    sd_waittime=sd(waittime), .groups="drop_last")
+
+df
+
+ggplot(df, aes(x=mean_waittime, fill=slurm_mode)) +
+    geom_histogram(position="dodge")
+
+ks.test(
+    as.numeric(filter(df, slurm_mode=="F2")$mean_waittime),
+    as.numeric(filter(df, slurm_mode=="N2")$mean_waittime))
+
+ks.test(
+    as.numeric(filter(df, slurm_mode=="S")$mean_waittime),
+    as.numeric(filter(df, slurm_mode=="N2")$mean_waittime))
+```
+
+```{r rows.print=50}
+df <- jobcomp2 %>% group_by(slurm_mode, run_id) %>% 
+    summarise(
+        id=last(id),
+        mean_waittime=mean(waittime),
+        sd_waittime=sd(waittime), .groups="drop_last") %>%
+    group_by(slurm_mode) %>% 
+    summarise(
+        mean_mean_waittime=mean(mean_waittime),
+        sd_mean_waittime=sd(mean_waittime),
+        n=n(), .groups="drop_last")
+df
+```
+
+
+## Distance Calculation
+
+
+
+
+
+
+```{r fig.width=5, fig.height=5}
+jobcomp_waittime <- jobcomp2 %>% 
+    mutate(waittime=as.numeric(waittime)) %>% 
+    dplyr::select(id, job_id, waittime) %>% 
+    spread(id, waittime)
+jobcomp_waittime_matrix <- as.matrix(dplyr::select(jobcomp_waittime, -job_id))
+row.names(jobcomp_waittime_matrix) <- jobcomp_waittime$job_id
+#jobcomp_waittime_matrix
+
+d <- dist(t(jobcomp_waittime_matrix))
+heatmap(as.matrix(d),symm = T)
+heatmap(as.matrix(d),symm = T, Colv = NA, Rowv = NA)
+```
+
+## Order
+
+```{r rows.print=50}
+df <- jobcomp2 %>% group_by(slurm_mode, run_id) %>%
+    mutate(rank=rank(start_time, na.last = TRUE, ties.method = c("average"))) %>%
+    ungroup()
+
+jobcomp_rank <- df %>%
+    dplyr::select(id, job_id, rank) %>% 
+    spread(id, rank)
+
+jobcomp_rank_matrix <- as.matrix(dplyr::select(jobcomp_rank, -job_id))
+row.names(jobcomp_rank_matrix) <- jobcomp_rank$job_id
+#jobcomp_waittime_matrix
+
+d <- dist(t(jobcomp_rank_matrix))
+d
+heatmap(as.matrix(d),symm = T)
+heatmap(as.matrix(d),symm = T, Colv = NA, Rowv = NA)
+```
+
+
+## Multivariate Analysis
+
+```{r fig.width=5, fig.height=5}
+#x <- mvrnorm(100, c(0, 0), diag(2))
+#y <- mvrnorm(100, c(0, 0), diag(2) * 1.4)
+x <- t(jobcomp_waittime_matrix)[1:13,]
+y <- t(jobcomp_waittime_matrix)[14:20,]+200
+
+#mWilcoxonTest(x, y, depth_params = list(ndir = 10000))
+mWilcoxonTest(x, y, depth_params = list(method = "Euclidean"))
+mWilcoxonTest(x, y, depth_params = list(method = "LP"))
+```
+
+
+
+# Jobs Alone
+
+```{r}
+jobcomp3 <- jobcomp %>% dplyr::select(
+    slurm_mode, run_id, job_id, user, job_state, partition, nodes, cpus, gres, time_limit, t_submit, t_eligible, t_start, t_end,waittime,walltime,node_list, qos, account)
+
+#dput(colnames(jobcomp))
+
+jobcomp3 %>% filter(slurm_mode=="normal_v10"&run_id==1) %>% arrange(t_submit)
+```
+
+
+```{r}
+jobcomp3 %>% filter(slurm_mode=="sim_v11_speed5"&run_id==1) %>% arrange(t_submit)
+```
+
