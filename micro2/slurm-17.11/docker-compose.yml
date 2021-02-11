@@ -1,0 +1,123 @@
+version: "3.3"
+services:
+  headnode:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: headnode
+    shm_size: 64M
+    command: ["sshd", "munged", "mysqld", "-loop"]
+    # "/opt/cluster/micro2/utils/start_head_node.sh" is intentionally removed here
+    # run_vc.sh will start slurm services in right order and will track time
+    networks:
+      network1:
+        ipv4_address: 172.32.2.11
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  n1:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: n1
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.21
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  n2:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: n2
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.22
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  n3:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: n3
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.23
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  n4:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: n4
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.24
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  m1:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: m1
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.31
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  m2:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: m2
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.32
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  m3:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: m3
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.33
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  m4:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: m4
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.34
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  b1:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: b1
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.41
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+  g1:
+    image: nsimakov/slurm_vc:slurm-17.11-sim
+    hostname: g1
+    command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.51
+    volumes:
+      - './results:/root/results'
+      - './etc:/opt/cluster/micro2/etc'
+
+networks:
+  network1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.32.2.0/24"
