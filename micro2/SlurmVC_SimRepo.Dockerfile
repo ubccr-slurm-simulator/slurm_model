@@ -103,7 +103,7 @@ RUN mkdir -p /opt/cluster/micro2/run /opt/cluster/micro2/log && \
     mkdir -p /opt/cluster/micro2/var/spool /opt/cluster/micro2/var/state && \
     chown -R slurm:slurm /opt/cluster && \
     chmod 755 /opt/cluster /opt/cluster/micro2 /opt/cluster/micro2/var && \
-    chmod 777 /opt/cluster/micro2/var/spool /opt/cluster/micro2/var/state && \
+    chmod 700 /opt/cluster/micro2/var/spool /opt/cluster/micro2/var/state && \
     chown -R slurm:slurm /opt
 
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]

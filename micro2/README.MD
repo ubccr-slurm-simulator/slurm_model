@@ -113,6 +113,63 @@ cd micro2
 ./run_jobs500.sh
 ```
 
+Simulator
+```bash
+${HOME}/slurm_sim_ws/slurm_sim_tools/src/run_sim.py \
+    -s ${HOME}/slurm_sim_ws/slurm_sim_deb \
+    -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
+    -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/jobs500_shrinked.events \
+    -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/jobs500_shrinked_sim/dtstart_10_1 \
+    -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
+    -d -v -dtstart 10 
+
+for i in {1..10}
+do
+    ${HOME}/slurm_sim_ws/slurm_sim_tools/src/run_sim.py \
+        -s ${HOME}/slurm_sim_ws/slurm_sim_deb \
+        -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
+        -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/jobs500_shrinked.events \
+        -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/jobs500_shrinked_sim_speed5/dtstart_10_${i} \
+        -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
+        -d -v -dtstart 10 --ignore-errors-in-conf
+done
+
+for i in {1..1}
+do
+    ${HOME}/slurm_sim_ws/slurm_sim_tools/src/run_sim.py \
+        -s ${HOME}/slurm_sim_ws/slurm_sim \
+        -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
+        -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/jobs500_shrinked.events \
+        -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/jobs500_shrinked_sim_v1_speed1/dtstart_10_${i} \
+        -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
+        -d -v -dtstart 10 --ignore-errors-in-conf
+done
+
+
+./run_vc.sh -jb small2 -s v1 -dtstart "10" -run-ids "$(seq 1 10) -normal -frontend"
+
+for i in {1..4}
+do
+    ${HOME}/slurm_sim_ws/slurm_sim_tools/src/run_sim.py \
+        -s ${HOME}/slurm_sim_ws/slurm_sim \
+        -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
+        -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/small2.events \
+        -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/small2_sim_v2_speed1/dtstart_10_${i} \
+        -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
+        -d -v -dtstart 10 --ignore-errors-in-conf
+done
+
+${HOME}/slurm_sim_ws/slurm_sim_tools/src/run_sim.py \
+        -s ${HOME}/slurm_sim_ws/slurm_sim \
+        -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
+        -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/small2.events \
+        -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/small2_sim_v1_speed1/dtstart_10_1 \
+        -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
+        -d -v -dtstart 10 --ignore-errors-in-conf
+
+```
+
+
 # on time
 
 Tue 12 Jan 2021 09:58:59 AM EST
