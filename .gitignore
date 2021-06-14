@@ -130,6 +130,7 @@ dmypy.json
 
 # ignore RPMS
 /docker/RPMS
+/docker_debian/DEB
 /.idea
 .DS_Store
 /miniapps/memgrow
