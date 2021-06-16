@@ -23,9 +23,13 @@ RUN mkdir /var/log/mariadb /var/run/mariadb && \
 #copy slurm deb
 COPY ./docker_debian/DEB/slurm*.deb /root/
 
+#copy etc (remove later)
+COPY ./micro1/etc/* /etc/
+
 #install Slurm
-Run dpkg --install \
-        slurm-[0-9]*.deb && \
+Run \
+    dpkg-deb -x slurm*.deb dir && \
+    rsync -au "./dir/usr/" "/usr" && \
     rm slurm*.deb  && \
     mkdir /var/log/slurm  && \
     chown -R slurm:slurm /var/log/slurm  && \
