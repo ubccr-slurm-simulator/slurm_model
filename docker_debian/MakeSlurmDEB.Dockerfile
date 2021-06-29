@@ -34,6 +34,6 @@ VOLUME ./docker_debian/DEB
 # setup entry point
 WORKDIR /root
 
-COPY ./docker_debian/make_slurm_deb ./docker_debian/utils/cmd_setup ./docker_debian/utils/cmd_start ./docker_debian/utils/cmd_stop /usr/local/sbin/
+COPY ./docker_debian/make_slurm_deb ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /usr/local/sbin/
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
 CMD ["make_slurm_deb"]

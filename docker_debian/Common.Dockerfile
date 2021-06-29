@@ -18,8 +18,8 @@ RUN \
 WORKDIR /root
 
 # copy daemons starters
-COPY ./docker_debian/utils/cmd_setup ./docker_debian/utils/cmd_start ./docker_debian/utils/cmd_stop /usr/local/sbin/
-COPY ./docker_debian/vctools /vctools
+COPY ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /usr/local/sbin/
+COPY ./docker/vctools /vctools
 # directories
 RUN mkdir /scratch && chmod 777 /scratch
 RUN mkdir /scratch/jobs && chmod 777 /scratch/jobs
