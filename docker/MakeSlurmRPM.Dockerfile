@@ -17,7 +17,8 @@ RUN \
         perl perl-ExtUtils-MakeMaker python3
 
 # source of slurm
-ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
+##ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-20.02.3.tar.bz2
+ENV SLURM_TAR_BZ2_SOURCE=https://download.schedmd.com/slurm/slurm-20.02.7.tar.bz2
 
 # volume for final rpms dump
 VOLUME ./docker/RPMS

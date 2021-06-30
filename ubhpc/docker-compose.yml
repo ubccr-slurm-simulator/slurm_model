@@ -1,0 +1,61 @@
+version: "3.8"
+services:
+    headnode:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: headnode
+        shm_size: 64M
+        command: ["sshd", "munged", "mysqld", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.11
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+    Gold-6130-1:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: Gold-6130-1
+        command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.21
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+    Gold-6130-2:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: Gold-6130-2
+        command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.22
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+    Gold-6130-3:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: Gold-6130-3
+        command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.23
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+    Gold-6130-4:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: Gold-6130-4
+        command: ["sshd", "munged", "/opt/cluster/micro2/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.24
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+    
+networks:
+    network1:
+        driver: bridge
+        ipam:
+            driver: default
+            config:
+                - subnet: "172.32.3.0/24"
