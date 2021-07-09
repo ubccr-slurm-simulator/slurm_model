@@ -12,6 +12,7 @@ services:
         - './results:/root/results'
         - './etc:/opt/cluster/ubhpc/etc'
         - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
     compute-1:
         image: nsimakov/slurm_vc:slurm-20.02-sim
         hostname: compute-1
@@ -23,6 +24,7 @@ services:
         - './results:/root/results'
         - './etc:/opt/cluster/ubhpc/etc'
         - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
     compute-2:
         image: nsimakov/slurm_vc:slurm-20.02-sim
         hostname: compute-2
@@ -34,6 +36,7 @@ services:
         - './results:/root/results'
         - './etc:/opt/cluster/ubhpc/etc'
         - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
 
     
 networks:
