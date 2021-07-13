@@ -3,5 +3,7 @@ export SLURM_HOME=/opt/slurm
 export SLURM_CONF=/opt/cluster/ubhpc/etc/slurm.conf
 export PATH=${SLURM_HOME}/sbin:${SLURM_HOME}/bin:${PATH}
 
+mkdir /opt/cluster/ubhpc/log
+
 echo "Starting slurmd"
-slurmd
+#slurmd

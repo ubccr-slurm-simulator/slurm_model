@@ -13,9 +13,9 @@ services:
         - './etc:/opt/cluster/ubhpc/etc'
         - './utils:/opt/cluster/ubhpc/utils'
         - './job_traces:/opt/cluster/ubhpc/job_traces'
-    compute-1:
+    compute-001:
         image: nsimakov/slurm_vc:slurm-20.02-sim
-        hostname: compute-1
+        hostname: compute-001
         command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
         networks:
             network1:
@@ -25,9 +25,9 @@ services:
         - './etc:/opt/cluster/ubhpc/etc'
         - './utils:/opt/cluster/ubhpc/utils'
         - './job_traces:/opt/cluster/ubhpc/job_traces'
-    compute-2:
+    compute-002:
         image: nsimakov/slurm_vc:slurm-20.02-sim
-        hostname: compute-2
+        hostname: compute-002
         command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
         networks:
             network1:
