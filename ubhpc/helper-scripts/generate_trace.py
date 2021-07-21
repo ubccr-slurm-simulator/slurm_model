@@ -5,10 +5,25 @@ import datetime as dt
 
 filename = sys.argv[1]
 outfilename = sys.argv[2]
+userlog = sys.argv[3]
 
-def generate_trace(filename, outfilename):
+node_list = []
+for i in range(16, 21 + 1):
+    node_list.append("cpn-u22-" + str(i))
+    node_list.append("cpn-u25-" + str(i))
+for i in range(17, 21 + 1):
+    node_list.append("cpn-u23-" + str(i))
+    node_list.append("cpn-u24-" + str(i))
+for i in range(23, 38 + 1):
+    node_list.append("cpn-u22-" + str(i))
+    node_list.append("cpn-u25-" + str(i))
+    node_list.append("cpn-u23-" + str(i))
+    node_list.append("cpn-u24-" + str(i))
+
+def generate_trace(filename, outfilename, userlog):
     infile = open(filename, "r")
-    BeginTime = dt.datetime(2021, 6, 1, 00, 00, 00)
+    BeginTime = dt.datetime(2021, 6, 1, 0, 0, 0)
+    EndTime = dt.datetime(2021, 6, 8, 0, 0, 0)
 
     header = infile.readline()
     header = header.split("|")
@@ -28,9 +43,17 @@ def generate_trace(filename, outfilename):
 
     lines = infile.readlines()[:-2]
     for line in lines:
+        in_list = True
         line = line.split("|")
 
         if line[11] == "Unknown":
+            continue
+
+        line[-2] = line[-2].split(",")
+        for node in line[-2]:
+            if not (node in node_list):
+                in_list = False
+        if in_list == False:
             continue
 
         line[9] = dt.datetime.strptime(line[9], "%Y-%m-%dT%H:%M:%S")
@@ -68,4 +91,16 @@ def generate_trace(filename, outfilename):
                         + str(row["Account"]) + " -p " + str(row["Partition"]) + " -q "
                         + str(row["Partition"]) + " pseudo.job\n")
 
-generate_trace(filename, outfilename)
+    anon_users = []
+    anon_accounts = []
+
+    user_count = 0
+    account_count = 0
+    for i in range(len(df["User"])):
+        if user_count == 0:
+            user_count += 1
+        
+        
+    df[["User", "Account"]].to_csv(userlog)
+
+generate_trace(filename, outfilename, userlog)
