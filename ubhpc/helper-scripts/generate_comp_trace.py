@@ -1,4 +1,6 @@
 import sys
+import math
+import numpy
 import time
 import pandas as pd
 import datetime as dt
@@ -46,9 +48,23 @@ def generate_trace(filename, outfilename, userlog):
         in_list = True
         line = line.split("|")
 
-        if ((line[9] - EndTime).total_seconds())
+        if line[-3] == "Partition_Limit":
+            continue
 
-        if line[11] == "Unknown":
+        if len(line[-3]) == 8:
+            line[-3] = "0-" + line[-3]
+
+        if line[11] == "Unknown" or line[12] == "Unknown" or line[9] == "Unknown" or line[-3] == "Unknown":
+            continue
+
+        line[9] = dt.datetime.strptime(line[9], "%Y-%m-%dT%H:%M:%S")
+        line[11] = dt.datetime.strptime(line[11], "%Y-%m-%dT%H:%M:%S")
+        line[12] = dt.datetime.strptime(line[12], "%Y-%m-%dT%H:%M:%S")
+        requested = dt.datetime.strptime(line[-3], "%w-%H:%M:%S")
+        requested_delta = math.ceil((requested - dt.datetime(1900, 1, 1)).total_seconds() / 1000.0)
+        line[-3] = str(dt.timedelta(seconds = requested_delta))
+
+        if ((line[9] - EndTime).total_seconds() > 0):
             continue
 
         line[-2] = line[-2].split(",")
@@ -58,13 +74,9 @@ def generate_trace(filename, outfilename, userlog):
         if in_list == False:
             continue
 
-        line[9] = dt.datetime.strptime(line[9], "%Y-%m-%dT%H:%M:%S")
-        line[11] = dt.datetime.strptime(line[11], "%Y-%m-%dT%H:%M:%S")
-        line[12] = dt.datetime.strptime(line[12], "%Y-%m-%dT%H:%M:%S")
-
-        SubmitTime.append((line[9] - BeginTime).total_seconds())
+        SubmitTime.append((line[9] - BeginTime).total_seconds() / 1000.0)
         JobID.append(line[0])
-        WallTime.append((line[12] - line[11]).total_seconds())
+        WallTime.append((line[12] - line[11]).total_seconds() / 1000.0)
         User.append(line[7])
         RequestTime.append(line[-3])
         NumNodes.append(line[16])
@@ -96,13 +108,14 @@ def generate_trace(filename, outfilename, userlog):
     anon_users = []
     anon_accounts = []
 
-    user_count = 0
-    account_count = 0
     for i in range(len(df["User"])):
-        if user_count == 0:
-            user_count += 1
-        
-        
-    df[["User", "Account"]].to_csv(userlog)
+        if not (df["User"][i] in anon_users):
+            anon_users.append(df["User"][i])
+            anon_accounts.append(df["Account"][i])      
+
+    df2 = pd.DataFrame()
+    df2["Users"] = anon_users
+    df2["Accounts"] = anon_accounts
+    df2.to_csv(userlog)
 
 generate_trace(filename, outfilename, userlog)

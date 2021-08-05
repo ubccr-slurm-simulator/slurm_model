@@ -781,6 +781,270 @@ services:
         - './etc:/opt/cluster/ubhpc/etc'
         - './utils:/opt/cluster/ubhpc/utils'
         - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute065:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute065
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.85
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute066:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute066
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.86
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute067:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute067
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.87
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute068:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute068
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.88
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute069:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute069
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.89
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute070:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute070
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.90
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute071:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute071
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.91
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute072:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute072
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.92
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute073:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute073
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.93
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute074:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute074
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.94
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute075:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute076
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.95
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute076:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute076
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.96
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute077:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute077
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.97
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute078:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute078
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.98
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute079:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute079
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.99
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute080:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute080
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.100
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute081:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute081
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.101
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute082:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute082
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.102
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute083:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute083
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.103
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute084:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute084
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.104
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute085:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute085
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.105
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
+    compute086:
+        image: nsimakov/slurm_vc:slurm-20.02-sim
+        hostname: compute086
+        command: ["sshd", "munged", "/opt/cluster/ubhpc/utils/start_compute_node.sh", "-loop"]
+        networks:
+            network1:
+              ipv4_address: 172.32.3.106
+        volumes:
+        - './results:/root/results'
+        - './etc:/opt/cluster/ubhpc/etc'
+        - './utils:/opt/cluster/ubhpc/utils'
+        - './job_traces:/opt/cluster/ubhpc/job_traces'
 
     
 networks:

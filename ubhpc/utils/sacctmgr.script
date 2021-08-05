@@ -5,18 +5,110 @@ add QOS Name=supporters Priority=100
 add cluster Name=ubhpc Fairshare=1 QOS=normal,supporters
 # add accounts
 add account name=account0 Fairshare=100
-add account name=account1 Fairshare=100
-add account name=account2 Fairshare=100
+add account name=tengwu Fairshare=100
+add account name=jzola Fairshare=100
+add account name=vasilipe Fairshare=100
+add account name=yijunsun Fairshare=100
+add account name=smuldoon Fairshare=100
+add account name=vmonje Fairshare=100
+add account name=vaalbert Fairshare=100
+add account name=yijunsun Fairshare=100
+add account name=batta Fairshare=100
+add account name=vasilipe Fairshare=100
+add account name=cmurray3 Fairshare=100
+add account name=chakrab2 Fairshare=100
+add account name=mshalfon Fairshare=100
+add account name=liangx Fairshare=100
+add account name=regan Fairshare=100
+add account name=mwang54 Fairshare=100
+add account name=ccrstaff Fairshare=100
+add account name=seagrid Fairshare=100
+add account name=swihart Fairshare=100
+add account name=cmurray3 Fairshare=100
+add account name=pinaroku Fairshare=100
+add account name=zhenw Fairshare=100
+add account name=jochena Fairshare=100
+add account name=omergokc Fairshare=100
+add account name=jonghan Fairshare=100
+add account name=negarkho Fairshare=100
+add account name=ericwalk Fairshare=100
+add account name=jerring Fairshare=100
+add account name=ezurek Fairshare=100
+add account name=ccrstaff Fairshare=100
+add account name=dpn2 Fairshare=100
+add account name=ccrtech Fairshare=100
+add account name=ltian Fairshare=100
+add account name=tkrabben Fairshare=100
+add account name=uttamsin Fairshare=100
+add account name=aaref Fairshare=100
+add account name=ezurek Fairshare=100
+add account name=anirband Fairshare=100
+add account name=vmonje Fairshare=100
+add account name=kmkauffm Fairshare=100
+add account name=ericwalk Fairshare=100
+add account name=cxma Fairshare=100
+add account name=astavrid Fairshare=100
+add account name=mjbuck Fairshare=100
+add account name=hachmann Fairshare=100
+add account name=ssinha2 Fairshare=100
+add account name=jochena Fairshare=100
+add account name=aaref Fairshare=100
+add account name=bednarek Fairshare=100
+add account name=neel Fairshare=100
 # add admin
 add user name=admin DefaultAccount=account0 MaxSubmitJobs=1000 AdminLevel=Administrator
 # add users
-add user name=user1 DefaultAccount=account1 MaxSubmitJobs=1000
-add user name=user2 DefaultAccount=account1 MaxSubmitJobs=1000
-add user name=user3 DefaultAccount=account1 MaxSubmitJobs=1000
-add user name=user4 DefaultAccount=account2 MaxSubmitJobs=1000
-add user name=user5 DefaultAccount=account2 MaxSubmitJobs=1000
+add user name=hwang48 DefaultAccount=tengwu MaxSubmitJobs=1000
+add user name=vickyzhe DefaultAccount=jzola MaxSubmitJobs=1000
+add user name=vasilipe DefaultAccount=vasilipe MaxSubmitJobs=1000
+add user name=lli59 DefaultAccount=yijunsun MaxSubmitJobs=1000
+add user name=bengieru DefaultAccount=smuldoon MaxSubmitJobs=1000
+add user name=ocampbel DefaultAccount=vmonje MaxSubmitJobs=1000
+add user name=mr249 DefaultAccount=vaalbert MaxSubmitJobs=1000
+add user name=lyang25 DefaultAccount=yijunsun MaxSubmitJobs=1000
+add user name=erdidasd DefaultAccount=batta MaxSubmitJobs=1000
+add user name=davoudad DefaultAccount=vasilipe MaxSubmitJobs=1000
+add user name=r28 DefaultAccount=cmurray3 MaxSubmitJobs=1000
+add user name=chakrab2 DefaultAccount=chakrab2 MaxSubmitJobs=1000
+add user name=hasibaas DefaultAccount=mshalfon MaxSubmitJobs=1000
+add user name=ssajedi DefaultAccount=liangx MaxSubmitJobs=1000
+add user name=regan DefaultAccount=regan MaxSubmitJobs=1000
+add user name=conghong DefaultAccount=mwang54 MaxSubmitJobs=1000
+add user name=xdtas DefaultAccount=ccrstaff MaxSubmitJobs=1000
+add user name=seagrid DefaultAccount=seagrid MaxSubmitJobs=1000
+add user name=rubikasa DefaultAccount=swihart MaxSubmitJobs=1000
+add user name=andrewko DefaultAccount=cmurray3 MaxSubmitJobs=1000
+add user name=sinabase DefaultAccount=pinaroku MaxSubmitJobs=1000
+add user name=carroll3 DefaultAccount=zhenw MaxSubmitJobs=1000
+add user name=pierpa DefaultAccount=jochena MaxSubmitJobs=1000
+add user name=alcampel DefaultAccount=omergokc MaxSubmitJobs=1000
+add user name=ishiakam DefaultAccount=jonghan MaxSubmitJobs=1000
+add user name=amirsarr DefaultAccount=negarkho MaxSubmitJobs=1000
+add user name=angelaag DefaultAccount=ericwalk MaxSubmitJobs=1000
+add user name=gaurabsa DefaultAccount=jerring MaxSubmitJobs=1000
+add user name=nishagen DefaultAccount=ezurek MaxSubmitJobs=1000
+add user name=zihuahu DefaultAccount=ccrstaff MaxSubmitJobs=1000
+add user name=nmiri DefaultAccount=dpn2 MaxSubmitJobs=1000
+add user name=cdc DefaultAccount=ccrtech MaxSubmitJobs=1000
+add user name=ygao35 DefaultAccount=ltian MaxSubmitJobs=1000
+add user name=hwaterma DefaultAccount=tkrabben MaxSubmitJobs=1000
+add user name=ankitsha DefaultAccount=uttamsin MaxSubmitJobs=1000
+add user name=apathak DefaultAccount=aaref MaxSubmitJobs=1000
+add user name=kphillek DefaultAccount=ezurek MaxSubmitJobs=1000
+add user name=kavyanar DefaultAccount=anirband MaxSubmitJobs=1000
+add user name=jli436 DefaultAccount=vmonje MaxSubmitJobs=1000
+add user name=kmkauffm DefaultAccount=kmkauffm MaxSubmitJobs=1000
+add user name=ajbecerr DefaultAccount=ericwalk MaxSubmitJobs=1000
+add user name=kwang35 DefaultAccount=cxma MaxSubmitJobs=1000
+add user name=gcongdon DefaultAccount=astavrid MaxSubmitJobs=1000
+add user name=crhandel DefaultAccount=mjbuck MaxSubmitJobs=1000
+add user name=arpitban DefaultAccount=hachmann MaxSubmitJobs=1000
+add user name=arglatha DefaultAccount=ssinha2 MaxSubmitJobs=1000
+add user name=pbatista DefaultAccount=jochena MaxSubmitJobs=1000
+add user name=snehasag DefaultAccount=aaref MaxSubmitJobs=1000
+add user name=jdcollin DefaultAccount=bednarek MaxSubmitJobs=1000
+add user name=tgroth DefaultAccount=neel MaxSubmitJobs=1000
 # add users to qos level
 modify user set qoslevel="normal,supporters"
-
 # check results
 list associations format=Account,Cluster,User,Fairshare tree withd
