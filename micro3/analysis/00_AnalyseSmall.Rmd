@@ -1,0 +1,416 @@
+---
+title: "Untitled"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+
+setwd(path.expand("~/slurm_sim_ws/slurm_model/micro3/analysis"))
+library(stringr)
+#library(rjson)
+library(dplyr)
+library(lubridate)
+
+#detach("package:RSlurmSimTools", unload=TRUE)
+#devtools::document(path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"))
+#devtools::install_local(path=path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"), force=TRUE)
+library(RSlurmSimTools)
+
+
+library(dplyr)
+library(tidyr)
+library(readr)
+library(ggplot2)
+#library(DepthProc)
+#reticulate::source_python(file.path(system.file("python", package = "RSlurmSimTools"),"hostlist.py"))
+#library(gplots)
+#library(parallel)
+```
+
+
+```{r}
+
+read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
+    #slurm_log <- read.table(filename, header = TRUE, sep = "|",as.is = TRUE)
+    slurm_log <- data.table::fread(filename,sep="|",header=TRUE)
+    
+    #for(col in c("Submit","Eligible","Start","End","Elapsed","Timelimit",
+    #             "Cluster","Partition","Account","Group","User", "ExitCode","State","QOS")){
+        #cat(paste0(col,"S=",col,",\n"))
+        #cat(paste0(col,"S,"))
+    #}
+    slurm_log <-  dplyr::rename(slurm_log,
+        JobId=JobID,
+        local_job_id=JobIDRaw,
+        NodeCount=NNodes,
+        SubmitS=Submit,
+        EligibleS=Eligible,
+        StartS=Start,
+        EndS=End,
+        ElapsedS=Elapsed,
+        TimelimitS=Timelimit,
+        ClusterS=Cluster,
+        PartitionS=Partition,
+        AccountS=Account,
+        GroupS=Group,
+        UserS=User,
+        ExitCodeS=ExitCode,
+        StateS=State,
+        QOSS=QOS
+    )
+    
+    #convert to proper format
+    for(col in c("Submit","Eligible","Start","End")){
+        slurm_log[[col]] <- as.POSIXct(slurm_log[[paste0(col,"S")]],format = "%Y-%m-%dT%H:%M:%S")
+    }
+    
+    #duration
+    for(col in c("Elapsed","Timelimit")){
+        slurm_log[,col] <- extract_slurm_period(slurm_log[[paste0(col,"S")]])
+    }
+    
+    #factor
+    for(col in c("Cluster","Partition","Account","Group","User", "ExitCode","State","QOS")){
+        slurm_log[,col] <- factor(slurm_log[[paste0(col,"S")]])
+    }
+    
+    #state
+    slurm_log$StateS <- as.character(slurm_log$StateS)
+    slurm_log$StateS[grepl("CANCELLED",slurm_log$StateS)] <- "CANCELLED"
+    slurm_log$State <- as.factor(slurm_log$StateS)
+    
+    #extract node list
+    if(extract_node_list==TRUE){
+        #python.load(file.path(rutil_dir,"..","src","hostlist.py"))
+        #slurm_log$NodeListFull <- python.call("expand_hostlists_to_str",slurm_log$NodeList)
+        slurm_log$NodeListFull <- expand_hostlists_to_list(slurm_log$NodeList)
+    }
+
+    #convert memory
+    slurm_log$ReqMem[slurm_log$ReqMem=="0n"] <- "0Mn"
+    reqmem <- stringr::str_match_all(slurm_log$ReqMem, "([\\.0-9]+)([MG])([nc]?)")
+    
+    reqmem_size <- sapply(reqmem,function(r){
+        as.integer(r[[2]])
+    })
+    reqmem_unit <- sapply(reqmem,function(r)r[[3]])
+    reqmem_perwhat <- sapply(reqmem,function(r)r[[4]])
+    #convert to MB
+    reqmem_size[reqmem_unit=="G"] <- reqmem_size[reqmem_unit=="G"]*1024
+    
+    slurm_log$ReqMemSize <- reqmem_size
+    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" || reqmem_perwhat==""
+    
+    slurm_log$ReqMem <- NULL
+    
+    #set proper NA
+    #slurm_log$ReqGRES[slurm_log$ReqGRES==""] <- NA
+    if(!is.null(nodes_desc)){
+      nr <- max(sapply(nodes_desc,function(n){length(n$Nodes)}))
+      
+      nodes_mat <- sapply(nodes_desc,function(n){c(n$Nodes,rep(NA,nr-length(n$Nodes)))})
+      
+      #assing nodes
+      nodes_types_used <- sapply(slurm_log$NodeListFull,function(nodes){
+        apply(nodes_mat,2,function(v){length(intersect(v,nodes))})
+      })
+      
+      slurm_log <- cbind(slurm_log,t(nodes_types_used))
+    }
+    
+    slurm_log$SubmitTS <- as.integer(slurm_log$Submit)
+    slurm_log$StartTS <- as.integer(slurm_log$Start)
+    slurm_log$EndTS <- as.integer(slurm_log$End)
+    
+    
+    slurm_log$WaitHours <- as.integer(slurm_log$Start-slurm_log$Submit)/3600.0
+    slurm_log$WaitHours[slurm_log$WaitHours<0.0] <- slurm_log$WaitHours[slurm_log$WaitHours<0.0]+1
+    
+    slurm_log$WallHours <- as.integer(slurm_log$Elapsed)/3600.0
+    slurm_log$NodeHours <- slurm_log$WallHours*slurm_log$NodeCount
+    
+    #shift 0 value for log scales
+    slurm_log$WaitHours4log <- slurm_log$WaitHours
+    slurm_log$WaitHours4log[slurm_log$WaitHours4log<1/60]<-1/60
+    #shift 0 value for log scales
+    slurm_log$WallHours4log <- slurm_log$WallHours
+    slurm_log$WallHours4log[slurm_log$WallHours4log<1/60]<-1/60
+    
+    slurm_log <- dplyr::arrange(slurm_log,SubmitTS)%>%
+        dplyr::select(-c(SubmitS,EligibleS,StartS,EndS,ElapsedS,TimelimitS,ClusterS,
+                         PartitionS,AccountS,GroupS,UserS,ExitCodeS,StateS,QOSS))
+    return(slurm_log)
+}
+
+read_sacct_out_multiple <- function(slurm_mode, results_root_dir, dtstart_list, run_id_list, sacct_out="slurm_acct.out") {
+  result_list <- list()
+  for(dtstart in dtstart_list) {
+    for(run_id in run_id_list) {
+      m_result_root_dir <- path.expand(file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id)))
+      m_sacct_out_filename <- file.path(m_result_root_dir, sacct_out)
+      
+      if(!dir.exists(m_result_root_dir)) {
+          warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+          return(NULL);
+      }
+      if(!file.exists(m_sacct_out_filename)) {
+          warning(sprintf("File %s does not exists!", m_sacct_out_filename))
+          return(NULL);
+      }
+      m_sacct_out <- read_sacct_out(m_sacct_out_filename)
+      m_sacct_out$slurm_mode <- slurm_mode
+      m_sacct_out$dtstart <- dtstart
+      m_sacct_out$run_id <- run_id
+      result_list[[length(result_list)+1]] <- m_sacct_out
+      
+    }
+  }
+  return(data.table::rbindlist(result_list))
+}
+sacct <-read_sacct_out_multiple("ref", "../results/small__ref", c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
+sacct$rid <- sacct$run_id + sacct$dtstart*100
+sacct
+```
+
+```{r rows.print=25}
+sacct %>% group_by(JobId) %>% summarise(mean=mean(WaitHours), sd=sd(WaitHours),dminmax=max(WaitHours)-min(WaitHours))
+```
+
+
+```{r}
+read_jobcomp <- function(results_root_dir, slurm_mode, dtstart, run_id, tz) {
+    m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id))
+    m_jobcomp_filename <- file.path(m_result_root_dir, "jobcomp.log")
+    m_perf_stat_filename <- file.path(m_result_root_dir, "perf_stat.log")
+    
+    if(!dir.exists(m_result_root_dir)) {
+        warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+        return(NULL);
+    }
+    if(!file.exists(m_jobcomp_filename)) {
+        warning(sprintf("File %s does not exists!", m_jobcomp_filename))
+        return(NULL);
+    }
+    if(!file.exists(m_perf_stat_filename)) {
+        warning(sprintf("File %s does not exists!", m_perf_stat_filename))
+        return(NULL);
+    }
+    m_perf_stat <- read_perf_stat(m_perf_stat_filename, tz=tz)
+    m_jobcomp <- read_jobcomp_log(m_jobcomp_filename, tz=tz, init_time=m_perf_stat$slurmctld_create_time)
+    m_jobcomp$slurm_mode <- slurm_mode
+    m_jobcomp$dtstart <- dtstart
+    m_jobcomp$run_id <- run_id
+    m_jobcomp
+}
+
+read_jobcomp_sim <- function(results_root_dir, slurm_mode, dtstart, run_id, tz="") {
+    m_jobcomp <- read_jobcomp(results_root_dir, slurm_mode, dtstart, run_id, tz)
+    if(!is.null(m_jobcomp)) {
+        m_jobcomp$ref_job_id <- m_jobcomp$job_id
+    }
+    
+    init_time <- min(m_jobcomp$submit_time)-dtstart
+    
+    if(!is.na(init_time)) {
+        for(col in c("submit_time","eligible_time","start_time","end_time")){
+            col_t <- paste0("t_", str_replace(col,"_time",""))
+            m_jobcomp[[col_t]] <- m_jobcomp[[col]] - init_time
+        }
+    }
+    m_jobcomp
+}
+
+read_perf_stat <- function(filename, tz="") {
+    perf_stat <- fromJSON(file = filename)
+    # older runs uses epoch
+    if(!(is.null(perf_stat$slurmctld_create_time) || is.na(perf_stat$slurmctld_create_time))) {
+        if(grepl("^[0-9.]+$", perf_stat$slurmctld_create_time, perl=T)) {
+            perf_stat$slurmctld_create_time <- as.POSIXct(perf_stat$slurmctld_create_time, origin="1970-01-01", tz=tz)
+        } else {
+            perf_stat$slurmctld_create_time <- as.POSIXct(perf_stat$slurmctld_create_time, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+        }
+    }
+    if(!(is.null(perf_stat$slurmdbd_create_time) || is.na(perf_stat$slurmdbd_create_time))) {
+        if(grepl("^[0-9.]+$", perf_stat$slurmdbd_create_time, perl=T)) {
+            perf_stat$slurmdbd_create_time <- as.POSIXct(perf_stat$slurmdbd_create_time, origin="1970-01-01", tz=tz)
+        } else {
+            perf_stat$slurmdbd_create_time <- as.POSIXct(perf_stat$slurmdbd_create_time, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+        }
+    }
+    if(!(is.null(perf_stat$slurmd_create_time) || is.na(perf_stat$slurmd_create_time))) {
+        if(grepl("^[0-9.]+$", perf_stat$slurmd_create_time, perl=T)) {
+            perf_stat$slurmd_create_time <- as.POSIXct(perf_stat$slurmd_create_time, origin="1970-01-01", tz=tz)
+        } else {
+            perf_stat$slurmd_create_time <- as.POSIXct(perf_stat$slurmd_create_time, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+        }
+    }
+    perf_stat
+}
+
+parse_slurmctrl_log <- function(filename) {
+    process_slurmctld_log <- path.expand("~/slurm_sim_ws/slurm_sim_tools/src/process_slurmctld_log.py")
+    slurmctld_csv <- sprintf("%s.csv", str_replace(filename, "\\.[A-Za-z0-9]+$",""))
+    command <- sprintf("%s -l %s -c %s", process_slurmctld_log, filename, slurmctld_csv)
+    system(command)
+}
+
+read_events <- function(filename, start_time, tz="") {
+    if(!file.exists(filename)) {
+        warning(sprintf("read_events:File %s does not exists!", filename))
+        return(NULL);
+    }
+    
+    events <- read_delim(
+        filename, ";", col_types = cols(
+            job_id = col_double(),
+            metric = col_character(),
+            t = col_character(),
+            value = col_character()))
+    
+    # events has local time
+    events$t <- as.POSIXct(events$t, format = "%Y-%m-%d %H:%M:%OS", tz = tz)
+    
+    if(as.character(start_time)=="first_event_time")  {
+        m_start_time <- as.double(events$t[[1]])
+        
+    } else if(as.character(start_time)=="from_events")  {
+        # both times in UTC
+        process_create_real_time <- filter(events, metric=="process_create_real_time")
+        process_create_sim_time <- filter(events, metric=="process_create_sim_time")
+        if(nrow(process_create_real_time) && nrow(process_create_sim_time)) {
+            # older runs uses epoch
+            if(grepl("^[0-9.]+$", process_create_sim_time$value, perl=T)) {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, origin="1970-01-01", tz=tz)
+            } else {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+            }
+        } else {
+            m_start_time <- events$t[[1]]
+        }
+    } else {
+        m_start_time <- start_time
+    }
+
+    events$dt <- as.double(events$t) - as.double(m_start_time)
+    
+    slurm_start_time <- filter(events, metric=="slurm_start_time")
+    if(nrow(slurm_start_time)) {
+        events$dt2 <- as.double(events$t) - as.double(slurm_start_time$t[[1]])
+    } else {
+        events$dt2 <- events$dt
+    }
+    
+    events
+}
+
+read_results <- function(results_dir, tz="", start_time="create_time") {
+    r <- list()
+    r$perf_stat <- read_perf_stat(file.path(results_dir, "perf_stat.log"), tz=tz)
+
+    parse_slurmctrl_log(file.path(results_dir, "slurmctld.log"))
+    if(start_time=="create_time"){
+        m_start_time <- r$perf_stat$slurmctld_create_time
+    } else if(start_time=="first_event_time")  {
+        m_start_time <- "first_event_time"
+    } else if(start_time=="from_events")  {
+        m_start_time <- "from_events"
+    } else {
+        warning("Unknown start time, will use from_events")
+        m_start_time <- "from_events"
+    }
+    r$events <- read_events(file.path(results_dir, "slurmctld.csv"), m_start_time, tz)
+    
+    
+    if(start_time=="first_event_time")  {
+        m_start_time <- r$events$t[[1]]
+    } else if(start_time=="from_events")  {
+        # both times in UTC
+        process_create_real_time <- filter(r$events, metric=="process_create_real_time")
+        process_create_sim_time <- filter(r$events, metric=="process_create_sim_time")
+        if(nrow(process_create_real_time) && nrow(process_create_sim_time)) {
+            # older runs uses epoch
+            if(grepl("^[0-9.]+$", process_create_sim_time$value, perl=T)) {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, origin="1970-01-01", tz=tz)
+            } else {
+                m_start_time <- as.POSIXct(process_create_sim_time$value, format = "%Y-%m-%dT%H:%M:%OS", tz=tz)
+            }
+        } else {
+            m_start_time <- events$t[[1]]
+        }
+    }
+    r$jobcomp <- read_jobcomp_log(file.path(results_dir, "jobcomp.log"), tz=tz, init_time=m_start_time)
+r$jobcomp$submit_time[[1]]
+    r
+}
+
+read_multiple_runs <- function(results_root_dir, tz, slurm_mode, dtstart_list, run_id_list, start_time, results=NULL) {
+    if(is.null(results)) {
+        results <- list(perf_stat=list(), events=list(), jobcomp=list())
+    }
+    if(!dir.exists(results_root_dir)) {
+        warning(sprintf("Directory %s does not exists!", results_root_dir))
+        return(NULL);
+    }
+    dtstart_run_id_list <- unlist(lapply(dtstart_list,FUN=function(x){
+        lapply(run_id_list,FUN=function(y){list(dtstart=x,run_id=y)})
+    }), recursive = FALSE)
+    
+    # parallel read/processing
+    r <- mclapply(dtstart_run_id_list, FUN = function(l){
+        dtstart <- l$dtstart
+        run_id<- l$run_id
+        
+        m_result_root_dir <- file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id))
+            
+        if(!dir.exists(m_result_root_dir)) {
+            warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+            return(NULL);
+        }
+        r <- read_results(m_result_root_dir,tz)
+    
+        id <- sprintf("%s_%d_%d", slurm_mode, dtstart, run_id)
+        
+        r <- read_results(m_result_root_dir, tz, start_time=start_time)
+        r$id <- id
+        r$perf_stat$slurm_mode <- slurm_mode
+        r$events$slurm_mode <- slurm_mode
+        r$jobcomp$slurm_mode <- slurm_mode
+        
+        r$perf_stat$dtstart <- dtstart
+        r$events$dtstart <- dtstart
+        r$jobcomp$dtstart <- dtstart
+        
+        r$perf_stat$run_id <- run_id
+        r$events$run_id <- run_id
+        r$jobcomp$run_id <- run_id
+        r
+        }, mc.cores = detectCores())
+    names(r) <- sapply(r,FUN = function(x) x$id)
+    # merge
+    for(dtstart in dtstart_list) {
+        for(run_id in run_id_list) {
+            id <- sprintf("%s_%d_%d", slurm_mode, dtstart, run_id)
+            
+            results$perf_stat[[id]] <- r[[id]]$perf_stat
+            results$events[[id]] <- r[[id]]$events
+            results$jobcomp[[id]] <- r[[id]]$jobcomp
+        }
+    }
+    results
+}
+```
+
+```{r}
+tz <- "GMT"
+results_ref <- list(perf_stat=list(), events=list(), jobcomp=list())
+#m_read_sacct_out("ref", "../results/small__ref", 58, 1)
+results_ref <- read_multiple_runs(
+    results_root_dir=path.expand("../results/small__ref"), 
+    tz=tz, 
+    slurm_mode="ref", 
+    dtstart_list=c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 
+    run_id_list=1:2, 
+    start_time="create_time", 
+    results=results_ref)
+```
