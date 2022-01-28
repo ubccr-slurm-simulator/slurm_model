@@ -1,0 +1,65 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+
+for i in {1..10}
+do
+    cd $SCRIPT_DIR
+    pwd
+    echo "Start sim $i"
+
+    rm log/*;sudo rm -rf compute_nodes_log/* ./home/*
+    case $i in
+        1)
+            dtstart=55
+            ;;
+        2)
+            dtstart=137
+            ;;
+        3)
+            dtstart=37
+            ;;
+        4)
+            dtstart=232
+            ;;
+        5)
+            dtstart=234
+            ;;
+        6)
+            dtstart=49
+            ;;
+        7)
+            dtstart=79
+            ;;
+        8)
+            dtstart=241
+            ;;
+        9)
+            dtstart=71
+            ;;
+        10)
+            dtstart=261
+            ;;
+      *)
+        dtstart=10
+        ;;
+    esac
+
+    docker pull nsimakov/slurm_head_node:2
+    docker pull nsimakov/slurm_compute_node:2
+
+    echo dtstart $dtstart
+
+    docker compose up -d
+
+    sleep 300
+
+    docker exec ubhpc-headnode-1 /opt/cluster/slurm_sim_tools/src/slurmsimtools/run_slurm.py \
+        -s /usr -e /etc/slurm             \
+        -a /opt/cluster/vctools/sacctmgr.script \
+        -t /opt/cluster/vctools/workload_scale240.events \
+        -r /root/results/test/workload_scale240_dtstart_${dtstart}_1 -d -v -dtstart $dtstart --no-slurmd >& workload_scale240_dtstart_${dtstart}_1.out
+
+    docker compose stop;docker compose rm -f -s -v
+    echo Done with $i
+done
+echo Done
