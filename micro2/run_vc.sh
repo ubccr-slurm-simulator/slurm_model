@@ -12,6 +12,7 @@ run_ids=$(seq 1 4)
 run_normal=0
 run_frontend=0
 run_sim=0
+run_simdeb=0
 
 while (( "$#" ))
 do
@@ -41,6 +42,9 @@ do
     -sim)
         run_sim=1
         ;;
+    -simdeb)
+        run_simdeb=1
+        ;;
     -h)
         echo "Usage:"
         echo "./run_normal_frontend.sh -jb <jobs_basename> -simsuf <sim_suffix> \\"
@@ -63,6 +67,7 @@ job_traces=${jobs_basename}.events
 normal_slurm_results_dir=${jobs_basename}_normal_${sim_suffix}
 frontend_slurm_results_dir=${jobs_basename}_frontend_${sim_suffix}
 sim_slurm_results_dir=${jobs_basename}_sim_${sim_suffix}
+simdeb_slurm_results_dir=${jobs_basename}_simdeb_${sim_suffix}
 
 echo "job_traces: ${job_traces}"
 
@@ -77,6 +82,10 @@ fi
 if [[ "${run_sim}" == "1" ]]; then
     echo "sim_slurm_results_dir: ${sim_slurm_results_dir}"
     mkdir -p ./results/${sim_slurm_results_dir}
+fi
+if [[ "${run_simdeb}" == "1" ]]; then
+    echo "simdeb_slurm_results_dir: ${simdeb_slurm_results_dir}"
+    mkdir -p ./results/${simdeb_slurm_results_dir}
 fi
 
 
@@ -116,6 +125,17 @@ do
                 -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
                 -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/${job_traces} \
                 -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/${sim_slurm_results_dir}/dtstart_${dtstart}_${i} \
+                -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
+                -d -v -dtstart ${dtstart} --ignore-errors-in-conf -octld c.log
+        fi
+        if [[ "${run_simdeb}" == "1" ]]; then
+            echo "Slurm-Sim: Stated modelling with dtstart ${dtstart}, i ${i}"
+
+            ${HOME}/slurm_sim_ws/slurm_sim_tools/src/run_sim.py \
+                -s ${HOME}/slurm_sim_ws/slurm_sim_deb \
+                -e ${HOME}/slurm_sim_ws/slurm_model/micro2/etc_sim \
+                -t ${HOME}/slurm_sim_ws/slurm_model/micro2/job_traces/${job_traces} \
+                -r ${HOME}/slurm_sim_ws/slurm_model/micro2/results/${simdeb_slurm_results_dir}/dtstart_${dtstart}_${i} \
                 -a ${HOME}/slurm_sim_ws/slurm_model/micro2/utils/sacctmgr.script \
                 -d -v -dtstart ${dtstart} --ignore-errors-in-conf -octld c.log
         fi

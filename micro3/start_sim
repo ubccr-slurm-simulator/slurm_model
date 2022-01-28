@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+cd $SCRIPT_DIR
+docker pull nsimakov/slurm_head_node:3
+docker pull nsimakov/slurm_compute_node:3
+RUN_NAME=small
+workload=small.events
+MACHINE_NAME=`hostname`
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -m|--machine)
+      MACHINE_NAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -w|--workload)
+      workload="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -n|--run-name)
+      RUN_NAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -h|--help)
+      echo "start_sim -m <machine name> -w <workload name> -n <simulation name>"
+      echo "    Start virtual cluster simulation (all head) and compute nodes"
+      echo "    -m <machine name>. Default: `hostname`"
+      echo "    -w <workload name> path to workload events file. Default: small.events"
+      echo "    -n <simulation name> default `hostname`"
+      echo "    The workload is read from <head node>:/opt/cluster/job_traces/-w <workload name>"
+      echo "    The results will be copied to <head node>:/root/results/<machine name>/<simulation name>"
+      echo "    each run will be in dtstart_<dtstart>_<replica> sub-directory"
+      exit 0
+      ;;
+    *)    # unknown option
+      echo "Unknown arguments!"
+      exit 1
+      shift # past argument
+      ;;
+  esac
+done
+
+echo "MACHINE_NAME ${MACHINE_NAME}"
+echo "RUN_NAME: ${RUN_NAME}"
+echo "workload ${workload}"
+
+# just in case try to remove old run
+docker compose stop;docker compose rm -f -s -v
+
+if [ ! -d "./results/${MACHINE_NAME}/${RUN_NAME}" ]
+then
+  mkdir -p ./results/${MACHINE_NAME}/${RUN_NAME}
+fi
+
+for dtstart in 58 59 68 79 89 99 105 114 126 146
+do
+    for replica in 1 2
+        do
+        cd $SCRIPT_DIR
+        pwd
+        echo "Start sim $dtstart $replica"
+
+        rm log/*;sudo rm -rf compute_nodes_log/* ./home/*
+
+        echo dtstart $dtstart
+
+        docker compose up -d
+
+        sleep 20
+
+        docker exec micro3-headnode-1 /opt/cluster/slurm_sim_tools/src/slurmsimtools/run_slurm.py \
+            -s /usr -e /etc/slurm             \
+            -a /opt/cluster/vctools/sacctmgr.script \
+            -t /opt/cluster/job_traces/${workload} \
+            -r /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v -dtstart $dtstart --no-slurmd >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
+
+        docker compose stop;docker compose rm -f -s -v
+        echo Done with $dtstart $replica
+    done
+done
+rm -rf ./results/${MACHINE_NAME}/${RUN_NAME}/etc ./results/${MACHINE_NAME}/${RUN_NAME}/${workload}.events
+cp -r ./etc ./results/${MACHINE_NAME}/${RUN_NAME}/
+cp ./job_traces/${workload} ./results/${MACHINE_NAME}/${RUN_NAME}/
+echo Done

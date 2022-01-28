@@ -95,6 +95,7 @@ RUN cd /opt && \
 # copy cluster configs
 COPY ./micro2/etc  /opt/cluster/micro2/etc
 COPY ./micro2/etc_frontend /opt/cluster/micro2/etc_frontend
+COPY ./micro2/shrinked /opt/cluster/micro2/shrinked
 COPY ./micro2/job_traces /opt/cluster/micro2/job_traces
 COPY ./micro2/utils /opt/cluster/micro2/utils
 

@@ -39,17 +39,31 @@ docker run --name slurm_rpm_maker -h slurm_rpm_maker \
 
 ```bash
 # Build Common Image
-docker build -f docker/Common.Dockerfile -t pseudo/slurm_common:latest .
+docker build -f docker/Common.Dockerfile -t nsimakov/slurm_common:2 .
 # (Optionally) Run Common container to test it
-# docker run -it --rm -h compute000 -p 222:22 --name compute000 pseudo/slurm_common:latest
+# docker run -it --rm -h compute000 -p 222:22 --name compute000 nsimakov/slurm_common:latest
 
 # Build Head-Node Image
-docker build -f docker/HeadNode.Dockerfile -t pseudo/slurm_head_node:latest .
+docker build -f docker/HeadNode.Dockerfile -t nsimakov/slurm_head_node:2 .
 # (Optionally) Run Head-Node container to test it
-# docker run -it --rm -h head-node -p 222:22 --name head-node pseudo/slurm_head_node:latest
+# docker run -it --rm -h head-node -p 222:22 --name head-node nsimakov/slurm_head_node:latest
 
 # Build Compute-Node Image
-docker build -f docker/ComputeNode.Dockerfile -t pseudo/slurm_compute_node:latest .
+docker build -f docker/ComputeNode.Dockerfile -t nsimakov/slurm_compute_node:2 .
 # (Optionally) Run Compute-Node container to test it
-# docker run -it --rm -h compute000 -p 222:22 --name compute000 pseudo/slurm_compute_node:latest
+# docker run -it --rm -h compute000 -p 222:22 --name compute000 nsimakov/slurm_compute_node:latest
 ```
+
+
+
+
+Initial sizes:
+pseudo/slurm_common:1 588542281
+pseudo/slurm_head_node:1 1046462804
+pseudo/slurm_compute_node:1 869'013'024
+
+* no update
+* no python g++ vim mc and all other helpers
+pseudo/slurm_common:2 240020608
+pseudo/slurm_compute_node: 392316592
+pseudo/slurm_compute_node:  351144115

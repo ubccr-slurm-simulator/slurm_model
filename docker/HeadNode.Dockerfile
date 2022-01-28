@@ -1,13 +1,16 @@
-FROM pseudo/slurm_common:latest
+FROM pseudo/slurm_common:2
 
 LABEL description="HeadNode Image for Slurm Virtual Cluster"
 
 USER root
 # install dependencies
-RUN \
+RUN yum update --assumeno || true && \
     yum -y install --setopt=tsflags=nodocs \
+        vim tmux mc perl-Switch \
+        iproute perl-Date* python3 \
         mariadb-server && \
-    yum clean all
+    yum clean all && \
+    rm -rf /var/cache/yum
 
 #configure mysqld
 RUN chmod g+rw /var/lib/mysql /var/log/mariadb /var/run/mariadb && \
@@ -19,13 +22,18 @@ RUN chmod g+rw /var/lib/mysql /var/log/mariadb /var/run/mariadb && \
     mysql -e 'GRANT ALL PRIVILEGES ON *.* TO "root"@"%" WITH GRANT OPTION;' && \
     mysql -e 'GRANT ALL PRIVILEGES ON *.* TO "root"@"localhost" WITH GRANT OPTION;' && \
     mysql -e 'DROP DATABASE IF EXISTS test;' && \
+    mysql -e "CREATE USER 'slurm'@'%' IDENTIFIED BY 'slurm';" && \
+    mysql -e 'GRANT ALL PRIVILEGES ON *.* TO "slurm"@"%" WITH GRANT OPTION;' && \
+    mysql -e "CREATE USER 'slurm'@'localhost' IDENTIFIED BY 'slurm';" && \
+    mysql -e 'GRANT ALL PRIVILEGES ON *.* TO "slurm"@"localhost" WITH GRANT OPTION;' && \
     cmd_stop mysqld
 
 # copy slurm rpm
 COPY ./docker/RPMS/x86_64/slurm*.rpm /root/
 
 #install Slurm
-RUN yum -y install \
+RUN yum update --assumeno || true && \
+    yum -y install \
         slurm-[0-9]*.x86_64.rpm \
         slurm-perlapi-*.x86_64.rpm \
         slurm-slurmctld-*.x86_64.rpm \
@@ -37,10 +45,14 @@ RUN yum -y install \
     mkdir /var/state  && \
     chown -R slurm:slurm /var/state  && \
     mkdir -p /var/spool/slurmd  && \
-    chown -R slurm:slurm /var/spool/slurmd
+    chown -R slurm:slurm /var/spool/slurmd && \
+    yum clean all && \
+    rm -rf /var/cache/yum && \
+    touch /bin/mail  && chmod 755 /bin/mail && \
+    echo '/opt/cluster/vctools/start_head_node.sh' >> /root/.bash_history
 
-EXPOSE 29002
-
+EXPOSE 6819
+EXPOSE 6817
 # setup entry point
 ENTRYPOINT ["/usr/local/sbin/cmd_start"]
-CMD ["-loop", "/vctools/init_system", "munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "/vctools/init_slurm", "bash"]
+CMD ["-loop", "/opt/cluster/vctools/init_system", "munged", "mysqld", "slurmdbd", "slurmctld", "sshd", "/opt/cluster/vctools/init_slurm", "bash"]

@@ -1,0 +1,3065 @@
+version: "3.8"
+services:
+  headnode:
+    image: nsimakov/slurm_head_node:2
+    hostname: headnode
+    shm_size: 64M
+    command: ["sshd", "munged", "mysqld", "/opt/cluster/vctools/add_system_users.sh", "-loop"]
+    # "/opt/cluster/vctools/start_head_node.sh" is intentionally removed here
+    # run_vc.sh will start slurm services in right order and will track time
+    networks:
+      network1:
+        ipv4_address: 172.32.0.11
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './log:/var/log/slurm'
+      - './home:/home'
+      - './../../slurm_sim_tools:/opt/cluster/slurm_sim_tools'
+    cpuset: '0-3'
+  n001:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n001
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.101
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n001:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n002:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n002
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.102
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n002:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n003:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n003
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.103
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n003:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n004:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n004
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.104
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n004:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n005:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n005
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.105
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n005:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n006:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n006
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.106
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n006:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n007:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n007
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.107
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n007:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n008:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n008
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.108
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n008:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n009:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n009
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.109
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n009:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n010:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n010
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.110
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n010:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n011:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n011
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.111
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n011:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n012:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n012
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.112
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n012:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n013:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n013
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.113
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n013:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n014:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n014
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.114
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n014:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n015:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n015
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.115
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n015:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n016:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n016
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.116
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n016:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n017:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n017
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.117
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n017:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n018:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n018
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.118
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n018:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n019:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n019
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.119
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n019:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n020:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n020
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.120
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n020:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n021:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n021
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.121
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n021:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n022:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n022
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.122
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n022:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n023:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n023
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.123
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n023:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n024:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n024
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.124
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n024:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n025:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n025
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.125
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n025:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n026:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n026
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.126
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n026:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n027:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n027
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.127
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n027:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n028:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n028
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.128
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n028:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n029:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n029
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.129
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n029:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n030:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n030
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.130
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n030:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n031:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n031
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.131
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n031:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n032:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n032
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.132
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n032:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n033:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n033
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.133
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n033:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n034:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n034
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.134
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n034:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n035:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n035
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.135
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n035:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n036:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n036
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.136
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n036:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n037:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n037
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.137
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n037:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n038:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n038
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.138
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n038:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n039:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n039
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.139
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n039:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n040:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n040
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.140
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n040:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n041:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n041
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.141
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n041:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n042:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n042
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.142
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n042:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n043:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n043
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.143
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n043:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n044:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n044
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.144
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n044:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n045:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n045
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.145
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n045:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n046:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n046
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.146
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n046:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n047:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n047
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.147
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n047:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n048:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n048
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.148
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n048:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n049:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n049
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.149
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n049:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n050:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n050
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.150
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n050:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n051:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n051
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.151
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n051:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n052:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n052
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.152
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n052:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n053:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n053
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.153
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n053:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n054:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n054
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.154
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n054:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n055:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n055
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.155
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n055:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n056:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n056
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.156
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n056:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n057:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n057
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.157
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n057:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n058:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n058
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.158
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n058:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n059:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n059
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.159
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n059:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n060:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n060
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.160
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n060:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n061:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n061
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.161
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n061:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n062:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n062
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.162
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n062:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n063:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n063
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.163
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n063:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n064:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n064
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.164
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n064:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n065:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n065
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.165
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n065:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n066:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n066
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.166
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n066:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n067:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n067
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.167
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n067:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n068:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n068
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.168
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n068:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n069:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n069
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.169
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n069:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n070:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n070
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.170
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n070:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n071:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n071
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.171
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n071:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n072:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n072
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.172
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n072:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n073:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n073
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.173
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n073:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n074:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n074
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.174
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n074:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n075:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n075
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.175
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n075:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n076:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n076
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.176
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n076:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n077:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n077
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.177
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n077:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n078:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n078
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.178
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n078:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n079:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n079
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.179
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n079:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n080:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n080
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.180
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n080:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n081:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n081
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.181
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n081:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n082:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n082
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.182
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n082:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n083:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n083
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.183
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n083:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n084:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n084
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.184
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n084:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n085:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n085
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.185
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n085:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n086:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n086
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.186
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n086:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  n087:
+    image: nsimakov/slurm_compute_node:2
+    hostname: n087
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.187
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n087:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  gn001:
+    image: nsimakov/slurm_compute_node:2
+    hostname: gn001
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.201
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n001:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  gn002:
+    image: nsimakov/slurm_compute_node:2
+    hostname: gn002
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.1.202
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/n002:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m001:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m001
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.101
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m001:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m002:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m002
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.102
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m002:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m003:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m003
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.103
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m003:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m004:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m004
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.104
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m004:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m005:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m005
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.105
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m005:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m006:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m006
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.106
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m006:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m007:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m007
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.107
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m007:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m008:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m008
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.108
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m008:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m009:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m009
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.109
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m009:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m010:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m010
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.110
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m010:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m011:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m011
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.111
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m011:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m012:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m012
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.112
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m012:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m013:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m013
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.113
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m013:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m014:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m014
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.114
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m014:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m015:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m015
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.115
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m015:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m016:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m016
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.116
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m016:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m017:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m017
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.117
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m017:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m018:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m018
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.118
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m018:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m019:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m019
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.119
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m019:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m020:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m020
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.120
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m020:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m021:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m021
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.121
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m021:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m022:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m022
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.122
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m022:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m023:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m023
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.123
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m023:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m024:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m024
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.124
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m024:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m025:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m025
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.125
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m025:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m026:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m026
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.126
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m026:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m027:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m027
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.127
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m027:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m028:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m028
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.128
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m028:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m029:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m029
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.129
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m029:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m030:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m030
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.130
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m030:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m031:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m031
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.131
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m031:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m032:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m032
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.132
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m032:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m033:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m033
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.133
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m033:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m034:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m034
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.134
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m034:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m035:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m035
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.135
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m035:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m036:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m036
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.136
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m036:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m037:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m037
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.137
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m037:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m038:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m038
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.138
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m038:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m039:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m039
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.139
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m039:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m040:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m040
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.140
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m040:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m041:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m041
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.141
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m041:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m042:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m042
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.142
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m042:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m043:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m043
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.143
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m043:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m044:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m044
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.144
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m044:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m045:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m045
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.145
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m045:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m046:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m046
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.146
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m046:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m047:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m047
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.147
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m047:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m048:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m048
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.148
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m048:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m049:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m049
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.149
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m049:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m050:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m050
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.150
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m050:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m051:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m051
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.151
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m051:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m052:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m052
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.152
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m052:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m053:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m053
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.153
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m053:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m054:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m054
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.154
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m054:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m055:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m055
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.155
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m055:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m056:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m056
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.156
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m056:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m057:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m057
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.157
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m057:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m058:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m058
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.158
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m058:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m059:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m059
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.159
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m059:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m060:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m060
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.160
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m060:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m061:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m061
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.161
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m061:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m062:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m062
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.162
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m062:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m063:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m063
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.163
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m063:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m064:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m064
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.164
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m064:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m065:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m065
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.165
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m065:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m066:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m066
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.166
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m066:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m067:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m067
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.167
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m067:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m068:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m068
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.168
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m068:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m069:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m069
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.169
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m069:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m070:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m070
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.170
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m070:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m071:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m071
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.171
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m071:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m072:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m072
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.172
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m072:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m073:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m073
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.173
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m073:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m074:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m074
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.174
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m074:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m075:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m075
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.175
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m075:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m076:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m076
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.176
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m076:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m077:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m077
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.177
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m077:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m078:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m078
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.178
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m078:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m079:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m079
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.179
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m079:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m080:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m080
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.180
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m080:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m081:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m081
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.181
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m081:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m082:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m082
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.182
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m082:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m083:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m083
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.183
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m083:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m084:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m084
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.184
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m084:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m085:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m085
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.185
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m085:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m086:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m086
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.186
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m086:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m087:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m087
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.187
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m087:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m088:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m088
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.188
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m088:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m089:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m089
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.189
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m089:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m090:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m090
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.190
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m090:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m091:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m091
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.191
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m091:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m092:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m092
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.192
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m092:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m093:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m093
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.193
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m093:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m094:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m094
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.194
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m094:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m095:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m095
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.195
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m095:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  m096:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   m096
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.2.196
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/m096:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b001:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b001
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.101
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b001:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b002:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b002
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.102
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b002:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b003:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b003
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.103
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b003:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b004:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b004
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.104
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b004:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b005:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b005
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.105
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b005:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b006:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b006
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.106
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b006:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b007:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b007
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.107
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b007:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b008:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b008
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.108
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b008:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b009:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b009
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.109
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b009:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b010:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b010
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.110
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b010:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b011:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b011
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.111
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b011:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b012:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b012
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.112
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b012:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b013:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b013
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.113
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b013:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b014:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b014
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.114
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b014:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b015:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b015
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.115
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b015:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b016:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b016
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.116
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b016:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b017:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b017
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.117
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b017:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b018:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b018
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.118
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b018:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b019:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b019
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.119
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b019:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b020:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b020
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.120
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b020:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b021:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b021
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.121
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b021:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b022:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b022
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.122
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b022:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b023:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b023
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.123
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b023:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  b024:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   b024
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.3.124
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/b024:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g001:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g001
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.101
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g001:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g002:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g002
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.102
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g002:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g003:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g003
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.103
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g003:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g004:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g004
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.104
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g004:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g005:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g005
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.105
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g005:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g006:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g006
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.106
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g006:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g007:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g007
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.107
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g007:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+  g008:
+    image: nsimakov/slurm_compute_node:2
+    hostname:   g008
+    command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
+    networks:
+      network1:
+        ipv4_address: 172.32.4.108
+    volumes:
+      - './results:/root/results'
+      - './etc:/etc/slurm'
+      - './vctools:/opt/cluster/vctools'
+      - './compute_nodes_log/g008:/var/log/slurm'
+      - './home:/home'
+    cpuset: '4-7'
+networks:
+  network1:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: "172.32.0.0/21"

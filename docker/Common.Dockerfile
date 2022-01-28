@@ -4,21 +4,22 @@ LABEL description="Common Image for Slurm Virtual Cluster"
 
 # install dependencies
 RUN \
-    yum -y update && \
+    yum update --assumeno || true && \
     yum -y install --setopt=tsflags=nodocs epel-release && \
     yum -y install --setopt=tsflags=nodocs \
-        vim tmux mc perl-Switch\
-        openssl openssh-server openssh-clients iproute \
-        perl-Date* \
-        gcc-c++ \
-        munge sudo python3 && \
-    yum clean all
-
+        openssl openssh-server openssh-clients \
+        munge sudo && \
+    yum clean all && \
+    rm -rf /var/cache/yum
+#        vim tmux mc perl-Switch\
+#        iproute \
+#        perl-Date* \
+#        gcc-c++ python3 \
 WORKDIR /root
 
 # copy daemons starters
 COPY ./docker/utils/cmd_setup ./docker/utils/cmd_start ./docker/utils/cmd_stop /usr/local/sbin/
-COPY ./docker/vctools /vctools
+COPY ./docker/vctools /opt/cluster/vctools
 # directories
 RUN mkdir /scratch && chmod 777 /scratch
 RUN mkdir /scratch/jobs && chmod 777 /scratch/jobs
@@ -49,8 +50,8 @@ RUN echo "secret munge key secret munge key secret munge key" >/etc/munge/munge.
 EXPOSE 22
 
 # install miniapps
-COPY ./miniapps /usr/local/miniapps
-RUN cd /usr/local/miniapps && make
+COPY ./apps/microapps /usr/local/microapps
+# RUN cd /usr/local/miniapps && make
 
 # edit system processor limits
 RUN sudo echo -e "# Default limit for number of user's processes to prevent \n \
