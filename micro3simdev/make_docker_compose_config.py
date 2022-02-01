@@ -18,7 +18,7 @@ n_gpu = 1
 fout.write("""version: "3.8"
 services:
   headnode:
-    image: nsimakov/slurm_sim_head_node:dev
+    image: nsimakov/slurm_sim_head_node:4
     hostname: headnode
     shm_size: 64M
     command: ["sshd", "munged", "mysqld", "/opt/cluster/vctools/add_system_users.sh", "-loop"]
@@ -30,7 +30,7 @@ services:
     volumes:
       - './results:/root/results'
       - './etc:/etc/slurm'
-      - '../micro3/vctools:/opt/cluster/vctools'
+      - './vctools:/opt/cluster/vctools'
       - '../micro3/job_traces:/opt/cluster/job_traces'
       - './log:/var/log/slurm'
       - './home:/home'
@@ -43,7 +43,7 @@ def get_compute_node_volumes(nodename):
     return f"""volumes:
       - './results:/root/results'
       - './etc:/etc/slurm'
-      - '../micro3/vctools:/opt/cluster/vctools'
+      - './vctools:/opt/cluster/vctools'
       - '../micro3/job_traces:/opt/cluster/job_traces'
       - './compute_nodes_log/{nodename}:/var/log/slurm'
       - './home:/home'"""\

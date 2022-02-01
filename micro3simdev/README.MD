@@ -22,8 +22,8 @@ set -e
 
 
 mkdir bld
-cd bld
-
+cd ~/bld
+rm -rf *
 /opt/cluster/slurm_sim_tools/slurm_simulator/configure \
     --prefix=/usr  --sysconfdir=/etc/slurm --disable-x11 \
     --with-hdf5=no --enable-simulator
@@ -31,6 +31,44 @@ make -j
 make -j install
 
 slurmctld -v -e /opt/cluster/job_traces/small.events
+
+mkdir ~/bld_deb
+cd ~/bld_deb
+rm -rf *
+/opt/cluster/slurm_sim_tools/slurm_simulator/configure \
+    --prefix=/usr  --sysconfdir=/etc/slurm --disable-x11 \
+    --with-hdf5=no --enable-simulator --enable-debug --enable-front-end \
+    "CFLAGS=-g -O0"
+make -j
+make -j install
+
+
+ 2204  sudo apt install libmunge-dev
+ 2209  sudo apt install libmysqlclient-dev
+
+
+CREATE USER 'slurm'@'%' IDENTIFIED BY 'slurm';
+CREATE USER 'slurm'@'localhost' IDENTIFIED BY 'slurm';
+
+GRANT ALL PRIVILEGES ON *.* TO 'slurm'@'localhost' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'slurm'@'%' WITH GRANT OPTION;
+
+```
+
+# run sim
+
+```
+docker run -it --rm -h headnode --name slurm_sim_head_node \
+      -v `pwd`/results:/root/results \
+      -v `pwd`/etc:/etc/slurm \
+      -v `pwd`/../micro3/vctools:/opt/cluster/vctools \
+      -v `pwd`/../micro3/job_traces:/opt/cluster/job_traces \
+      -v `pwd`/log:/var/log/slurm \
+      -v `pwd`/home:/home \
+      -v `pwd`/../../slurm_sim_tools:/opt/cluster/slurm_sim_tools \
+      -p 5000:5000 -p 2222:22 \
+    nsimakov/slurm_sim_head_node:4
+ssh -nNT -L 5001:localhost:5000 -p 2222 root@localhost
 
 ```
 

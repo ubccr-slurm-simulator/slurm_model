@@ -57,11 +57,11 @@ if [ ! -d "./results/${MACHINE_NAME}/${RUN_NAME}" ]
 then
   mkdir -p ./results/${MACHINE_NAME}/${RUN_NAME}
 fi
-# 58 59 68 79 89 99 105 114 126 146
+# 58 59
 # 1 2
-for dtstart in 58 59
+for replica in 1 2
 do
-    for replica in 1
+    for dtstart in 58 59 68 79 89 99 105 114 126 146
     do
         cd $SCRIPT_DIR
         pwd
@@ -81,8 +81,8 @@ do
             -t /opt/cluster/job_traces/${workload} \
             -r /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v \
             -octld /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_ctld.out \
-            -dtstart $dtstart --no-slurmd >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
-
+            -dtstart $dtstart >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
+# --no-slurmd
         sudo chown -R $USER:$USER ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}
 
         docker compose stop;docker compose rm -f -s -v
