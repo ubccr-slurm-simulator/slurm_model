@@ -81,8 +81,8 @@ do
             -t /opt/cluster/job_traces/${workload} \
             -r /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v \
             -octld /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_ctld.out \
-            -dtstart $dtstart >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
-# --no-slurmd
+            -dtstart $dtstart --no-slurmd >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
+#
         sudo chown -R $USER:$USER ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}
 
         docker compose stop;docker compose rm -f -s -v

@@ -208,6 +208,53 @@ read_sacct_out_multiple <- function(slurm_mode, results_root_dir, dtstart_list, 
 ```
 
 ```{r}
+
+read_events_csv <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
+    cat("Read: ",filename,"\n")
+  
+    if(grepl(".zst", filename, fixed=TRUE)){
+      events <- data.table::fread(cmd=paste("zstdcat", filename),sep=",",header=TRUE)
+    } else {
+      events <- data.table::fread(filename,sep=",",header=TRUE)
+    }
+    
+    return(events)
+}
+
+read_events_multiple <- function(slurm_mode, results_root_dir, dtstart_list, run_id_list, events_csv="slurmctld_log.csv") {
+  result_list <- list()
+  for(dtstart in dtstart_list) {
+    for(run_id in run_id_list) {
+      m_result_root_dir <- path.expand(file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id)))
+      m_events_csv_filename <- file.path(m_result_root_dir, events_csv)
+      
+      if(!dir.exists(m_result_root_dir)) {
+          warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+          return(NULL);
+      }
+      if(!file.exists(m_events_csv_filename)) {
+          if (file.exists(paste0(m_events_csv_filename,".zst"))) {
+              m_events_csv_filename <- paste0(m_events_csv_filename,".zst")
+          } else {
+              warning(sprintf("File %s does not exists!", m_events_csv_filename))
+              return(NULL);
+          }
+      }
+      m_events_csv <- read_events_csv(m_events_csv_filename)
+      m_events_csv$slurm_mode <- slurm_mode
+      m_events_csv$dtstart <- dtstart
+      m_events_csv$run_id <- run_id
+      
+      m_events_csv <- relocate(m_events_csv,slurm_mode,dtstart,run_id, .before = "job_rec_id")
+      result_list[[length(result_list)+1]] <- m_events_csv
+      
+    }
+  }
+  return(data.table::rbindlist(result_list))
+}
+```
+
+```{r}
 #JobName
 # ../../../slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/
 sacct <- bind_rows(
@@ -215,10 +262,11 @@ sacct <- bind_rows(
   read_sacct_out_multiple("b1_351d", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   read_sacct_out_multiple("b2_fbb2", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_2_fbb23b6cadcad237ffcc06d6cd87e035d138e279/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   read_sacct_out_multiple("b3_b07f", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  read_sacct_out_multiple("b4_4c06", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
+  read_sacct_out_multiple("b4_4c06", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+  read_sacct_out_multiple("b4fr_4c06", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e_fixrep/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b_5_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_5_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("b_Z2_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_2_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  #read_sacct_out_multiple("b_ZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
+  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
 )
 #sacct$rid <- sacct$run_id + sacct$dtstart*100
 #sacct
@@ -232,6 +280,15 @@ b3_f588c - reduced threads
 b4_4c06 - front end mode (slightly different outcomes)
 
 
+```{r}
+
+events <- bind_rows(
+  read_events_multiple("b4fr_4c06", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e_fixrep/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+  #read_events_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+  read_events_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), 58, 1)
+)
+events
+```
 
 ```{r}
 jobs_summary <- sacct %>% group_by(slurm_mode,JobRecID) %>% summarise(
@@ -306,6 +363,150 @@ p <- ggplot(sacct, aes(x=factor(JobRecID), y=StartTime, color=slurm_mode)) +
 
 # WebGL is a lot more efficient at rendering lots of points
 toWebGL(ggplotly(p))
+```
+
+
+
+```{r}
+# 'max-width: 800px'
+# "width: 100%; max-width: 800px;", width=1800
+# plotlyOutput(width = "1800px")/usr/lib/R/site-library/plotly/htmlwidgets/lib/plotlyjs/plotly-latest.min.js:
+plot_ly(sacct %>% filter(dtstart==58), x = ~factor(JobRecID), y = ~StartTime, color = ~slurm_mode, type = "box") %>% 
+  layout(boxmode = "group", legend = list(orientation = 'h', y=-0.2))
+
+
+```
+
+```{r}
+sacct %>% filter(dtstart==58 & slurm_mode %in% c('b4fr_4c06', 'bZZ')) %>% arrange(slurm_mode, dtstart, run_id,StartTime)
+```
+
+```{r rows.print=20}
+df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='b4fr_4c06' & run_id==1)
+df1$job_rec_id <- df1$JobRecID-0.2
+
+df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==1)
+df2$job_rec_id <- df2$JobRecID+0.2
+
+print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
+
+df <- rbind(df1,df2) %>% mutate(id=paste(slurm_mode,dtstart,run_id)) %>% arrange(run_id,StartTime)
+
+#df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==2)
+#df2$job_rec_id <- df$JobRecID+0.2
+
+
+
+#data.table::rbindlist(list(df1,df2))
+p <- ggplot(df) +
+  geom_segment(mapping = aes(y=job_rec_id,yend=job_rec_id, x=SubmitTime,xend=StartTime),color="grey") +
+  geom_segment(mapping = aes(y=job_rec_id,yend=job_rec_id, x=StartTime,xend=EndTime),color="red") +
+  geom_point(mapping = aes(y=job_rec_id, x=SubmitTime),color="blue",shape=1) +
+  geom_point(mapping = aes(y=job_rec_id, x=StartTime),color="red",shape=3) +
+  geom_point(mapping = aes(y=job_rec_id, x=EndTime),color="green",shape=4) +
+  geom_line(mapping = aes(y=job_rec_id,x=StartTime, linetype=id)) +
+  scale_y_continuous(breaks=seq(min(df$JobRecID),max(df$JobRecID),1)) + 
+  #theme(panel.grid.minor = element_line(colour="black", size=0.5)) +
+  scale_x_continuous(breaks = seq(0, max(df2$EndTime), 5), minor_breaks = seq(0, max(df2$EndTime), 2)) 
+ggplotly(p)
+#p
+```
+
+
+```{r rows.print=20}
+df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='b4fr_4c06' & run_id==1)
+df1$job_rec_id <- df1$JobRecID-0.1
+
+df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==1)
+df2$job_rec_id <- df2$JobRecID+0.1
+
+print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
+
+df <- rbind(df1,df2) %>% mutate(id=paste(slurm_mode,dtstart,run_id)) %>% arrange(run_id,StartTime)
+
+#df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==2)
+#df2$job_rec_id <- df$JobRecID+0.2
+
+
+
+#data.table::rbindlist(list(df1,df2))
+plot_ly(df) %>%
+  add_segments(y=~job_rec_id,yend=~job_rec_id, x=~SubmitTime,xend=~StartTime,color=I("grey"), name="Wait Period") %>%
+  add_segments(y=~job_rec_id,yend=~job_rec_id, x=~StartTime,xend=~EndTime,color=I("red"), name="Run Period") %>%
+  add_markers(y=~job_rec_id, x=~SubmitTime, color=I("blue"), symbol=I('o'), name="Submit Time") %>%
+  add_markers(y=~job_rec_id, x=~StartTime, color=I("red"), symbol=I('+'), name="Start Time") %>%
+  add_markers(y=~job_rec_id, x=~EndTime, color=I("green"), symbol=I('x'), name="End Time") %>%
+  add_paths(y=~job_rec_id,x=~StartTime, linetype=~id, legendgroup="Execution Order", color=I('black')) %>% 
+  # ,legendgrouptitle=list(text="Execution Order"
+  layout(
+    yaxis = list(dtick = 1),
+    xaxis = list(dtick = 10)
+  )
+#%>%
+#  scale_y_continuous(breaks=seq(min(df$JobRecID),max(df$JobRecID),1)) + 
+  #theme(panel.grid.minor = element_line(colour="black", size=0.5)) +
+#  scale_x_continuous(breaks = seq(0, max(df2$EndTime), 5), minor_breaks = seq(0, max(df2$EndTime), 2)) 
+#ggplotly(p)
+#p
+```
+
+```{r rows.print=20}
+df1 <- events %>% filter(dtstart==58 & slurm_mode=='b4fr_4c06' & run_id==1)
+df1$job_rec_id2 <- df1$job_rec_id-0.2
+
+df2 <- events %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==1)
+df2$job_rec_id2 <- df2$job_rec_id+0.2
+
+#print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
+
+df <- rbind(df1,df2) %>% mutate(id=paste(slurm_mode,dtstart,run_id)) %>% arrange(run_id,t)
+dfs <- filter(df, metric %in% c("submit_job","launch_job","job_epilog_complete")) %>% 
+  select(id,job_rec_id,job_rec_id2,metric,t) %>%
+  #group_by(id,job_rec_id,metric) %>%
+  #summarise(n=n())%>% arrange(n)
+  spread(metric,t)
+```
+
+```{r}
+marker=list(size=10, line=list(width=2))
+p <- plot_ly(df) %>%
+    add_segments(data = filter(df, metric=='backfill'), y=I(1000),yend=I(1021), x=~t,xend=~t,color=I("grey"),alpha=I(0.5), linetype=~id, name="backfiller start") %>%
+    add_segments(data = filter(df, metric=='sched'), y=I(1000),yend=I(1021), x=~t,xend=~t,color=I("#AED6F1"),alpha=I(0.5), linetype=~id, name="backfiller start") %>% #light blue
+    add_segments(data = dfs, y=~job_rec_id2,yend=~job_rec_id2, x=~submit_job,xend=~launch_job,color=I("grey"), name="Wait Period") %>%
+    add_segments(data = dfs, y=~job_rec_id2,yend=~job_rec_id2, x=~launch_job,xend=~job_epilog_complete,color=I("red"), name="Run Period") %>%
+    add_markers(data = df %>% filter(metric=="submit_job"), y=~job_rec_id2, x=~t, color=I("grey"), symbol=I('o'), name="Submit Time",marker=marker) %>%
+    add_markers(data = df %>% filter(metric=="launch_job"), y=~job_rec_id2, x=~t, color=~value, colors=c("#0000FF","#00FF00"), symbol=I('cross'),marker=marker) %>% #I('+')
+    add_markers(data = df %>% filter(metric=="job_epilog_complete"), y=~job_rec_id2, x=~t, color=I("red"), symbol=I('x'), name="End Time",marker=marker) %>%
+    add_paths(data = df %>% filter(metric=="launch_job"), y=~job_rec_id2,x=~t, linetype=~id, legendgroup="Execution Order", color=I('black')) %>% 
+    layout(
+      yaxis = list(dtick = 1),
+      xaxis = list(dtick = 10)
+    )
+#htmlwidgets::saveWidget(p, "sample_sched_didnt_start_after_1004_ends.html")
+  #
+
+  # ,legendgrouptitle=list(text="Execution Order"
+
+#%>%
+#  scale_y_continuous(breaks=seq(min(df$JobRecID),max(df$JobRecID),1)) + 
+  #theme(panel.grid.minor = element_line(colour="black", size=0.5)) +
+#  scale_x_continuous(breaks = seq(0, max(df2$EndTime), 5), minor_breaks = seq(0, max(df2$EndTime), 2)) 
+#ggplotly(p)
+p
+```
+
+```{r}
+#read_events_csv("/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small/dtstart_58_1/slurmctld_log.csv")
+#df1
+#filter(df, metric %in% c("submit_job","launch_job","job_epilog_complete")) %>% 
+#  select(id,job_rec_id,job_rec_id2,metric,t) %>%
+#  #group_by(id,job_rec_id,metric) %>%
+#  #summarise(n=n())%>% arrange(n)
+#  spread(metric,t)
+
+#sched                            109.492565                   start                           
+#NA           backfill
+filter(df, metric=='sched')
 ```
 
 ```{r}
