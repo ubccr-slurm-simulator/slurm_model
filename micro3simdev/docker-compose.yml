@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   headnode:
-    image: nsimakov/slurm_sim_head_node:5
+    image: nsimakov/slurm_sim_head_node:6
     hostname: headnode
     shm_size: 64M
     command: ["sshd", "munged", "mysqld", "/opt/cluster/vctools/add_system_users.sh", "-loop"]

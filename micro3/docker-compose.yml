@@ -1,7 +1,7 @@
 version: "3.8"
 services:
   headnode:
-    image: nsimakov/slurm_head_node:3
+    image: nsimakov/slurm_head_node:1
     #image: nsimakov/slurm_compute_node:dev
     hostname: headnode
     shm_size: 64M
@@ -21,7 +21,7 @@ services:
       - './../../slurm_sim_tools:/opt/cluster/slurm_sim_tools'
     cpuset: '0-3'
   n1:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname: n1
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -36,7 +36,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   n2:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname: n2
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -51,7 +51,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   n3:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname: n3
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -66,7 +66,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   n4:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname: n4
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -81,7 +81,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   m1:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname:   m1
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -96,7 +96,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   m2:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname:   m2
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -111,7 +111,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   m3:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname:   m3
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -126,7 +126,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   m4:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname:   m4
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -141,7 +141,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   b1:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname:   b1
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:
@@ -156,7 +156,7 @@ services:
       - './home:/home'
     cpuset: '4-7'
   g1:
-    image: nsimakov/slurm_compute_node:3
+    image: nsimakov/slurm_compute_node:1
     hostname:   g1
     command: ["sshd", "munged", "/opt/cluster/vctools/start_compute_node.sh", "-loop"]
     networks:

@@ -70,6 +70,15 @@ docker run -it --rm -h headnode --name slurm_sim_head_node \
     nsimakov/slurm_sim_head_node:4
 ssh -nNT -L 5001:localhost:5000 -p 2222 root@localhost
 
+
+
+${HOME}/slurm_sim_ws/slurm_sim_tools/src/slurmsimtools/run_sim.py \
+    -s ${HOME}/slurm_sim_ws/slurm_sim_deb \
+    -e ${HOME}/slurm_sim_ws/slurm_model/micro3simdev/etc_sim \
+    -t ${HOME}/slurm_sim_ws/slurm_model/micro3simdev/job_traces/small.events \
+    -r ${HOME}/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small/dtstart_58_1 \
+    -a ${HOME}/slurm_sim_ws/slurm_model/micro3simdev/vctools/sacctmgr.script \
+    -d -v -dtstart 58 
 ```
 
 ```
@@ -93,6 +102,13 @@ build/           doc/             .git/            miniapps/        reg_testing/
 [root@headnode bld]# md5sum /usr/lib/slurm/libslurmfull.so
 0f5145fe400c7591846f256b0c86c5e0  /usr/lib/slurm/libslurmfull.so
 [root@headnode bld]# 
+
+
+start_conda
+conda activate slurm_analyser
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$PATH
+
+slurmsim -v process slurmctrd_log -l slurmctld.log -csv slurmctld_log.csv --top-dir . --job-id job_rec_id --time first_jo
 ```
 
 -dt 2 -e submit_batch_job | -J jobid_1003 -sim-walltime 5 --uid=user4 -t 00:01:00 -n 1 --ntasks-per-node=1 -A account2 -p normal -q normal --mem=500000 pseudo.job

@@ -214,9 +214,10 @@ sacct2 <- bind_rows(
   read_sacct_out_multiple("b0_tb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/jobs500_shrinked__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   read_sacct_out_multiple("b2_fb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_2_fbb23b6cadcad237ffcc06d6cd87e035d138e279/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   read_sacct_out_multiple("b3_b0", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  read_sacct_out_multiple("b4_4c", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("b_5_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_5_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("b_Z2_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_2_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
+  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
   #read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
 )
 #sacct$rid <- sacct$run_id + sacct$dtstart*100
@@ -275,10 +276,29 @@ heatmap.2(
 
 ## Multivariate Analysis
 ```{r fig.width=5, fig.height=5}
-for(test in c("b2_fb", "b3_b0", "bZZ")) {
+for(test in c("b2_fb", "b3_b0", "b4_4c", "bZZ")) {
   print(test)
   metrics_ref <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
     filter(slurm_mode=="b0_tb") %>% 
+    unite(id,slurm_mode, dtstart, run_id) %>% 
+    dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
+    spread(id, metric) %>% dplyr::select(-job_rec_id) %>% as.matrix() %>% t()
+  metrics_test <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
+      filter(slurm_mode==test) %>% 
+      unite(id,slurm_mode, dtstart, run_id) %>% 
+      dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
+      spread(id, metric) %>% dplyr::select(-job_rec_id) %>% as.matrix() %>% t()
+  
+  print(mWilcoxonTest(metrics_ref, metrics_test, depth_params = list(method = "Euclidean")))
+  print(mWilcoxonTest(metrics_ref, metrics_test, depth_params = list(method = "LP")))
+}
+
+```
+```{r fig.width=5, fig.height=5}
+for(test in c("b0_tb", "b2_fb", "b3_b0", "b4_4c", "bZZ")) {
+  print(test)
+  metrics_ref <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
+    filter(slurm_mode=="bZZ") %>% 
     unite(id,slurm_mode, dtstart, run_id) %>% 
     dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
     spread(id, metric) %>% dplyr::select(-job_rec_id) %>% as.matrix() %>% t()
