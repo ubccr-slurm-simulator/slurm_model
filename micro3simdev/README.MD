@@ -103,7 +103,7 @@ build/           doc/             .git/            miniapps/        reg_testing/
 0f5145fe400c7591846f256b0c86c5e0  /usr/lib/slurm/libslurmfull.so
 [root@headnode bld]# 
 
-
+# run local
 start_conda
 conda activate slurm_analyser
 export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$PATH
@@ -162,3 +162,56 @@ slurmctld: _pick_best_nodes: JobId=1000 never runnable in partition normal
 [2022-01-31T18:37:28.651784] _slurm_rpc_submit_batch_job: JobId=1002 InitPrio=1060833 usec=302
 [2022-01-31T18:37:28.818578] sched/backfill: _attempt_backfill: beginning
 [2022-01-31T18:37:28.818602] debug:  sched/backfill: _attempt_backfill: 2 jobs to backfill
+
+
+```bash
+# run local
+start_conda
+conda activate slurm_analyser
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/sbin:$PATH
+export SLURM_CONF=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev/etc_sim/slurm.conf
+
+CLUS_DIR=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev
+
+rm var/* log_loc/*; rm -rf var/spool/* var/state/*
+
+slurmsim -v run_sim -s /home/nikolays/slurm_sim_ws/slurm_sim_deb \
+    -e ${CLUS_DIR}/etc_sim \
+    -a ${CLUS_DIR}/vctools/sacctmgr.script \
+    -t ${CLUS_DIR}/job_traces/small.events \
+    -r ${CLUS_DIR}/results_loc -d -v \
+    -octld ${CLUS_DIR}/results_loc/dtstart_${dtstart}_${replica}_ctld.out \
+    -odbd ${CLUS_DIR}/results_loc/dtstart_${dtstart}_${replica}_dbd.out \
+    -dtstart 10 --no-slurmd --no-slurmctld
+squeue -o "%.18i %.9P %.18j %.8u %.2t %.10M %.6D %R"
+
+
+slurmsim -v run_sim -s /home/nikolays/slurm_sim_ws/slurm_sim_deb \
+    -e ${CLUS_DIR}/etc_sim \
+    -a ${CLUS_DIR}/vctools/sacctmgr.script \
+    -t ${CLUS_DIR}/job_traces/jobs500_shrinked.events \
+    -r ${CLUS_DIR}/results_loc -d -v \
+    -octld ${CLUS_DIR}/results_loc/dtstart_${dtstart}_${replica}_ctld.out \
+    -odbd ${CLUS_DIR}/results_loc/dtstart_${dtstart}_${replica}_dbd.out \
+    -dtstart 58 --no-slurmd --no-slurmctld
+
+sacct --allclusters --allusers \
+    --parsable2 --allocations \
+    --format jobid,jobidraw,cluster,partition,account,group,gid,\
+user,uid,submit,eligible,start,end,elapsed,exitcode,state,nnodes,\
+ncpus,reqcpus,reqmem,reqtres,timelimit,qos,nodelist,jobname,NTasks \
+    --state CANCELLED,COMPLETED,FAILED,NODE_FAIL,PREEMPTED,TIMEOUT \
+    --starttime 2021-01-01 --endtime 2023-01-01
+```
+error: Database settings not recommended values: innodb_buffer_pool_size innodb_lock_wait_timeout
+
+ innodb_lock_wait_timeout
+ innodb_log_file_size 
+ 
+add to [mysqld] in /etc/mysql/mysql.conf.d/mysqld.cnf:
+innodb_buffer_pool_size=1024M
+innodb_log_file_size=64M
+innodb_lock_wait_timeout=900
+
+restart:
+sudo service mysql restart

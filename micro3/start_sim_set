@@ -5,8 +5,8 @@ cd $SCRIPT_DIR
 date
 
 $SCRIPT_DIR/start_sim -w small.events -n small
-$SCRIPT_DIR/start_sim -w jobs500_shrinked.events -n jobs500_shrinked
-$SCRIPT_DIR/start_sim -w jobs500.events -n jobs500
+# $SCRIPT_DIR/start_sim -w jobs500_shrinked.events -n jobs500_shrinked
+# $SCRIPT_DIR/start_sim -w jobs500.events -n jobs500
 
 date
 

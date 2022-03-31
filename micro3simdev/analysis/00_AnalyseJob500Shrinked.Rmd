@@ -212,12 +212,27 @@ read_sacct_out_multiple <- function(slurm_mode, results_root_dir, dtstart_list, 
 # ../../../slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/
 sacct2 <- bind_rows(
   read_sacct_out_multiple("b0_tb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/jobs500_shrinked__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+  read_sacct_out_multiple("b1c", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1c_3f4335f8f50378635795e8463bd5c137ec4734ff/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   read_sacct_out_multiple("b2_fb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_2_fbb23b6cadcad237ffcc06d6cd87e035d138e279/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  read_sacct_out_multiple("b3_b0", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  #read_sacct_out_multiple("b3_b0", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   read_sacct_out_multiple("b4_4c", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("b_5_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_5_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("b_Z2_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_2_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
+  #read_sacct_out_multiple("bS10", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeS10/jobs500_shrinked"), c(58), 1),
+  #read_sacct_out_multiple("bS05", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeS05/jobs500_shrinked"), c(58), 1),
+  #read_sacct_out_multiple("bS02", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeS02/jobs500_shrinked"), c(58), 1),
+  #read_sacct_out_multiple("bRR", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeRR/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  #read_sacct_out_multiple("bRRR", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeRR/jobs500_shrinked"), c(58, 59), 1),
+  #read_sacct_out_multiple("bR4", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeRR/jobs500_shrinked"), c(58, 59), 1),
+  #read_sacct_out_multiple("bR5", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeRR/jobs500_shrinked"), c(58, 59), 1),
+  read_sacct_out_multiple("bR9", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeR9/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  #read_sacct_out_multiple("bF1", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF1/jobs500_shrinked"), c(58), 1),
+  #read_sacct_out_multiple("bF5", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  #read_sacct_out_multiple("bF2b", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF2b/jobs500_shrinked"), c(58), 1),
+  #read_sacct_out_multiple("bF3", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF3/jobs500_shrinked"), c(58), 1),
+  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
+  #,
+  #read_sacct_out_multiple("bF3", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58), 1)
   #read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
 )
 #sacct$rid <- sacct$run_id + sacct$dtstart*100
@@ -254,8 +269,8 @@ plot_ly(sacct2, x = ~factor(JobRecID), y = ~StartTime, color = ~slurm_mode, type
 ## Distance on Waittime
 
 ```{r fig.width=12, fig.height=12}
-metrics_df <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
-    unite(id,slurm_mode, dtstart, run_id) %>% 
+metrics_df <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>% #filter(dtstart %in% c(58)) %>%
+    mutate(id=sprintf("%s_%03d_%d", slurm_mode, dtstart, run_id)) %>% select(-slurm_mode, -dtstart, -run_id) %>%
     dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
     spread(id, metric)
 metrics_matrix <- metrics_df %>% dplyr::select(-job_rec_id) %>% as.matrix()
@@ -273,10 +288,16 @@ heatmap.2(
     col="bluered", key.title = NA, key.xlab="Distance, hour")
 ```
 
+NOTE:
+TimeStart = 1641013200.0 produce early job_time_limits_testing happens
+in 29 seconds for 146. TimeStart = 1641013200.1 already goes 30 sec.
+
+
 
 ## Multivariate Analysis
+
 ```{r fig.width=5, fig.height=5}
-for(test in c("b2_fb", "b3_b0", "b4_4c", "bZZ")) {
+for(test in c("b1c", "b2_fb", "b4_4c", "bZZ")) {
   print(test)
   metrics_ref <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
     filter(slurm_mode=="b0_tb") %>% 
@@ -295,7 +316,7 @@ for(test in c("b2_fb", "b3_b0", "b4_4c", "bZZ")) {
 
 ```
 ```{r fig.width=5, fig.height=5}
-for(test in c("b0_tb", "b2_fb", "b3_b0", "b4_4c", "bZZ")) {
+for(test in c("b0_tb", "b1c", "b2_fb", "b4_4c", "bR9")) {
   print(test)
   metrics_ref <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
     filter(slurm_mode=="bZZ") %>% 
@@ -329,18 +350,157 @@ metrics_test <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
 mWilcoxonTest(metrics_ref, metrics_test, depth_params = list(method = "Euclidean"))
 mWilcoxonTest(metrics_ref, metrics_test, depth_params = list(method = "LP"))
 ```
-row.names(metrics_matrix) <- metrics_df$job_id
 
-d <- dist(t(metrics_matrix))
+```{r}
+dtstart <- 58
+events <- bind_rows(
+  read_events_multiple("b_TB", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/jobs500_shrinked__ref"), dtstart, 1),
+  read_events_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), dtstart, 1)
+)
 
-#x <- mvrnorm(100, c(0, 0), diag(2))
-#y <- mvrnorm(100, c(0, 0), diag(2) * 1.4)
-x <- t(jobcomp_waittime_matrix)[1:13,]
-y <- t(jobcomp_waittime_matrix)[14:20,]+200
+df1 <- events %>% filter(dtstart==dtstart & slurm_mode=='b_TB' & run_id==1)
+df1$job_rec_id2 <- df1$job_rec_id-0.2
 
-#mWilcoxonTest(x, y, depth_params = list(ndir = 10000))
-mWilcoxonTest(x, y, depth_params = list(method = "Euclidean"))
-mWilcoxonTest(x, y, depth_params = list(method = "LP"))
+df2 <- events %>% filter(dtstart==dtstart & slurm_mode=='bZZ' & run_id==1)
+df2$job_rec_id2 <- df2$job_rec_id+0.2
+
+#print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
+
+df <- rbind(df1,df2) %>% mutate(id=paste(slurm_mode,dtstart,run_id)) %>% arrange(run_id,t)
+# dfs <- filter(df, metric %in% c("submit_job","launch_job","job_epilog_complete")) %>% 
+#   dplyr::select(id,job_rec_id,job_rec_id2,metric,t) %>%
+#   #group_by(id,job_rec_id,metric) %>%
+#   #summarise(n=n())%>% arrange(n)
+#   spread(metric,t)
+
+
+marker=list(size=10, line=list(width=2))
+p <- plot_ly(df) %>%
+    add_segments(data = filter(df, metric=='backfill'), y=I(1000),yend=I(1501), x=~t,xend=~t,color=I("grey"),alpha=I(0.5), linetype=~id, name="backfiller start") %>%
+    add_segments(data = filter(df, metric=='sched'), y=I(1000),yend=I(1501), x=~t,xend=~t,color=I("#AED6F1"),alpha=I(0.5), linetype=~id, name="sched start") %>% #light blue
+    add_segments(data = filter(df, metric=='job_time_limits_testing'), y=I(1000),yend=I(1501), x=~t,xend=~t,color=I("#AEF1D6"),alpha=I(0.5), linetype=~id, name="timelim check") %>% #light green
+    add_segments(data = dfs, y=~job_rec_id2,yend=~job_rec_id2, x=~submit_job,xend=~launch_job,color=I("grey"), name="Wait Period") %>%
+    add_segments(data = dfs, y=~job_rec_id2,yend=~job_rec_id2, x=~launch_job,xend=~job_epilog_complete,color=I("red"), name="Run Period") %>%
+    add_markers(data = df %>% filter(metric=="submit_job"), y=~job_rec_id2, x=~t, color=I("grey"), symbol=I('o'), name="Submit Time",marker=marker) %>%
+    add_markers(data = df %>% filter(metric=="launch_job"), y=~job_rec_id2, x=~t, color=~value, colors=c("#0000FF","#00FF00"), symbol=I('cross'),marker=marker) %>% #I('+')
+    #add_markers(data = df %>% filter(metric=="job_epilog_complete"), y=~job_rec_id2, x=~t, color=I("red"), symbol=I('x'), name="End Time",marker=marker) %>%
+    add_paths(data = df %>% filter(metric=="launch_job"), y=~job_rec_id2,x=~t, linetype=~id, legendgroup="Execution Order", color=I('black')) %>% 
+    layout(
+      yaxis = list(dtick = 1),
+      xaxis = list(dtick = 10)
+    )
+#htmlwidgets::saveWidget(p, "sample_sched_didnt_start_after_1004_ends.html")
+  #
+
+  # ,legendgrouptitle=list(text="Execution Order"
+
+#%>%
+#  scale_y_continuous(breaks=seq(min(df$JobRecID),max(df$JobRecID),1)) + 
+  #theme(panel.grid.minor = element_line(colour="black", size=0.5)) +
+#  scale_x_continuous(breaks = seq(0, max(df2$EndTime), 5), minor_breaks = seq(0, max(df2$EndTime), 2)) 
+#ggplotly(p)
+p
 ```
 
 
+
+```{r}
+dtstart <- 146
+events <- bind_rows(
+  #read_events_multiple("bRR", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1c_3f4335f8f50378635795e8463bd5c137ec4734ff/jobs500_shrinked"), dtstart, 1),
+  read_events_multiple("bRR", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeRR/jobs500_shrinked"), dtstart, 1),
+  read_events_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), dtstart, 1)
+)
+
+dfRR <- events %>% filter(dtstart==dtstart & slurm_mode=='bRR' & run_id==1)
+dfRR$job_rec_id2 <- dfRR$job_rec_id-0.2
+
+dfZZ <- events %>% filter(dtstart==dtstart & slurm_mode=='bZZ' & run_id==1)
+dfZZ$job_rec_id2 <- dfZZ$job_rec_id+0.2
+
+#print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
+
+df <- rbind(dfRR,dfZZ) %>% mutate(id=paste(slurm_mode,dtstart,run_id)) %>% arrange(run_id,t)
+dfs <- filter(df, metric %in% c("submit_job","launch_job","job_epilog_complete")) %>% 
+  dplyr::select(id,job_rec_id,job_rec_id2,metric,t) %>%
+  group_by(id,job_rec_id,metric) %>%
+  summarise(job_rec_id2=last(job_rec_id2),t=last(t))%>%
+  spread(metric,t)
+
+
+marker=list(size=10, line=list(width=2))
+p <- plot_ly(df) %>%
+    add_segments(data = filter(df, metric=='backfill'), y=I(1000),yend=I(1501), x=~t,xend=~t,color=I("grey"),alpha=I(0.5), linetype=~id, name="backfiller start") %>%
+    add_segments(data = filter(df, metric=='sched'), y=I(1000),yend=I(1501), x=~t,xend=~t,color=I("#AED6F1"),alpha=I(0.5), linetype=~id, name="sched start") %>% #light blue
+    add_segments(data = filter(df, metric=='job_time_limits_testing'), y=I(1000),yend=I(1501), x=~t,xend=~t,color=I("#AEF1D6"),alpha=I(0.5), linetype=~id, name="timelim check") %>% #light green
+    add_segments(data = dfs, y=~job_rec_id2,yend=~job_rec_id2, x=~submit_job,xend=~launch_job,color=I("grey"), name="Wait Period") %>%
+    add_segments(data = dfs, y=~job_rec_id2,yend=~job_rec_id2, x=~launch_job,xend=~job_epilog_complete,color=I("red"), name="Run Period") %>%
+    add_markers(data = df %>% filter(metric=="submit_job"), y=~job_rec_id2, x=~t, color=I("grey"), symbol=I('o'), name="Submit Time",marker=marker) %>%
+    add_markers(data = df %>% filter(metric=="launch_job"), y=~job_rec_id2, x=~t, color=~value, colors=c("#0000FF","#00FF00"), symbol=I('cross'),marker=marker) %>% #I('+')
+    add_markers(data = df %>% filter(metric=="job_epilog_complete"), y=~job_rec_id2, x=~t, color=I("red"), symbol=I('x'), name="End Time",marker=marker) %>%
+    add_paths(data = df %>% filter(metric=="launch_job"), y=~job_rec_id2,x=~t, linetype=~id, legendgroup="Execution Order", color=I('black')) %>% 
+    layout(
+      yaxis = list(dtick = 1),
+      xaxis = list(dtick = 10)
+    )
+#htmlwidgets::saveWidget(p, "sample_sched_didnt_start_after_1004_ends.html")
+  #
+
+  # ,legendgrouptitle=list(text="Execution Order"
+
+#%>%
+#  scale_y_continuous(breaks=seq(min(df$JobRecID),max(df$JobRecID),1)) + 
+  #theme(panel.grid.minor = element_line(colour="black", size=0.5)) +
+#  scale_x_continuous(breaks = seq(0, max(df2$EndTime), 5), minor_breaks = seq(0, max(df2$EndTime), 2)) 
+#ggplotly(p)
+p
+```
+
+
+```{r}
+#sched
+#backfill
+#job_time_limits_testing
+dftRR <- dfRR %>% arrange(t) %>% filter(t > 180) # %>% mutate(diff=t-lag(t))
+dfRR
+```
+```{r}
+#metric=="sched" & 
+dftZZ <- dfZZ %>% arrange(t) %>% filter(t > 180) # %>% mutate(diff=t-lag(t))
+dftZZ
+```
+
+
+```{r}
+#sched
+#backfill
+#job_time_limits_testing
+dftRR <- dfRR %>% arrange(t) %>% filter(metric=="job_time_limits_testing") %>% mutate(diff=t-lag(t))
+dftRR
+```
+
+```{r}
+#metric=="sched" & 
+dftZZ <- dfZZ %>% arrange(t) %>% filter(metric=="job_time_limits_testing") %>% mutate(diff=t-lag(t))
+dftZZ
+#2022-01-01 00:00:11.998497
+```
+
+```{r}
+df <- events %>% group_by(slurm_mode) %>% filter(metric=='_slurmctld_background_cycle') %>% mutate(dt=t-lag(t)-1) %>% filter(!is.na(dt))
+#hist(df$dt) & dt>0.01
+#df
+ggplot(df, aes(x=log(dt), fill=slurm_mode)) +
+  geom_histogram(position="dodge",bins=10)
+```
+```{r}
+
+dft1 <- dft1 %>% mutate(t_zz=dft2$t[1:94],dt=t-t_zz)
+dft1
+
+```
+
+
+```{r}
+events %>% filter(metric=="slurm_start_time")
+```

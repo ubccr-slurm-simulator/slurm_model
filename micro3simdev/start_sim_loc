@@ -1,11 +1,25 @@
 #!/usr/bin/env bash
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd $SCRIPT_DIR
-# docker pull nsimakov/slurm_sim_head_node:dev
-# docker pull nsimakov/slurm_compute_node:3
-RUN_NAME=small
-workload=small.events
+
+SLURM_SIM_DIR=/home/nikolays/slurm_sim_ws/slurm_sim
+
+
+source /home/nikolays/anaconda3/etc/profile.d/conda.sh
+conda activate slurm_analyser
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$SLURM_SIM_DIR/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/sbin:$PATH
+export SLURM_CONF=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev/etc_sim/slurm.conf
+
+CLUS_DIR=$SCRIPT_DIR
+
 MACHINE_NAME=`hostname`
+RUN_NAME=small
+workload=$SCRIPT_DIR/job_traces/small.events
+run_ids="1 2"
+dtstarts="58 59 68 79 89 99 105 114 126 146"
+
+RUN_NAME=jobs500_shrinked
+workload=$SCRIPT_DIR/job_traces/jobs500_shrinked.events
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -24,6 +38,16 @@ while [[ $# -gt 0 ]]; do
       ;;
     -n|--run-name)
       RUN_NAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -dts|--dtstarts)
+      dtstarts="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -rid|--run-ids)
+      run_ids="$2"
       shift # past argument
       shift # past value
       ;;
@@ -59,34 +83,35 @@ then
 fi
 # 58 59
 # 1 2
-for replica in 1 2
+# for replica in 1 2 3 4 5 6 7 8 9
+for replica in $run_ids
 do
-    for dtstart in 58 59 68 79 89 99 105 114 126 146
+    for dtstart in $dtstarts
     do
         cd $SCRIPT_DIR
         pwd
         echo "Start sim $dtstart $replica ${RUN_NAME}"
 
         sudo rm log/*;sudo rm -rf compute_nodes_log/* ./home/*
+        rm var/* log_loc/*; rm -rf var/spool/* var/state/*
 
         echo dtstart $dtstart
 
-        docker compose up -d
-
         sleep 20
 
-        docker exec micro3simdev-headnode-1 /opt/cluster/slurm_sim_tools/bin/slurmsim -v run_sim  \
-            -s /usr -e /etc/slurm             \
-            -a /opt/cluster/vctools/sacctmgr.script \
-            -t /opt/cluster/job_traces/${workload} \
-            -r /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v \
-            -octld /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_ctld.out \
-            -odbd /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_dbd.out \
+        slurmsim -v run_sim  \
+            -s $SLURM_SIM_DIR \
+            -e ${CLUS_DIR}/etc_sim \
+            -a ${CLUS_DIR}/vctools/sacctmgr.script \
+            -t ${workload} \
+            -r ${CLUS_DIR}/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v \
+            -octld ${CLUS_DIR}/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_ctld.out \
+            -odbd ${CLUS_DIR}/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_dbd.out \
             -dtstart $dtstart --no-slurmd >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
-#
+
         sudo chown -R $USER:$USER ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}
 
-        docker compose stop;docker compose rm -f -s -v
+
         echo Done with $dtstart $replica
     done
 done
@@ -94,6 +119,6 @@ done
 
 rm -rf ./results/${MACHINE_NAME}/${RUN_NAME}/etc ./results/${MACHINE_NAME}/${RUN_NAME}/${workload}.events
 cp -r ./etc ./results/${MACHINE_NAME}/${RUN_NAME}/
-cp ./job_traces/${workload} ./results/${MACHINE_NAME}/${RUN_NAME}/
+cp ${workload} ./results/${MACHINE_NAME}/${RUN_NAME}/
 
 echo Done
