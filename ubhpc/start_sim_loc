@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
+cd $SCRIPT_DIR
+
+SLURM_SIM_DIR=/home/nikolays/slurm_sim_ws/slurm_sim
+
+
+source /home/nikolays/anaconda3/etc/profile.d/conda.sh
+conda activate slurm_analyser
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$SLURM_SIM_DIR/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/sbin:$PATH
+export SLURM_CONF=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev/etc_sim/slurm.conf
+
+CLUS_DIR=$SCRIPT_DIR
+
+MACHINE_NAME=`hostname`
+RUN_NAME=workload_scale240
+workload=$SCRIPT_DIR/job_traces/workload_scale240.events
+run_ids="1"
+dtstarts="55 137 37 232 234 49 79 241 71 261"
+
+
+RUN_NAME=workload_scale240.events
+workload=$SCRIPT_DIR/job_traces/workload_scale240.events
+
+POSITIONAL=()
+while [[ $# -gt 0 ]]; do
+  key="$1"
+
+  case $key in
+    -m|--machine)
+      MACHINE_NAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -w|--workload)
+      workload="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -n|--run-name)
+      RUN_NAME="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -dts|--dtstarts)
+      dtstarts="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -rid|--run-ids)
+      run_ids="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -h|--help)
+      echo "start_sim -m <machine name> -w <workload name> -n <simulation name>"
+      echo "    Start virtual cluster simulation (all head) and compute nodes"
+      echo "    -m <machine name>. Default: `hostname`"
+      echo "    -w <workload name> path to workload events file. Default: small.events"
+      echo "    -n <simulation name> default `hostname`"
+      echo "    The workload is read from <head node>:/opt/cluster/job_traces/-w <workload name>"
+      echo "    The results will be copied to <head node>:/root/results/<machine name>/<simulation name>"
+      echo "    each run will be in dtstart_<dtstart>_<replica> sub-directory"
+      exit 0
+      ;;
+    *)    # unknown option
+      echo "Unknown arguments!"
+      exit 1
+      shift # past argument
+      ;;
+  esac
+done
+
+echo "MACHINE_NAME ${MACHINE_NAME}"
+echo "RUN_NAME: ${RUN_NAME}"
+echo "workload ${workload}"
+
+# just in case try to remove old run
+docker compose stop;docker compose rm -f -s -v
+
+if [ ! -d "./results/${MACHINE_NAME}/${RUN_NAME}" ]
+then
+  mkdir -p ./results/${MACHINE_NAME}/${RUN_NAME}
+fi
+# 58 59
+# 1 2
+# for replica in 1 2 3 4 5 6 7 8 9
+for replica in $run_ids
+do
+    for dtstart in $dtstarts
+    do
+        cd $SCRIPT_DIR
+        pwd
+        echo "Start sim $dtstart $replica ${RUN_NAME}"
+
+        sudo rm log/*;sudo rm -rf compute_nodes_log/* ./home/*
+        rm var/* log_loc/*; rm -rf var/spool/* var/state/*
+
+        echo dtstart $dtstart
+
+        sleep 20
+
+        slurmsim -v run_sim  \
+            -s $SLURM_SIM_DIR \
+            -e ${CLUS_DIR}/etc_sim \
+            -a ${CLUS_DIR}/vctools/sacctmgr.script \
+            -t ${workload} \
+            -r ${CLUS_DIR}/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v \
+            -octld ${CLUS_DIR}/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_ctld.out \
+            -odbd ${CLUS_DIR}/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_dbd.out \
+            -dtstart $dtstart --no-slurmd >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
+
+        sudo chown -R $USER:$USER ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}
+
+
+        echo Done with $dtstart $replica
+    done
+done
+
+
+rm -rf ./results/${MACHINE_NAME}/${RUN_NAME}/etc ./results/${MACHINE_NAME}/${RUN_NAME}/${workload}.events
+cp -r ./etc ./results/${MACHINE_NAME}/${RUN_NAME}/
+cp ${workload} ./results/${MACHINE_NAME}/${RUN_NAME}/
+
+echo Done

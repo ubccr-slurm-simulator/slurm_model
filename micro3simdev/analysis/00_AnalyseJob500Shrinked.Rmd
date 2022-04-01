@@ -230,7 +230,8 @@ sacct2 <- bind_rows(
   #read_sacct_out_multiple("bF5", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("bF2b", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF2b/jobs500_shrinked"), c(58), 1),
   #read_sacct_out_multiple("bF3", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF3/jobs500_shrinked"), c(58), 1),
-  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
+  read_sacct_out_multiple("bF5", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79), 1)
   #,
   #read_sacct_out_multiple("bF3", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58), 1)
   #read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
@@ -405,10 +406,10 @@ p
 
 
 ```{r}
-dtstart <- 146
+dtstart <- 58
 events <- bind_rows(
   #read_events_multiple("bRR", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1c_3f4335f8f50378635795e8463bd5c137ec4734ff/jobs500_shrinked"), dtstart, 1),
-  read_events_multiple("bRR", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeRR/jobs500_shrinked"), dtstart, 1),
+  read_events_multiple("bRR", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeR9/jobs500_shrinked"), dtstart, 1),
   read_events_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), dtstart, 1)
 )
 

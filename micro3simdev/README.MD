@@ -43,8 +43,8 @@ make -j
 make -j install
 
 
- 2204  sudo apt install libmunge-dev
- 2209  sudo apt install libmysqlclient-dev
+sudo apt install libmunge-dev
+sudo apt install libmysqlclient-dev
 
 
 CREATE USER 'slurm'@'%' IDENTIFIED BY 'slurm';

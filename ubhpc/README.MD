@@ -322,7 +322,8 @@ docker compose stop;docker compose rm -f -s -v
 sudo rm log/*;sudo rm -rf compute_nodes_log/* ./home/*
 # run docker compose up -d untill all up
 docker compose up -d --wait --quiet-pull
-./start_sim_bg 7
+
+./start_sim_bg 5
 
 #also check that it start submitting the jobs
 
@@ -381,6 +382,70 @@ VC_SIM_DIR=5
 RESULTS_DIR=results/test/dtstart_234_1
 PCP_LOG=/var/log/pcp/pmlogger/slurm-sim--4.novalocal
 
+# centos@slurm-sim--1 / slurm-sim-2
+VC_SIM_DIR=7
+RESULTS_DIR=results/test/dtstart_79_1
+PCP_LOG=/var/log/pcp/pmlogger/slurm-sim--1.novalocal
+# is not completed
+
+[2022-01-12 03:11:30,504]-[INFO]: slurm.conf: /etc/slurm/slurm.conf
+[2022-01-12 03:11:30,504]-[INFO]: slurmdbd: /usr/sbin/slurmdbd
+[2022-01-12 03:11:30,504]-[INFO]: slurmd: /usr/sbin/slurmd
+[2022-01-12 03:11:30,504]-[INFO]: slurmctld: /usr/sbin/slurmctld
+
+[2022-01-17 23:48:52,788]-[INFO]: Done
+
+# centos@slurm-sim--1-2 / slurm-sim-1-2
+VC_SIM_DIR=6
+RESULTS_DIR=results/test/dtstart_49_1
+PCP_LOG=/var/log/pcp/pmlogger/slurm-sim-1-2.novalocal
+
+2022-01-11T22:17:37.548
+2022-02-10T10:02:52.207
+
+# centos@slurm-sim--2 / slurm-sim-3
+VC_SIM_DIR=8
+RESULTS_DIR=results/test/dtstart_241_1
+PCP_LOG=/var/log/pcp/pmlogger/slurm-sim--2.novalocal
+
+[2022-01-12T03:39:07.115]
+[2022-02-10T13:53:40.221]
+29678 results/test/dtstart_241_1/slurm_acct.out
+
+
+# centos@slurm-sim--3 / slurm-sim-4
+VC_SIM_DIR=9
+RESULTS_DIR=results/test/dtstart_71_1
+PCP_LOG=/var/log/pcp/pmlogger/slurm-sim--3.novalocal
+
+[2022-01-12T03:41:46.846] error: Unable to open pidfile `/var/run/slurmctld.pid': Permission denied
+[2022-01-12T03:41:46.846] Not running as root. Can't drop supplementary groups
+[centos@slurm-sim--3 ubhpc]$ tail -n 2 $RESULTS_DIR/slurmctld.log
+[2022-02-10T00:48:07.139] _job_complete: JobId=22794 done
+[2022-02-10T13:57:49.920] Time limit exhausted for JobId=22810
+[centos@slurm-sim--3 ubhpc]$ wc -l $RESULTS_DIR/slurm_acct.out
+29678 results/test/dtstart_71_1/slurm_acct.out
+
+# centos@slurm-sim--4 / slurm-sim-5
+VC_SIM_DIR=10
+RESULTS_DIR=results/test/dtstart_261_1
+PCP_LOG=/var/log/pcp/pmlogger/slurm-sim--4.novalocal
+
+[2022-01-12T03:40:23.407] error: Unable to open pidfile `/var/run/slurmctld.pid': Permission denied
+[2022-01-12T03:40:23.408] Not running as root. Can't drop supplementary groups
+[centos@slurm-sim--4 ubhpc]$ tail -n 2 $RESULTS_DIR/slurmctld.log
+[2022-02-10T15:34:47.259] error: _handle_assoc_tres_run_secs: job 22810: assoc 1 TRES node grp_used_tres_run_secs underflow, tried to remove 248 seconds when only 0 remained.
+[2022-02-10T15:34:47.259] error: _handle_assoc_tres_run_secs: job 22810: assoc 1 TRES billing grp_used_tres_run_secs underflow, tried to remove 9920 seconds when only 8120 remained.
+[centos@slurm-sim--4 ubhpc]$ wc -l $RESULTS_DIR/slurm_acct.out
+29678 results/test/dtstart_261_1/slurm_acct.out
+
+
+# "script"
+cd slurm_sim_ws/slurm_model/ubhpc/
+sudo chown -R centos:centos *
+head -n 2 $RESULTS_DIR/slurmctld.log
+tail -n 2 $RESULTS_DIR/slurmctld.log
+wc -l $RESULTS_DIR/slurm_acct.out
 
 mkdir vc_sim_${VC_SIM_DIR}
 # change permissions
@@ -392,7 +457,7 @@ ZSTD_CLEVEL=19 ZSTD_NBTHREADS=8 tar --use-compress-program zstd -cf compute_node
 ZSTD_CLEVEL=19 ZSTD_NBTHREADS=8 tar --use-compress-program zstd -cf etc.tar.zst etc
 
 # rename vc simulation output and compress
-mv out_1 vc_sim.out
+mv out_${VC_SIM_DIR} vc_sim.out
 zstd -19 -T8 vc_sim.out
 
 zstd -19 -T8 ${RESULTS_DIR}/*
@@ -434,3 +499,22 @@ rsync -a slurm-sim-2:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_2 ./
 rsync -a slurm-sim-3:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_3 ./
 rsync -a slurm-sim-4:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_4 ./
 rsync -a slurm-sim-5:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_5 ./
+
+[2022-01-12T03:39:07.115]
+[2022-02-10T13:53:40.221]
+
+rm -rf vc_sim_${VC_SIM_DIR}/pmlog/2022021[1-9]* vc_sim_${VC_SIM_DIR}/pmlog/2022022* vc_sim_${VC_SIM_DIR}/pmlog/202203*
+
+sudo rm -rf ${PCP_LOG}/202201*
+sudo rm -rf ${PCP_LOG}/202202*
+sudo rm -rf ${PCP_LOG}/202203[012]*
+
+du -h vc_sim_${VC_SIM_DIR}
+
+rsync -a slurm-sim-1-2:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_6 ./
+rsync -a slurm-sim-3:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_8 ./
+rsync -a slurm-sim-4:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_9 ./
+rsync -a slurm-sim-5:/home/centos/slurm_sim_ws/slurm_model/ubhpc/vc_sim_10 ./
+
+
+7 5
