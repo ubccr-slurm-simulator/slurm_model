@@ -211,41 +211,11 @@ read_sacct_out_multiple <- function(slurm_mode, results_root_dir, dtstart_list, 
 #JobName
 # ../../../slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/
 sacct2 <- bind_rows(
-  read_sacct_out_multiple("b0_tb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/jobs500_shrinked__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  #read_sacct_out_multiple("b1c", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1c_3f4335f8f50378635795e8463bd5c137ec4734ff/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  #read_sacct_out_multiple("b2_fb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_2_fbb23b6cadcad237ffcc06d6cd87e035d138e279/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  #read_sacct_out_multiple("b3_b0", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  #read_sacct_out_multiple("b4_4c", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-
-  #read_sacct_out_multiple("bR9", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebeeR9/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-
-  read_sacct_out_multiple("bF5", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3sim/bumblebeeF5/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  read_sacct_out_multiple("s2311", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.11rc_2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  #read_sacct_out_multiple("zZZ", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3sim/bumblebee_23.02_sim_796898/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
-  read_sacct_out_multiple("zZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
-  #,
-  #read_sacct_out_multiple("bF3", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58), 1)
-  #read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/jobs500_shrinked"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2)
+  read_sacct_out_multiple("b0_tb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/mightybee_21.08.04_tarball/jobs500"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1), # i am not sure is it tarball
+  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
 )
-#sacct$rid <- sacct$run_id + sacct$dtstart*100
-#sacct
-#read_sacct_out(path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/dtstart_58_1/slurm_acct.out"))
 sacct2
 ```
-```{r}
-jobs_summary2 <- sacct2 %>% group_by(slurm_mode,JobRecID) %>% summarise(
-  SubmitTimeMean=mean(SubmitTime), SubmitTimeSD=sd(SubmitTime),
-  StartTimeMean=mean(StartTime), StartTimeSD=sd(StartTime),
-  WaitTimeMean=mean(WaitTime), WaitTimeSD=sd(WaitTime),
-  WallTimeMean=mean(WallTime), WallTimeSD=sd(WallTime),
-  .groups="drop_last"
-) %>% arrange(JobRecID,slurm_mode)
-jobs_summary2
-```
-b0_tb - bumblebee_0_tarball - build from official tarball
-bumblebee_1_351d4  - build from git using tag corresponding to above tarball, increased time accuracy in logs
-b2_fb 
-
 
 
 # Start Time Boxplot
@@ -262,7 +232,7 @@ plot_ly(sacct2, x = ~factor(JobRecID), y = ~StartTime, color = ~slurm_mode, type
 
 ```{r fig.width=12, fig.height=12}
 metrics_df <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>% #filter(dtstart %in% c(58)) %>%
-    mutate(id=sprintf("%s_%03d_%d", slurm_mode, dtstart, run_id)) %>% dplyr::select(-slurm_mode, -dtstart, -run_id) %>%
+    mutate(id=sprintf("%s_%03d_%d", slurm_mode, dtstart, run_id)) %>% select(-slurm_mode, -dtstart, -run_id) %>%
     dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
     spread(id, metric)
 metrics_matrix <- metrics_df %>% dplyr::select(-job_rec_id) %>% as.matrix()

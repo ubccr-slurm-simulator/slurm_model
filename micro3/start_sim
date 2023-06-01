@@ -1,10 +1,13 @@
 #!/usr/bin/env bash
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd $SCRIPT_DIR
-docker pull nsimakov/slurm_head_node:1
-docker pull nsimakov/slurm_compute_node:1
+# docker pull nsimakov/slurm_head_node:1
+# docker pull nsimakov/slurm_compute_node:1
 RUN_NAME=small
 workload=small.events
+
+#RUN_NAME=jobs500_shrinked
+#workload=jobs500_shrinked.events
 MACHINE_NAME=`hostname`
 
 POSITIONAL=()
@@ -60,7 +63,7 @@ fi
 
 for dtstart in 58 59 68 79 89 99 105 114 126 146
 do
-    for replica in 1 2
+    for replica in 1
         do
         cd $SCRIPT_DIR
         pwd

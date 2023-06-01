@@ -2,24 +2,27 @@
 SCRIPT_DIR="$( cd -- "$( dirname -- "${BASH_SOURCE[0]}" )" &> /dev/null && pwd )"
 cd $SCRIPT_DIR
 
-SLURM_SIM_DIR=/home/nikolays/slurm_sim_ws/slurm_sim
+SLURM_SIM_DIR=/home/nikolays/slurm_sim_ws/slurm_simulator/build/install
 
 
 source /home/nikolays/anaconda3/etc/profile.d/conda.sh
 conda activate slurm_analyser
-export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$SLURM_SIM_DIR/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/sbin:$PATH
-export SLURM_CONF=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev/etc_sim/slurm.conf
+
+export SLURM_CONF=$SCRIPT_DIR/etc_sim/slurm.conf
 
 CLUS_DIR=$SCRIPT_DIR
+
+#run_ids="1 2"
+run_ids="1"
+dtstarts="58 59 68 79 89 99 105 114 126 146"
+#dtstarts="58 59"
 
 MACHINE_NAME=`hostname`
 RUN_NAME=small
 workload=$SCRIPT_DIR/job_traces/small.events
-run_ids="1 2"
-dtstarts="58 59 68 79 89 99 105 114 126 146"
 
-RUN_NAME=jobs500_shrinked
-workload=$SCRIPT_DIR/job_traces/jobs500_shrinked.events
+#RUN_NAME=jobs500_shrinked
+#workload=$SCRIPT_DIR/job_traces/jobs500_shrinked.events
 
 POSITIONAL=()
 while [[ $# -gt 0 ]]; do
@@ -41,6 +44,12 @@ while [[ $# -gt 0 ]]; do
       shift # past argument
       shift # past value
       ;;
+    -wn|--workload-name)
+      RUN_NAME="$2"
+      workload=$SCRIPT_DIR/job_traces/$RUN_NAME.events
+      shift # past argument
+      shift # past value
+      ;;
     -dts|--dtstarts)
       dtstarts="$2"
       shift # past argument
@@ -48,6 +57,11 @@ while [[ $# -gt 0 ]]; do
       ;;
     -rid|--run-ids)
       run_ids="$2"
+      shift # past argument
+      shift # past value
+      ;;
+    -s|--slurm)
+      SLURM_SIM_DIR="$2"
       shift # past argument
       shift # past value
       ;;
@@ -70,12 +84,15 @@ while [[ $# -gt 0 ]]; do
   esac
 done
 
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$SLURM_SIM_DIR/bin:$SLURM_SIM_DIR/sbin:$PATH
+
 echo "MACHINE_NAME ${MACHINE_NAME}"
 echo "RUN_NAME: ${RUN_NAME}"
+echo "SLURM_SIM_DIR: ${SLURM_SIM_DIR}"
 echo "workload ${workload}"
 
 # just in case try to remove old run
-docker compose stop;docker compose rm -f -s -v
+#docker compose stop;docker compose rm -f -s -v
 
 if [ ! -d "./results/${MACHINE_NAME}/${RUN_NAME}" ]
 then
@@ -94,10 +111,9 @@ do
 
         sudo rm log/*;sudo rm -rf compute_nodes_log/* ./home/*
         rm var/* log_loc/*; rm -rf var/spool/* var/state/*
+        sleep 20
 
         echo dtstart $dtstart
-
-        sleep 20
 
         slurmsim -v run_sim  \
             -s $SLURM_SIM_DIR \

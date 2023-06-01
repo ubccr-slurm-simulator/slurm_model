@@ -39,10 +39,7 @@ library(cowplot)
 #library(gplots)
 #library(parallel)
 library(plotly)
-```
 
-
-```{r}
 
 read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     cat("Read: ",filename,"\n")
@@ -79,6 +76,13 @@ read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     )
     #convert job names
     slurm_log$JobRecID <- as.integer(str_replace(slurm_log$JobName, "jobid_",""))
+    if(sum(is.na(slurm_log$JobRecID)) > 0.5 * length(slurm_log$JobRecID )) {
+      slurm_log$JobRecID <- as.integer(str_replace(slurm_log$JobName, "job_",""))
+    }
+    if(sum(is.na(slurm_log$JobRecID)) > 0.5 * length(slurm_log$JobRecID )) {
+      warning("Can not extract job id from job name will use raw job id")
+      slurm_log$JobRecID <- slurm_log$JobIdRaw
+    }
     
     #convert to proper format
     for(col in c("Submit","Eligible","Start","End")){
@@ -205,9 +209,7 @@ read_sacct_out_multiple <- function(slurm_mode, results_root_dir, dtstart_list, 
   }
   return(data.table::rbindlist(result_list))
 }
-```
 
-```{r}
 
 read_events_csv <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     cat("Read: ",filename,"\n")
@@ -258,22 +260,26 @@ read_events_multiple <- function(slurm_mode, results_root_dir, dtstart_list, run
 #JobName
 # ../../../slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/
 sacct <- bind_rows(
-  read_sacct_out_multiple("b0_tarball", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/small__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+  #read_sacct_out_multiple("b0_tarball", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/small__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b1_351d", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b2_fbb2", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_2_fbb23b6cadcad237ffcc06d6cd87e035d138e279/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b3_b07f", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_3_b07f7071f32c0ddd10b468041abdc4c34ef9b7c2/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b4_4c06", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  read_sacct_out_multiple("b4fr_4c06", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e_fixrep/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+#  read_sacct_out_multiple("b4fr_4c06", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e_fixrep/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
 #  read_sacct_out_multiple("b5_f588", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_5_146f125da6b5edad5f8723286d5bcd884a9b6b1c/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  read_sacct_out_multiple("b6_af43", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_6_af43b09f8b5edc71028ecc02e03d68f81111c290/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
+  #read_sacct_out_multiple("b6_af43", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_6_af43b09f8b5edc71028ecc02e03d68f81111c290/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b_Z2_f588", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee_2_f588c59c7a52c00c95f8c84c94e9122048c0acd0/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
-  read_sacct_out_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
+  read_sacct_out_multiple("s2302", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.02/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  read_sacct_out_multiple("s2311", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.11rc/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  #read_sacct_out_multiple("z2302s1", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3sim/bumblebee_23.02_sim_796898/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  read_sacct_out_multiple("zZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
 )
 #sacct$rid <- sacct$run_id + sacct$dtstart*100
 #sacct
 #read_sacct_out(path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/dtstart_58_1/slurm_acct.out"))
 #sacct
 ```
+
 b0_tarball - build from official tarball
 b1_351d4  - build from git using tag corresponding to above tarball, increased time accuracy in logs
 b2_f588c - feed jobs from slurmctrld
@@ -292,6 +298,8 @@ events_time
 #read_sacct_out_multiple("b0_tarball", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/small__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b1_351d", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
 ```
+
+
 ```{r}
 
 events_proc <- bind_rows(
@@ -318,6 +326,8 @@ df %>% select(-value) %>% spread(metric,t) %>%
             job_time_limits_testing_avg=mean(job_time_limits_testing),job_time_limits_testing_sd=sd(job_time_limits_testing))
 
 ```
+
+
 ```{r}
 
 events_proc <- bind_rows(
@@ -383,11 +393,18 @@ plot_grid(
 ```
 
 
-```{r fig.width=11}
-ggplot(sacct, aes(x=factor(JobRecID),y=StartTime, color=slurm_mode)) + 
-    geom_boxplot(position=position_dodge()) + 
-    theme(legend.position="bottom")
-#ggplotly(p)
+```{r fig.width=20}
+cowplot::plot_grid(
+ggplot(sacct, aes(x=factor(JobRecID),y=SubmitTime, color=slurm_mode)) + 
+     geom_boxplot(position=position_dodge()) + 
+     theme(legend.position="bottom"),
+  ggplot(sacct, aes(x=factor(JobRecID),y=StartTime, color=slurm_mode)) + 
+     geom_boxplot(position=position_dodge()) + 
+     theme(legend.position="bottom"),
+ggplot(sacct, aes(x=factor(JobRecID),y=WallTime, color=slurm_mode)) + 
+     geom_boxplot(position=position_dodge()) + 
+     theme(legend.position="bottom"), ncol=1
+)
 ```
 
 # Start Time Boxplot
@@ -432,14 +449,14 @@ toWebGL(ggplotly(p, hoverinfo = 'text', text=paste0(sacct$slurm_mode,"\n",sacct$
 
 
 ```{r}
-sacct %>% filter(dtstart==58 & slurm_mode %in% c('b4fr_4c06', 'bZZ')) %>% arrange(slurm_mode, dtstart, run_id,StartTime)
+sacct %>% filter(dtstart==58 & slurm_mode %in% c('s2311', 'zZZ')) %>% arrange(JobRecID,slurm_mode, dtstart, run_id,StartTime)
 ```
 
 ```{r rows.print=20}
-df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='b4fr_4c06' & run_id==1)
+df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='s2311' & run_id==1)
 df1$job_rec_id <- df1$JobRecID-0.2
 
-df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==1)
+df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='zZZ' & run_id==1)
 df2$job_rec_id <- df2$JobRecID+0.2
 
 print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
@@ -468,10 +485,10 @@ ggplotly(p)
 
 
 ```{r rows.print=20}
-df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='b4fr_4c06' & run_id==1)
+df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='s2311' & run_id==1)
 df1$job_rec_id <- df1$JobRecID-0.1
 
-df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='bZZ' & run_id==1)
+df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='zZZ' & run_id==1)
 df2$job_rec_id <- df2$JobRecID+0.1
 
 print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
@@ -501,21 +518,23 @@ plot_ly(df) %>%
   #theme(panel.grid.minor = element_line(colour="black", size=0.5)) +
 #  scale_x_continuous(breaks = seq(0, max(df2$EndTime), 5), minor_breaks = seq(0, max(df2$EndTime), 2)) 
 #ggplotly(p)
-#p
+p
 ```
 
 ```{r}
 dtstart <- 58
 events <- bind_rows(
   #read_events_multiple("b4fr_4c06", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_4_4c06fd8cc8492dbfbe863a069e782ceb58376b9e_fixrep/small"), dtstart, 1),
-  read_events_multiple("bR", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1c_3f4335f8f50378635795e8463bd5c137ec4734ff/small"), dtstart, 1),
-  read_events_multiple("bZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), dtstart, 1)
+  #read_events_multiple("bumblebee_1c_3f", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1c_3f4335f8f50378635795e8463bd5c137ec4734ff/small"), dtstart, 1),
+  read_events_multiple("s2311", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.11rc/small"), dtstart, 1),
+  #read_events_multiple("s2311", path.expand("~/slurm_sim_ws/slurm_model/micro3/results/bumblebee/small"), dtstart, 1),
+  read_events_multiple("zZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), dtstart, 1)
 )
 
-df1 <- events %>% filter(dtstart==dtstart & slurm_mode=='bR' & run_id==1)
+df1 <- events %>% filter(dtstart==dtstart & slurm_mode=='s2311' & run_id==1)
 df1$job_rec_id2 <- df1$job_rec_id-0.2
 
-df2 <- events %>% filter(dtstart==dtstart & slurm_mode=='bZZ' & run_id==1)
+df2 <- events %>% filter(dtstart==dtstart & slurm_mode=='zZZ' & run_id==1)
 df2$job_rec_id2 <- df2$job_rec_id+0.2
 
 #print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
@@ -556,7 +575,16 @@ p <- plot_ly(df) %>%
 p
 ```
 
+```{r rows.print = 25}
+df1 %>% filter(job_rec_id==1002)
+```
+```{r rows.print = 25}
+df1 %>% filter(job_rec_id==1001)
+```
 
+```{r rows.print = 25}
+df2 %>% filter(job_rec_id==1001)
+```
 
 ```{r}
 #sched
@@ -566,6 +594,7 @@ df1 %>% arrange(t) %>% filter(metric=="backfill")
 ```{r}
 #df %>% filter(job_rec_id %in% c(1012,1007,1017) & metric=="nodes") %>% arrange(t) #%>% filter(metric=="backfill")
 df2 %>% arrange(t) %>% filter(metric=="backfill")
+3.317691-4.266231-.500000
 ```
 
 	-54.779917	start	NA	b4fr_4c06 58 1

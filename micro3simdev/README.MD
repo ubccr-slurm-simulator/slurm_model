@@ -168,7 +168,8 @@ slurmctld: _pick_best_nodes: JobId=1000 never runnable in partition normal
 # run local
 start_conda
 conda activate slurm_analyser
-export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/sbin:$PATH
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_tools/bin:$PATH
+export PATH=/home/nikolays/slurm_sim_ws/slurm_sim_deb/bin:/home/nikolays/slurm_sim_ws/slurm_sim_deb/sbin:$PATH
 export SLURM_CONF=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev/etc_sim/slurm.conf
 
 CLUS_DIR=/home/nikolays/slurm_sim_ws/slurm_model/micro3simdev

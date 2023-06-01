@@ -1,8 +1,65 @@
-Micro2 is small cluster used for validation of simulator.
+Micro3 is small cluster used for validation of simulator.
 
 This directory contains files used for generation of reference job history.
 
-# Host Preparation
+# Complete Manually Running Virtual Cluster
+
+for debugging purposes
+```bash
+docker run -it --rm -h headnode --name micro3-headnode-1 \
+    -v './results:/root/results' \
+    -v './etc:/etc/slurm' \
+    -v './vctools:/opt/cluster/vctools' \
+    -v './job_traces:/opt/cluster/job_traces' \
+    -v './log:/var/log/slurm' \
+    -v './home:/home' \
+    -v './../../slurm_sim_tools:/opt/cluster/slurm_sim_tools' \
+    nsimakov/slurm_head_node:3 \
+    sshd munged mysqld /opt/cluster/vctools/add_system_users.sh bash
+# run in container
+/opt/cluster/vctools/start_head_node.sh
+
+docker run -it --rm -h g1 --name micro3-g1-1 \
+      -v './results:/root/results' \
+      -v './etc:/etc/slurm' \
+      -v './vctools:/opt/cluster/vctools' \
+      -v './job_traces:/opt/cluster/job_traces' \
+      -v './compute_nodes_log/g1:/var/log/slurm' \
+      -v './home:/home' \
+    nsimakov/slurm_compute_node:3 \
+    sshd munged bash
+# run in container
+/opt/cluster/vctools/start_compute_node.sh
+    
+    
+```
+
+# Manually Running Virtual Cluster
+```bash
+# Start all nodes
+docker compose up -d
+
+# Access head node
+docker exec -it micro3-headnode-1 bash
+sleep 20
+
+docker exec micro3simdev-headnode-1 /opt/cluster/slurm_sim_tools/bin/slurmsim -v run_sim  \
+    -s /usr -e /etc/slurm             \
+    -a /opt/cluster/vctools/sacctmgr.script \
+    -t /opt/cluster/job_traces/${workload} \
+    -r /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica} -d -v \
+    -octld /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_ctld.out \
+    -odbd /root/results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}_dbd.out \
+    -dtstart $dtstart --no-slurmd >& ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}.out
+#
+sudo chown -R $USER:$USER ./results/${MACHINE_NAME}/${RUN_NAME}/dtstart_${dtstart}_${replica}
+
+# Stop and remove all nodes
+docker compose stop;docker compose rm -f -s -v
+```
+
+# Old Stuff 
+# Host Preparation (OLD)
 
 Install docker and docker compose
 
@@ -31,7 +88,7 @@ sudo docker run hello-world
 # add centos user to docker group
 sudo usermod -aG docker centos
 
-# install docker compose
+# install docker compose USE DOCKER COMPOSER!
 sudo curl -L "https://github.com/docker/compose/releases/download/1.27.4/docker-compose-$(uname -s)-$(uname -m)" -o /usr/local/bin/docker-compose
 sudo chmod +x /usr/local/bin/docker-compose
 
@@ -74,7 +131,7 @@ docker exec -it micro3-headnode-1 bash
 Run number of simulation
 ```bash
 # Run shrinked jobs500
-cd micro2
+cd micro3
 ./run_jobs500_shrinked.sh
 # Run jobs500
 cd micro2
@@ -148,3 +205,29 @@ Tue 12 Jan 2021 09:58:59 AM EST
 ./start_sim -w jobs500_shrinked.events -n jobs500_shrinked_simbase__ref
 
 ```
+
+# Troubleshooting
+
+## Problem with missing cgroup_v2.so
+
+```
+slurmd: debug3: Trying to load plugin /usr/lib64/slurm/cgroup_v2.so
+slurmd: error: Couldn't find the specified plugin name for cgroup/v2 looking at all files
+slurmd: debug3: plugin_peek->_verify_syms: found Slurm plugin name:Cgroup v1 plugin type:cgroup/v1 version:0x170201
+slurmd: error: cannot find cgroup plugin for cgroup/v2
+slurmd: error: cannot create cgroup context for cgroup/v2
+slurmd: error: Unable to initialize cgroup plugin
+slurmd: error: slurmd initialization failed
+```
+
+dbus/dbus.h was not available during build
+```
+fatal error: dbus/dbus.h: No such file or directory
+```
+
+force cgroup v1 interface (cgroup.conf):
+
+```
+CgroupPlugin=cgroup/v1
+```
+
