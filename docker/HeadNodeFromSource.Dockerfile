@@ -3,15 +3,26 @@ FROM nsimakov/slurm_common:23.11
 LABEL description="HeadNode Image for Slurm Virtual Cluster"
 
 USER root
-# install dependencies
-RUN dnf update --assumeno || true && \
+
+RUN \
+    dnf -y update && \
     dnf -y install 'dnf-command(config-manager)' && \
-    dnf config-manager --set-enabled crb && \
+    dnf config-manager --set-enabled devel && \
+    dnf -y update && \
+    dnf -y install --setopt=tsflags=nodocs epel-release && \
     dnf -y install --setopt=tsflags=nodocs \
-        vim tmux mc perl-Switch \
-        iproute perl-Date* \
+        vim wget bzip2 \
+        autoconf make gcc rpm-build \
+        openssl openssh-clients openssl-devel \
+        mariadb-server mariadb-devel \
+        munge munge-devel munge-libs\
+        readline readline-devel \
+        hdf5 hdf5-devel pam-devel hwloc hwloc-devel \
+        perl perl-Switch perl-ExtUtils-MakeMaker perl-Date* \
         python3 python3-PyMySQL python3-pip \
-        mariadb-server && \
+        libjwt libjwt-devel \
+        glib2-devel \
+        iproute && \
     dnf clean all && \
     pip install pandas psutil&& \
     rm -rf /var/cache/dnf
@@ -31,18 +42,23 @@ RUN chmod g+rw /var/lib/mysql /var/log/mariadb /var/run/mariadb && \
     mysql -e 'GRANT ALL PRIVILEGES ON *.* TO "slurm"@"localhost" WITH GRANT OPTION;' && \
     cmd_stop mysqld
 
-# copy slurm rpm
-COPY ./docker/RPMS/x86_64/slurm*.rpm /root/
+
+
+
+
+# copy slurm src
+COPY ./docker/slurm_src /root/slurm_src
 
 #install Slurm
-RUN dnf update --assumeno || true && \
-    dnf -y install \
-        slurm-[0-9]*.x86_64.rpm \
-        slurm-perlapi-*.x86_64.rpm \
-        slurm-slurmctld-*.x86_64.rpm \
-        slurm-slurmdbd-*.x86_64.rpm  \
-        slurm-pam_slurm-*.x86_64.rpm && \
-    rm slurm*.rpm  && \
+RUN cd /root/slurm_src && \
+    mkdir build1 && \
+    cd build1  && \
+    ../configure --prefix=/usr --exec-prefix=/usr --bindir=/usr/bin --sbindir=/usr/sbin \
+        --sysconfdir=/etc/slurm --datadir=/usr/share --includedir=/usr/include --libdir=/usr/lib64 \
+        --libexecdir=/usr/libexec --localstatedir=/var --sharedstatedir=/var/lib --mandir=/usr/share/man \
+        --infodir=/usr/share/info  && \
+    make -j && \
+    make -j install && \
     mkdir /var/log/slurm  && \
     chown -R slurm:slurm /var/log/slurm  && \
     mkdir /var/state  && \

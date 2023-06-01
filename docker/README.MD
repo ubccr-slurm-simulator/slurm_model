@@ -18,7 +18,7 @@ Here is listing on the whole process:
 ```bash
 # create directory for RPMS storage
 [[ ! -d "./docker/RPMS" ]] && mkdir -p docker/RPMS
-rm -rf "./docker/RPMS/*"
+rm -rf ./docker/RPMS/*
 
 # make image
 docker build -t pseudo/slurm_rpm_maker:latest -f ./docker/MakeSlurmRPM.Dockerfile .
@@ -39,19 +39,23 @@ docker run --name slurm_rpm_maker -h slurm_rpm_maker \
 
 ```bash
 # Build Common Image
-docker build -f docker/Common.Dockerfile -t nsimakov/slurm_common:2 .
+docker build -f docker/Common.Dockerfile -t nsimakov/slurm_common:23.11 .
 # (Optionally) Run Common container to test it
 # docker run -it --rm -h compute000 -p 222:22 --name compute000 nsimakov/slurm_common:latest
 
 # Build Head-Node Image
-docker build -f docker/HeadNode.Dockerfile -t nsimakov/slurm_head_node:2 .
+docker build -f docker/HeadNode.Dockerfile -t nsimakov/slurm_head_node:23.11 .
 # (Optionally) Run Head-Node container to test it
 # docker run -it --rm -h head-node -p 222:22 --name head-node nsimakov/slurm_head_node:latest
 
 # Build Compute-Node Image
-docker build -f docker/ComputeNode.Dockerfile -t nsimakov/slurm_compute_node:2 .
+docker build -f docker/ComputeNode.Dockerfile -t nsimakov/slurm_compute_node:23.11 .
 # (Optionally) Run Compute-Node container to test it
 # docker run -it --rm -h compute000 -p 222:22 --name compute000 nsimakov/slurm_compute_node:latest
+
+
+# Build Head-Node Image
+docker build -f docker/HeadNodeFromSource.Dockerfile -t nsimakov/slurm_head_node:src .
 ```
 
 

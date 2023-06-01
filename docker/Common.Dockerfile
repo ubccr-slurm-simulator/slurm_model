@@ -1,16 +1,17 @@
-FROM centos:7
+FROM rockylinux:9
 
 LABEL description="Common Image for Slurm Virtual Cluster"
 
 # install dependencies
 RUN \
-    yum update --assumeno || true && \
-    yum -y install --setopt=tsflags=nodocs epel-release && \
-    yum -y install --setopt=tsflags=nodocs \
+    dnf update --assumeno || true && \
+    dnf -y install --setopt=tsflags=nodocs epel-release && \
+    dnf -y install --setopt=tsflags=nodocs \
         openssl openssh-server openssh-clients \
-        munge sudo && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+        munge sudo \
+        procps && \
+    dnf clean all
+#    rm -rf /var/cache/yum
 #        vim tmux mc perl-Switch\
 #        iproute \
 #        perl-Date* \

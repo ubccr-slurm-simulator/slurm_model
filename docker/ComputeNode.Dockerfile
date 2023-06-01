@@ -1,4 +1,4 @@
-FROM pseudo/slurm_common:2
+FROM nsimakov/slurm_common:23.11
 
 LABEL description="Compute Node Image for Slurm Virtual Cluster"
 
@@ -12,8 +12,8 @@ COPY ./docker/RPMS/x86_64/slurm-[0-9]*.rpm ./docker/RPMS/x86_64/slurm-slurmd-*.x
 COPY ./docker/password-auth /etc/pam.d/password-auth
 
 #install Slurm
-RUN ls && yum update --assumeno || true && \
-    yum -y install \
+RUN ls && dnf update --assumeno || true && \
+    dnf -y install \
         slurm-[0-9]*.x86_64.rpm \
         slurm-slurmd-*.x86_64.rpm \
         && \
@@ -24,8 +24,8 @@ RUN ls && yum update --assumeno || true && \
     chown -R slurm:slurm /var/state  && \
     mkdir -p /var/spool/slurmd  && \
     chown -R slurm:slurm /var/spool/slurmd && \
-    yum clean all && \
-    rm -rf /var/cache/yum
+    dnf clean all && \
+    rm -rf /var/cache/dnf
 # slurm-pam_slurm-*.x86_64.rpm   slurm-perlapi-*.x86_64.rpm
 EXPOSE 6818
 
