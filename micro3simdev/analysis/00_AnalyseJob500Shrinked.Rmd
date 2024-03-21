@@ -1,9 +1,12 @@
 ---
-title: "Developing Slurm Simulator: Micro3 Cluster, job500shrinked trace"
-author: nikolays@buffalo.edu
+title: 'Developing Slurm Simulator: Micro3 Cluster, job500shrinked trace'
+author: "nikolays@buffalo.edu"
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
-  html_document: 
+  pdf_document:
+    toc: yes
+    toc_depth: '2'
+  html_document:
     toc: yes
     toc_float: yes
     toc_depth: 2
@@ -43,7 +46,6 @@ library(plotly)
 
 
 ```{r}
-
 read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     cat("Read: ",filename,"\n")
   
@@ -120,7 +122,7 @@ read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     reqmem_size[reqmem_unit=="G"] <- reqmem_size[reqmem_unit=="G"]*1024
     
     slurm_log$ReqMemSize <- reqmem_size
-    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" || reqmem_perwhat==""
+    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" | reqmem_perwhat==""
     
     slurm_log$ReqMem <- NULL
     
@@ -230,8 +232,17 @@ sacct2 <- bind_rows(
 #sacct$rid <- sacct$run_id + sacct$dtstart*100
 #sacct
 #read_sacct_out(path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/dtstart_58_1/slurm_acct.out"))
+
+# just for pics
+sacct2 <- bind_rows(
+  read_sacct_out_multiple("b0_tb", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/jobs500_shrinked__ref"), c(58, 68, 89, 105, 126), 1),
+  read_sacct_out_multiple("bF5", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3sim/bumblebeeF5/jobs500_shrinked"), c(58, 68, 89, 105, 126), 1),
+  read_sacct_out_multiple("s2311", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.11rc_2/jobs500_shrinked"), c(58, 68, 89, 105, 126), 1),
+  read_sacct_out_multiple("zZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/jobs500_shrinked"), c(58, 68, 89, 105, 126), 1)
+)
 sacct2
 ```
+
 ```{r}
 jobs_summary2 <- sacct2 %>% group_by(slurm_mode,JobRecID) %>% summarise(
   SubmitTimeMean=mean(SubmitTime), SubmitTimeSD=sd(SubmitTime),
@@ -260,7 +271,7 @@ plot_ly(sacct2, x = ~factor(JobRecID), y = ~StartTime, color = ~slurm_mode, type
 
 ## Distance on Waittime
 
-```{r fig.width=12, fig.height=12}
+```{r fig.width=8, fig.height=6}
 metrics_df <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>% #filter(dtstart %in% c(58)) %>%
     mutate(id=sprintf("%s_%03d_%d", slurm_mode, dtstart, run_id)) %>% dplyr::select(-slurm_mode, -dtstart, -run_id) %>%
     dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
@@ -269,15 +280,24 @@ metrics_matrix <- metrics_df %>% dplyr::select(-job_rec_id) %>% as.matrix()
 row.names(metrics_matrix) <- metrics_df$job_id
 
 d <- dist(t(metrics_matrix))
+
+pdf(file = "micro_jobs500shrinked2.pdf", width = 12, height = 6)
+heatmap.2(
+    as.matrix(d)/3600,
+    symm = T,trace = "none", scale = "none", Rowv=FALSE, 
+    col="bluered", key.title = NA, key.xlab="Distance, hour")
+dev.off()
+
 heatmap.2(
     as.matrix(d)/3600,
     symm = T,trace = "none", scale = "none", Rowv=FALSE, 
     col="bluered", key.title = NA, key.xlab="Distance, hour")
 
-heatmap.2(
-    as.matrix(d)/1e5,
-    symm = T,trace = "none", scale = "none",
-    col="bluered", key.title = NA, key.xlab="Distance, hour")
+
+#heatmap.2(
+#    as.matrix(d)/1e5,
+#    symm = T,trace = "none", scale = "none",
+#    col="bluered", key.title = NA, key.xlab="Distance, hour")
 ```
 
 NOTE:

@@ -1,5 +1,5 @@
 ---
-title: "Developing Slurm Simulator: Micro3 Cluster, job500shrinked trace"
+title: "Developing Slurm Simulator: ubhpc"
 author: nikolays@buffalo.edu
 date: "`r format(Sys.time(), '%d %B, %Y')`"
 output:
@@ -12,11 +12,10 @@ output:
 ---
 
 
-
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-setwd(path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/analysis"))
+setwd(path.expand("~/slurm_sim_ws/slurm_model/ubhpc/analysis"))
 library(stringr)
 #library(rjson)
 library(dplyr)
@@ -35,16 +34,13 @@ library(readr)
 library(ggplot2)
 library(cowplot)
 library(DepthProc)
-#reticulate::source_python(file.path(system.file("python", package = "RSlurmSimTools"),"hostlist.py"))
+reticulate::source_python(file.path(system.file("python", package = "RSlurmSimTools"),"hostlist.py"))
 library(gplots)
 #library(parallel)
 library(plotly)
-```
 
 
-```{r}
-
-read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE, jobrec_prefix="jobid_"){
+read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     cat("Read: ",filename,"\n")
   
     if(grepl(".zst", filename, fixed=TRUE)){
@@ -78,13 +74,13 @@ read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE, job
         QOSS=QOS
     )
     #convert job names
-    if(sum(grepl("jobid_",slurm_log$JobName))==length(slurm_log$JobName)){
-      slurm_log$JobRecID <- as.integer(str_replace(slurm_log$JobName, "jobid_",""))
-    } else if(sum(grepl("job_",slurm_log$JobName))==length(slurm_log$JobName)){
+    slurm_log$JobRecID <- as.integer(str_replace(slurm_log$JobName, "jobid_",""))
+    if(sum(is.na(slurm_log$JobRecID)) > 0.5 * length(slurm_log$JobRecID )) {
       slurm_log$JobRecID <- as.integer(str_replace(slurm_log$JobName, "job_",""))
-      
-    } else {
-      slurm_log$JobRecID <- as.integer(slurm_log$JobId)
+    }
+    if(sum(is.na(slurm_log$JobRecID)) > 0.5 * length(slurm_log$JobRecID )) {
+      warning("Can not extract job id from job name will use raw job id")
+      slurm_log$JobRecID <- slurm_log$JobIdRaw
     }
     
     #convert to proper format
@@ -127,7 +123,7 @@ read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE, job
     reqmem_size[reqmem_unit=="G"] <- reqmem_size[reqmem_unit=="G"]*1024
     
     slurm_log$ReqMemSize <- reqmem_size
-    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" || reqmem_perwhat==""
+    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" | reqmem_perwhat==""
     
     slurm_log$ReqMem <- NULL
     
@@ -152,7 +148,9 @@ read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE, job
     
     
     slurm_log$WaitHours <- as.integer(slurm_log$Start-slurm_log$Submit)/3600.0
-    slurm_log$WaitHours[slurm_log$WaitHours<0.0] <- slurm_log$WaitHours[slurm_log$WaitHours<0.0]+1
+    
+    slurm_log$WaitHours[is.na(slurm_log$WaitHours)] <- 0.0
+    slurm_log$WaitHours[slurm_log$WaitHours<0.0] <- 0.0#slurm_log$WaitHours[slurm_log$WaitHours<0.0]+1
     
     slurm_log$WallHours <- as.integer(slurm_log$Elapsed)/3600.0
     slurm_log$NodeHours <- slurm_log$WallHours*slurm_log$NodeCount
@@ -212,7 +210,53 @@ read_sacct_out_multiple <- function(slurm_mode, results_root_dir, dtstart_list, 
   }
   return(data.table::rbindlist(result_list))
 }
+
+
+read_events_csv <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
+    cat("Read: ",filename,"\n")
+  
+    if(grepl(".zst", filename, fixed=TRUE)){
+      events <- data.table::fread(cmd=paste("zstdcat", filename),sep=",",header=TRUE)
+    } else {
+      events <- data.table::fread(filename,sep=",",header=TRUE)
+    }
+    
+    return(events)
+}
+
+read_events_multiple <- function(slurm_mode, results_root_dir, dtstart_list, run_id_list, events_csv="slurmctld_log.csv") {
+  result_list <- list()
+  for(dtstart in dtstart_list) {
+    for(run_id in run_id_list) {
+      m_result_root_dir <- path.expand(file.path(results_root_dir, paste0("dtstart_", dtstart, "_", run_id)))
+      m_events_csv_filename <- file.path(m_result_root_dir, events_csv)
+      
+      if(!dir.exists(m_result_root_dir)) {
+          warning(sprintf("Directory %s does not exists!", m_result_root_dir))
+          return(NULL);
+      }
+      if(!file.exists(m_events_csv_filename)) {
+          if (file.exists(paste0(m_events_csv_filename,".zst"))) {
+              m_events_csv_filename <- paste0(m_events_csv_filename,".zst")
+          } else {
+              warning(sprintf("File %s does not exists!", m_events_csv_filename))
+              return(NULL);
+          }
+      }
+      m_events_csv <- read_events_csv(m_events_csv_filename)
+      m_events_csv$slurm_mode <- slurm_mode
+      m_events_csv$dtstart <- dtstart
+      m_events_csv$run_id <- run_id
+      
+      m_events_csv <- relocate(m_events_csv,slurm_mode,dtstart,run_id, .before = "job_rec_id")
+      result_list[[length(result_list)+1]] <- m_events_csv
+      
+    }
+  }
+  return(data.table::rbindlist(result_list))
+}
 ```
+
 
 ```{r}
 read_sacct_out_multiple("tb", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/lakeeffect_tb/workload"), 
@@ -226,14 +270,34 @@ sacct2 <- bind_rows(
   #read_sacct_out_multiple("tb", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/lakeeffect_tb/workload"), c(37, 49, 55, 71, 137, 232, 241, 261), 1), # i am not sure is it tarball
   read_sacct_out_multiple("tb", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/lakeeffect_tb/workload"), 
                           c(37, 49, 55, 71, 137, 232, 241, 261), 1), # i am not sure is it tarball
-  read_sacct_out_multiple("sm", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/mightybee_sim/workload"), 
+  read_sacct_out_multiple("um", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/mightybee_sim/workload"), 
                           c(71, 241, 261), 1),
-  read_sacct_out_multiple("sa10", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/anvil_sim/anvil10/workload"), 
-                          c(37, 55,79, 137,234, 241, 261), 1),
-  read_sacct_out_multiple("sa4free", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/anvil_sim/anvil4free/workload"), 
+  #read_sacct_out_multiple("wsa10", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/anvil_sim/anvil10/workload"), 
+  #                        c(37, 55,79, 137,234, 241, 261), 1),
+  read_sacct_out_multiple("va", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/anvil_sim/anvil4free/workload"),  # used to be "vsa4free"
+                          c(37, 55, 137,232), 1),
+  read_sacct_out_multiple("zZ", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/bumblebee/workload"), 
+                          c(55, 137, 37, 232, 234, 49, 79), 1),
+  
+)
+sacct2
+```
+
+```{r}
+#for pics
+# ../../../slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small/
+sacct2 <- bind_rows(
+  #read_sacct_out_multiple("tb", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/lakeeffect_tb/workload"), c(37, 49, 55, 71, 137, 232, 241, 261), 1), # i am not sure is it tarball
+  read_sacct_out_multiple("tb", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/lakeeffect_tb/workload"), 
+                          c(37, 55, 137, 261), 1), # i am not sure is it tarball
+  read_sacct_out_multiple("um", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/mightybee_sim/workload"), 
+                          c(71, 241, 261), 1),
+  #read_sacct_out_multiple("wsa10", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/anvil_sim/anvil10/workload"), 
+  #                        c(37, 55,79, 137,234, 241, 261), 1),
+  read_sacct_out_multiple("va", path.expand("~/slurm_sim_ws/slurm_model_archive/ubhpc/anvil_sim/anvil4free/workload"),  # used to be "vsa4free"
                           c(37, 55, 137,232), 1),
   read_sacct_out_multiple("zZ", path.expand("~/slurm_sim_ws/slurm_model/ubhpc/results/bumblebee/workload"), 
-                          c(55, 137, 37, 232, 234, 49, 79), 1),
+                          c(37, 55, 137,234), 1),
   
 )
 sacct2
@@ -275,7 +339,7 @@ hist(sZ$WallHours)
 
 ## Distance on Waittime
 
-```{r fig.width=12, fig.height=12}
+```{r fig.width=8, fig.height=6}
 metrics_df <- sacct2 %>% arrange(slurm_mode, dtstart, run_id) %>%
     mutate(id=sprintf("%s_%03d_%d", slurm_mode, dtstart, run_id)) %>% dplyr::select(-slurm_mode, -dtstart, -run_id) %>%
     dplyr::select(id, job_rec_id=JobRecID, metric=WaitTime) %>% 
@@ -285,15 +349,19 @@ metrics_matrix <- metrics_df %>% dplyr::select(-job_rec_id) %>% as.matrix()
 row.names(metrics_matrix) <- metrics_df$job_id
 
 d <- dist(t(metrics_matrix))
+
+#pdf(file = "ubhpc2.pdf", width = 12, height = 6)
 heatmap.2(
     as.matrix(d)/3600,
-    symm = T,trace = "none", scale = "none", Rowv=FALSE, 
+    symm = T,trace = "none", scale = "none", 
+    Rowv=FALSE, 
     col="bluered", key.title = NA, key.xlab="Distance, hour")
+#dev.off()
 
-heatmap.2(
-    as.matrix(d)/1e5,
-    symm = T,trace = "none", scale = "none",
-    col="bluered", key.title = NA, key.xlab="Distance, hour")
+#heatmap.2(
+#    as.matrix(d)/1e5,
+#    symm = T,trace = "none", scale = "none",
+#    col="bluered", key.title = NA, key.xlab="Distance, hour")
 ```
 
 NOTE:
@@ -514,3 +582,141 @@ dft1
 ```{r}
 events %>% filter(metric=="slurm_start_time")
 ```
+
+# Utilization
+```
+# 187G RAM
+NodeName=DEFAULT RealMemory=187000 Sockets=2 CoresPerSocket=16 Weight=60
+NodeName=n[001-087] Feature=CPU-Gold-6130,OPA
+NodeName=gn[001-002] Gres=gpu:tesla_p100-pcie-16gb:2 Feature=CPU-Gold-6130,OPA,P100 Weight=190
+
+# 187G RAM
+NodeName=DEFAULT CPUs=40 RealMemory=187000 Sockets=2 CoresPerSocket=20 ThreadsPerCore=1
+NodeName=g[001-008] Gres=gpu:tesla_v100-pcie-32gb:2 Feature=CPU-Gold-6230,IB,V100 Weight=190
+NodeName=m[001-096] Feature=CPU-Gold-6230,IB Weight=70
+
+# 754G RAM
+NodeName=DEFAULT RealMemory=754000 Sockets=2 CoresPerSocket=20
+NodeName=b[001-024] Feature=CPU-Gold-6230,IB Weight=160
+```
+
+```{r}
+# Cores 
+87*32+2*32+8*40+96*40+24*40
+
+#nodes_names <- expand_slurm_hostlists(c("n[001-087]","gn[001-002]","g[001-008]","m[001-096]","b[001-024]"))
+#nodes <- unlist(nodes)
+node_desc <- list(
+    list(
+        Name="Nodes_N",
+        Nodes=expand_hostlist("n[001-087]"),
+        Procs=32
+    ),
+    list(
+        Name="Nodes_GN",
+        Nodes=expand_hostlist("gn[001-002]"),
+        Procs=32
+    ),
+    list(
+        Name="Nodes_G",
+        Nodes=expand_hostlist("g[001-008]"),
+        Procs=40
+    ),
+    list(
+        Name="Nodes_M",
+        Nodes=expand_hostlist("m[001-096]"),
+        Procs=40
+    ),
+    list(
+        Name="Nodes_B",
+        Nodes=expand_hostlist("b[001-024]"),
+        Procs=40
+    )
+)
+names(nodes_desc) <- unique(sapply(nodes_desc,function(n){n$Name}))
+```
+
+
+```{r}
+sacct0 <- read_sacct_out("/home/nikolays/slurm_sim_ws/slurm_model/ubhpc/results/bumblebee/workload/dtstart_55_1/slurm_acct.out", extract_node_list = TRUE)
+util <- get_utilization(sacct0,7968-2*32,dt=60L)
+mean(util$total_norm)
+```
+```{r}
+dt <- as.integer(60)
+    
+nodes_names <- unlist(sapply(node_desc,function(x){x$Nodes}))
+total_proc <- sum(unlist(sapply(node_desc,function(x){x$Procs*length(x$Nodes)})))
+total_nodes <- length(nodes_names)
+
+ts0 <- as.integer(min(unlist(sacct0[,c("Submit","Eligible","Start","End")]),na.rm = TRUE))
+ts1 <- as.integer(max(unlist(sacct0[,c("Submit","Eligible","Start","End")]),na.rm = TRUE))
+
+
+ts0 <- as.integer(ts0/dt-1L)*dt
+ts1 <- as.integer(ts1/dt+2L)*dt
+
+ts <- seq(ts0,ts1,dt)
+t <- as.POSIXct(ts, origin="1970-01-01")
+utilization <- data.frame(ts,t,matrix(data=0.0, ncol = length(nodes_names)+4, nrow = length(ts)))
+colnames(utilization) <- c("ts","t",nodes_names,"total","total_norm","total_nodes","total_nodes_norm")
+
+Njobs <- nrow(sacct0)
+for(ijob in 1:Njobs){
+    jts_0 <- as.integer(sacct0$Start[[ijob]])
+    jts_1 <- as.integer(sacct0$End[[ijob]])
+    
+    iperiod0 <- as.integer((jts_0-ts0)/dt) + 1L
+    iperiod01 <- iperiod0 + 1L
+    iperiod10 <- as.integer((jts_1-ts0)/dt) + 1L
+    iperiod1 <- iperiod10 + 1L
+    nnodes <- length(sacct0$NodeListFull[[ijob]])
+    ppn <- sacct0$NCPUS[[ijob]]/nnodes
+    
+    if(iperiod10>iperiod01){
+        for(node in sacct0$NodeListFull[[ijob]]){
+            utilization[[node]][iperiod01:(iperiod10-1L)] <- utilization[[node]][iperiod01:(iperiod10-1L)] + ppn
+        }
+    }
+    
+    if(iperiod10> iperiod0)
+    {
+        #i.e. two ends
+        for(node in sacct0$NodeListFull[[ijob]]){
+            utilization[[node]][iperiod0] <- utilization[[node]][iperiod0] + ((ts[iperiod01]-jts_0)/dt)*ppn
+            utilization[[node]][iperiod10] <- utilization[[node]][iperiod10] + ((jts_1-ts[iperiod10])/dt)*ppn
+        }
+    }else{
+        for(node in sacct0$NodeListFull[[ijob]]){
+            utilization[[node]][iperiod0] <- utilization[[node]][iperiod0] + ((jts_1-jts_0)/dt)*ppn
+        }
+    }
+}
+utilization$total <- rowSums(utilization[,nodes_names])
+utilization$total_norm <- utilization$total /total_proc
+utilization$total_node <- rowSums(utilization[,nodes_names]>0)
+utilization$total_node_norm <- utilization$total_node /total_nodes
+
+mean(utilization$total_norm)
+mean(utilization$total_node_norm)
+#util_nodes <- get_utilization_old(sacct0,nodes_desc,dt=60L)
+```
+```{r}
+mean(sacct0$WaitHours)
+hist(sacct0$WaitHours,breaks=0:700)
+```
+```{r}
+ggplot(utilization,aes(x=t,y=total_norm))+geom_line()
+ggplot(utilization,aes(x=t,y=total_node_norm))+geom_line()
+
+```
+
+
+```{r}
+ggplot(util,aes(x=t,y=total_norm))+geom_line()
+
+```
+
+
+
+

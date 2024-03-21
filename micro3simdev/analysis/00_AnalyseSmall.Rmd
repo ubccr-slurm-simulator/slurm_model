@@ -9,14 +9,15 @@ output:
     toc_depth: 2
     mathjax: null
     css: doc.css
+editor_options: 
+  markdown: 
+    wrap: 80
 ---
-
-
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 
-setwd(path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/analysis"))
+#setwd(path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/analysis"))
 library(stringr)
 #library(rjson)
 library(dplyr)
@@ -26,7 +27,12 @@ library(lubridate)
 #detach("package:RSlurmSimTools", unload=TRUE)
 #devtools::document(path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"))
 #devtools::install_local(path=path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"), force=TRUE)
-library(RSlurmSimTools)
+#library(RSlurmSimTools)
+library(reticulate)
+use_condaenv(condaenv="xdmod-notebooks")
+
+# rebuild RSlurmSimTools
+devtools::load_all(path.expand("~/slurm_sim_ws/slurm_sim_tools/src/RSlurmSimTools"))
 
 
 library(dplyr)
@@ -124,7 +130,7 @@ read_sacct_out <- function(filename,nodes_desc=NULL,extract_node_list=FALSE){
     reqmem_size[reqmem_unit=="G"] <- reqmem_size[reqmem_unit=="G"]*1024
     
     slurm_log$ReqMemSize <- reqmem_size
-    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" || reqmem_perwhat==""
+    slurm_log$ReqMemPerNode <- reqmem_perwhat=="n" | reqmem_perwhat==""
     
     slurm_log$ReqMem <- NULL
     
@@ -272,7 +278,8 @@ sacct <- bind_rows(
   read_sacct_out_multiple("s2302", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.02/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   read_sacct_out_multiple("s2311", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_23.11rc/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
   #read_sacct_out_multiple("z2302s1", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3sim/bumblebee_23.02_sim_796898/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
-  read_sacct_out_multiple("zZZ", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
+  read_sacct_out_multiple("zZ1", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/bumblebee/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1),
+  read_sacct_out_multiple("zZ2", path.expand("~/slurm_sim_ws/slurm_model/micro3simdev/results/slurm_sim/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1)
 )
 #sacct$rid <- sacct$run_id + sacct$dtstart*100
 #sacct
@@ -280,11 +287,10 @@ sacct <- bind_rows(
 #sacct
 ```
 
-b0_tarball - build from official tarball
-b1_351d4  - build from git using tag corresponding to above tarball, increased time accuracy in logs
-b2_f588c - feed jobs from slurmctrld
-b3_f588c - reduced threads
-b4_4c06 - front end mode (slightly different outcomes)
+b0_tarball - build from official tarball b1_351d4 - build from git using tag
+corresponding to above tarball, increased time accuracy in logs b2_f588c - feed
+jobs from slurmctrld b3_f588c - reduced threads b4_4c06 - front end mode
+(slightly different outcomes)
 
 ```{r}
 
@@ -298,7 +304,6 @@ events_time
 #read_sacct_out_multiple("b0_tarball", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_21.08.04_tarball/small__ref"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
   #read_sacct_out_multiple("b1_351d", path.expand("~/slurm_sim_ws/slurm_model_archive/micro3/bumblebee_1_351d4b6c2870284078531f082758f11116f0996d/small"), c(58, 59, 68, 79, 89, 99, 105, 114, 126, 146), 1:2),
 ```
-
 
 ```{r}
 
@@ -327,7 +332,6 @@ df %>% select(-value) %>% spread(metric,t) %>%
 
 ```
 
-
 ```{r}
 
 events_proc <- bind_rows(
@@ -355,14 +359,10 @@ df %>% select(-value) %>% spread(metric,t) %>%
 
 ```
 
-#
-sched_avg
-3.182659 secs	+- 0.01648027
-backfill_avg
-30.17454 secs +- 0.01301492	
-job_time_limits_testing_sd
-30.16486 secs +- 0.2260608
+# 
 
+sched_avg 3.182659 secs +- 0.01648027 backfill_avg 30.17454 secs +- 0.01301492
+job_time_limits_testing_sd 30.16486 secs +- 0.2260608
 
 ```{r}
 jobs_summary <- sacct %>% group_by(slurm_mode,JobRecID) %>% summarise(
@@ -391,7 +391,6 @@ plot_grid(
     theme(legend.position="bottom"),
   ncol=1)
 ```
-
 
 ```{r fig.width=20}
 cowplot::plot_grid(
@@ -446,17 +445,15 @@ p <- ggplot(sacct, aes(x=factor(JobRecID), y=StartTime, color=slurm_mode, text=d
 toWebGL(ggplotly(p, hoverinfo = 'text', text=paste0(sacct$slurm_mode,"\n",sacct$dtstart)))
 ```
 
-
-
 ```{r}
-sacct %>% filter(dtstart==58 & slurm_mode %in% c('s2311', 'zZZ')) %>% arrange(JobRecID,slurm_mode, dtstart, run_id,StartTime)
+sacct %>% filter(dtstart==58 & slurm_mode %in% c('s2311', 'zZ2')) %>% arrange(JobRecID,slurm_mode, dtstart, run_id,StartTime)
 ```
 
 ```{r rows.print=20}
 df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='s2311' & run_id==1)
 df1$job_rec_id <- df1$JobRecID-0.2
 
-df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='zZZ' & run_id==1)
+df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='zZ2' & run_id==1)
 df2$job_rec_id <- df2$JobRecID+0.2
 
 print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
@@ -483,12 +480,11 @@ ggplotly(p)
 #p
 ```
 
-
 ```{r rows.print=20}
 df1 <- sacct %>% filter(dtstart==58 & slurm_mode=='s2311' & run_id==1)
 df1$job_rec_id <- df1$JobRecID-0.1
 
-df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='zZZ' & run_id==1)
+df2 <- sacct %>% filter(dtstart==58 & slurm_mode=='zZ2' & run_id==1)
 df2$job_rec_id <- df2$JobRecID+0.1
 
 print(cbind(df1 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs1=JobRecID, start1=StartTime), df2 %>% arrange(slurm_mode, dtstart, run_id,StartTime) %>% select(jobs2=JobRecID, start2=StartTime)))
@@ -578,6 +574,7 @@ p
 ```{r rows.print = 25}
 df1 %>% filter(job_rec_id==1002)
 ```
+
 ```{r rows.print = 25}
 df1 %>% filter(job_rec_id==1001)
 ```
@@ -597,10 +594,11 @@ df2 %>% arrange(t) %>% filter(metric=="backfill")
 3.317691-4.266231-.500000
 ```
 
-	-54.779917	start	NA	b4fr_4c06 58 1
-bZZ	58	1	NA	sched	-54.620774	start
+```         
+-54.779917  start   NA  b4fr_4c06 58 1
+```
 
-
+bZZ 58 1 NA sched -54.620774 start
 
 ```{r}
 dtstart <- 79
@@ -652,8 +650,6 @@ p <- plot_ly(df) %>%
 p
 ```
 
-
-
 ```{r}
 df %>% arrange(t) #%>% filter(metric=="backfill")
 ```
@@ -671,5 +667,3 @@ df %>% arrange(t) #%>% filter(metric=="backfill")
 #NA           backfill
 filter(df, metric=='sched')
 ```
-
-
